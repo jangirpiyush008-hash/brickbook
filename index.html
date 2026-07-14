@@ -1886,6 +1886,69 @@ function heroSVG() {
     <rect y="360" width="1200" height="100" fill="url(#haze)" opacity=".3"/>
   </svg>`;
 }
+/* Real photo URLs (Unsplash direct — permanent hashes). Falls back to SVG if blocked. */
+const PHOTO_MAP = {
+  bedroom:      ['1616486338812-3dadae4b4ace', '1560448204-e02f11c3d0e2', '1522708323590-d24dbb6b0267', '1505693416388-ac5ce068fe85'],
+  masterbedroom:['1618221195710-dd6b41faaea6', '1616594039964-ae9021a400a0', '1540518614846-7eded433c457', '1616137466211-f939a420be84'],
+  kitchen:      ['1556909114-f6e7ad7d3136', '1600585154340-be6161a56a0c', '1556909195-4e5b0aa9f39a', '1600607687644-c7171b42498f'],
+  living:       ['1618221195710-dd6b41faaea6', '1560185127-6ed189bf02f4', '1567767292278-a4f21aa2d36e', '1600607687939-ce8a6c25118c'],
+  drawing:      ['1600210491892-03d54c0aaf87', '1600585154526-990dced4db0d', '1567016432779-094069958ea5', '1613977257363-707ba9348227'],
+  dining:       ['1600607687644-c7171b42498f', '1567016432779-094069958ea5', '1615529182904-14819c35db37', '1600585154526-990dced4db0d'],
+  bathroom:     ['1552321554-5fefe8c9ef14', '1552321554-5fefe8c9ef14', '1600566753051-6057a4b0f31c', '1600585154340-be6161a56a0c'],
+  toilet:       ['1552321554-5fefe8c9ef14', '1600566753051-6057a4b0f31c', '1600607687644-aac4c3eac7f4', '1552321554-5fefe8c9ef14'],
+  balcony:      ['1600607687939-ce8a6c25118c', '1592595896616-c37162298647', '1600566753151-384129cf4e3e', '1600585154340-be6161a56a0c'],
+  terrace:      ['1592595896616-c37162298647', '1600607687939-ce8a6c25118c', '1560185127-6ed189bf02f4', '1518005020951-eccb494ad742'],
+  entrance:     ['1600607687644-aac4c3eac7f4', '1600566753151-384129cf4e3e', '1600585154340-be6161a56a0c', '1600607687939-ce8a6c25118c'],
+  mandir:       ['1616486338812-3dadae4b4ace', '1600210491892-03d54c0aaf87', '1615529182904-14819c35db37', '1600585154526-990dced4db0d'],
+  study:        ['1600585154526-990dced4db0d', '1616486338812-3dadae4b4ace', '1567016432779-094069958ea5', '1618221195710-dd6b41faaea6'],
+  parking:      ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1487958449943-2429e8be8625', '1590274853856-f22d5ee3d228'],
+  storage:      ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1590274853856-f22d5ee3d228', '1487958449943-2429e8be8625'],
+  roof:         ['1600566753151-384129cf4e3e', '1600607687644-aac4c3eac7f4', '1487958449943-2429e8be8625', '1518005020951-eccb494ad742'],
+  construction: ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1590274853856-f22d5ee3d228', '1518005020951-eccb494ad742'],
+  residential:  ['1600585154340-be6161a56a0c', '1600607687644-aac4c3eac7f4', '1600566753051-6057a4b0f31c', '1600607687939-ce8a6c25118c'],
+  villa:        ['1600585154340-be6161a56a0c', '1600607687644-aac4c3eac7f4', '1600566753151-384129cf4e3e', '1580587771525-78b9dba3b914'],
+  modern:       ['1487958449943-2429e8be8625', '1600585154340-be6161a56a0c', '1600607687939-ce8a6c25118c', '1600566753051-6057a4b0f31c'],
+  farms:        ['1518005020951-eccb494ad742', '1449158743715-0a90ebb6d2d8', '1543423942-a1c4fea11d24', '1600585154340-be6161a56a0c'],
+};
+function photoKey(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('master')) return 'masterbedroom';
+  if (n.includes('bedroom')) return 'bedroom';
+  if (n.includes('kitchen')) return 'kitchen';
+  if (n.includes('living')) return 'living';
+  if (n.includes('drawing')) return 'drawing';
+  if (n.includes('dining')) return 'dining';
+  if (n.includes('toilet') || n.includes('bath') || n.includes('wash')) return 'bathroom';
+  if (n.includes('balcony')) return 'balcony';
+  if (n.includes('terrace') || n.includes('deck')) return 'terrace';
+  if (n.includes('entrance') || n.includes('hall') || n.includes('lobby')) return 'entrance';
+  if (n.includes('mandir')) return 'mandir';
+  if (n.includes('study') || n.includes('pdr')) return 'study';
+  if (n.includes('parking')) return 'parking';
+  if (n.includes('storage') || n.includes('utility') || n.includes('pump')) return 'storage';
+  if (n.includes('roof') || n.includes('water tank')) return 'roof';
+  if (n.includes('villa')) return 'villa';
+  if (n.includes('modern')) return 'modern';
+  if (n.includes('farm')) return 'farms';
+  if (n.includes('resid')) return 'residential';
+  return 'construction';
+}
+function photoURL(name, i, w = 800, h = 500) {
+  const key = photoKey(name);
+  const arr = PHOTO_MAP[key] || PHOTO_MAP.construction;
+  const hash = arr[i % arr.length];
+  return `https://images.unsplash.com/photo-${hash}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+}
+/* Real photo <img> with hidden SVG fallback behind it. */
+function spaceMedia(name, i, w = 800, h = 500) {
+  const src = photoURL(name, i, w, h);
+  const svg = spaceSVG(name, i);
+  return `<div style="position:relative;width:100%;height:100%;overflow:hidden">
+    <div style="position:absolute;inset:0">${svg}</div>
+    <img src="${src}" alt="${name}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--surface-2)" onerror="this.remove()">
+  </div>`;
+}
+
 function spaceSVG(name, i, w = 200, h = 130) {
   const n = (name || '').toLowerCase();
   // pick scene by name where possible
@@ -1956,7 +2019,7 @@ function renderLanding() {
     <div class="landing">
       <nav class="ln-nav" id="lnNav">
         <div class="ln-nav-inner">
-          <a class="brand" href="#/">${brandMark(15)}<span class="brand-tag">Studio</span></a>
+          <a class="brand" href="#/">${brandMark(15)}</a>
           <div class="links">
             <a href="#/" data-scroll="directory">Directory</a>
             <a href="#/" data-scroll="how">How it works</a>
@@ -1965,7 +2028,6 @@ function renderLanding() {
             <a href="#/signup">For architects</a>
           </div>
           <div class="cta">
-            <button class="admin-btn" onclick="nav('/admin')">Admin login →</button>
             <button class="icon-btn" onclick="toggleTheme()" id="themeBtnLn">${iconSVG('sun')}</button>
             <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
             <button class="btn btn-navy btn-sm" onclick="nav('/signup')">List your practice</button>
@@ -1977,8 +2039,8 @@ function renderLanding() {
         <div class="hero-grid"></div>
         <div class="mkt-hero">
           <span class="kicker">${iconSVG('arch').replace('width="16"','width="12"').replace('height="16"','height="12"')} India's directory of building professionals</span>
-          <h1>Find the <em>architect</em><br>your home deserves.</h1>
-          <p class="lede">Browse 12,000+ verified architects across India. Filter by city, specialty, and budget. See portfolios, years of experience, and real client reviews — then book a consultation in one tap.</p>
+          <h1>Every home starts with the <em>right</em> architect.</h1>
+          <p class="lede">Meet 12,000+ verified architects across India — from residential specialists in Mumbai to landscape studios in Kochi. See real portfolios, honest reviews, and transparent fees before you ever pick up the phone.</p>
           <form class="mkt-search" onsubmit="event.preventDefault();document.getElementById('directory').scrollIntoView({behavior:'smooth'});toast('Showing 148 architects matching your criteria')">
             <div class="cell" tabindex="0">
               <div class="lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h6M9 13h6M9 17h6"/></svg> Project type</div>
@@ -2036,7 +2098,7 @@ function renderLanding() {
         <div class="mkt-section-head">
           <div>
             <span class="eyebrow" style="display:block;margin-bottom:8px">Featured this month</span>
-            <h2>Architects <em>India trusts</em>.</h2>
+            <h2>Handpicked. <em>Booked out.</em></h2>
           </div>
           <div class="fs">
             <button data-active="true">All</button><button>Residential</button><button>Interior</button><button>Sustainable</button><button>Heritage</button><button>Landscape</button>
@@ -2047,7 +2109,7 @@ function renderLanding() {
 
       <section class="mkt-section" style="padding-top:20px">
         <div class="mkt-section-head">
-          <h2>All <em>architects</em> · sorted by rating</h2>
+          <h2>Every architect. <em>Zero commissions.</em></h2>
           <div class="fs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--muted);align-self:center">${ARCHITECTS.length} of 12,438</span></div>
         </div>
         <div class="arch-grid" id="archAll"></div>
@@ -2259,7 +2321,7 @@ function renderLanding() {
       <footer class="footer" id="footer" style="padding-bottom:calc(80px + env(safe-area-inset-bottom))">
         <div class="footer-inner">
           <div>
-            <div class="brand">${brandMark(15)}<span class="brand-tag">Studio</span></div>
+            <div class="brand">${brandMark(15)}</div>
             <p class="about">BricBook is the shared canvas for architects, contractors, and clients — built in India, tuned for construction.</p>
             <div style="display:flex;gap:8px;align-items:center">
               <span class="chip sage">All systems normal</span>
@@ -2306,7 +2368,7 @@ function renderLanding() {
 
 function archCardHTML(a) {
   return `<div class="arch" data-slug="${a.slug}">
-    <div class="cover">${spaceSVG(a.spec[0], a.cover)}
+    <div class="cover">${spaceMedia(a.spec[0], a.cover)}
       <span class="badge">${a.spec[0]}${a.spec[1] ? ' · ' + a.spec[1] : ''}</span>
       <div class="top"><button class="fav" onclick="event.stopPropagation()" title="Shortlist"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button></div>
       ${a.verified ? `<span class="verified">✓ Verified · ${a.avail.split(' ').slice(-2).join(' ')}</span>` : ''}
@@ -2338,10 +2400,9 @@ function renderArchitectProfile(slug) {
     <div class="landing">
       <nav class="ln-nav" id="lnNav">
         <div class="ln-nav-inner">
-          <a class="brand" href="#/">${brandMark(15)}<span class="brand-tag">Studio</span></a>
+          <a class="brand" href="#/">${brandMark(15)}</a>
           <div class="links"><a href="#/">Directory</a><a href="#/">How it works</a><a href="#/">For architects</a></div>
           <div class="cta">
-            <button class="admin-btn" onclick="nav('/admin')">Admin login →</button>
             <button class="icon-btn" onclick="toggleTheme()">${iconSVG('sun')}</button>
             <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
             <button class="btn btn-navy btn-sm" onclick="nav('/signup')">List your practice</button>
@@ -2396,7 +2457,7 @@ function renderArchitectProfile(slug) {
                 <a onclick="toast('Loading full portfolio…')" style="color:var(--brass);font-size:12.5px;font-weight:500;cursor:pointer">View all ${a.proj} →</a>
               </div>
               <div class="ap-portfolio">
-                ${[['Residence','Bedroom',0,'2024','₹1.4 Cr'],['Villa','Kitchen',2,'2024','₹2.8 Cr'],['Home','Living',4,'2023','₹98 L'],['Interior','Bathroom',5,'2023','₹42 L'],['Farmhouse','Balcony',6,'2022','₹3.2 Cr'],['Residence','Entrance',7,'2022','₹1.6 Cr']].map(([t,n,v,y,c]) => `<div class="ap-work" onclick="toast('Project details would open here')"><div class="im">${spaceSVG(n, v)}<span class="yr">${y}</span></div><div class="in"><div class="nm">${t} · ${a.loc}</div><div class="mt">${c} · ${['G+1','G+2','Duplex','Ground'][v%4]}</div></div></div>`).join('')}
+                ${[['Residence','Bedroom',0,'2024','₹1.4 Cr'],['Villa','Kitchen',2,'2024','₹2.8 Cr'],['Home','Living',4,'2023','₹98 L'],['Interior','Bathroom',5,'2023','₹42 L'],['Farmhouse','Balcony',6,'2022','₹3.2 Cr'],['Residence','Entrance',7,'2022','₹1.6 Cr']].map(([t,n,v,y,c]) => `<div class="ap-work" onclick="toast('Project details would open here')"><div class="im">${spaceMedia(n, v)}<span class="yr">${y}</span></div><div class="in"><div class="nm">${t} · ${a.loc}</div><div class="mt">${c} · ${['G+1','G+2','Duplex','Ground'][v%4]}</div></div></div>`).join('')}
               </div>
             </div>
             <div class="ap-block">
@@ -2456,7 +2517,7 @@ function renderArchitectProfile(slug) {
       </div>
       <footer class="footer" style="margin-top:80px" id="footer">
         <div class="footer-inner">
-          <div><div class="brand">${brandMark(15)}<span class="brand-tag">Studio</span></div><p class="about">India's directory of building professionals — plus the shared canvas they and their clients build together.</p></div>
+          <div><div class="brand">${brandMark(15)}</div><p class="about">India's directory of building professionals — plus the shared canvas they and their clients build together.</p></div>
           <div><h4>Directory</h4><ul><li><a href="#/">All architects</a></li><li><a href="#/">Interior only</a></li><li><a href="#/">Landscape</a></li><li><a href="#/">Heritage</a></li></ul></div>
           <div><h4>For architects</h4><ul><li><a href="#/signup">List your practice</a></li><li><a href="#/login">Sign in</a></li><li><a href="#/">Pricing</a></li></ul></div>
           <div><h4>For clients</h4><ul><li><a href="#/signup">Create account</a></li><li><a href="#/">How it works</a></li><li><a href="#/">Verification</a></li></ul></div>
@@ -2527,7 +2588,7 @@ function renderLogin() {
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}<span class="brand-tag">${isCust ? 'Client' : 'Studio'}</span></a>
+          <a class="brand" href="#/">${brandMark(14)}</a>
           <a class="auth-back" href="#/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
@@ -2577,7 +2638,7 @@ function renderSignup() {
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}<span class="brand-tag">Studio</span></a>
+          <a class="brand" href="#/">${brandMark(14)}</a>
           <a class="auth-back" href="#/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
@@ -2657,7 +2718,7 @@ function renderForgot() {
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}<span class="brand-tag">Studio</span></a>
+          <a class="brand" href="#/">${brandMark(14)}</a>
           <a class="auth-back" href="#/login">${iconSVG('arrL')} Back to sign in</a>
         </div>
         <div class="auth-body">
@@ -2683,7 +2744,7 @@ function renderReset() {
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}<span class="brand-tag">Studio</span></a>
+          <a class="brand" href="#/">${brandMark(14)}</a>
           <a class="auth-back" href="#/login">${iconSVG('arrL')} Sign in</a>
         </div>
         <div class="auth-body">
@@ -2706,7 +2767,7 @@ function renderAdmin() {
     <div class="auth" data-theme="dark">
       <div class="auth-side" style="background:#0C0E12;color:#ECE4D2;border-right-color:#262A31">
         <div class="auth-header">
-          <a class="brand" href="#/" style="color:#ECE4D2">${brandMark(14)}<span class="brand-tag" style="border-color:#262A31;color:#999488">Admin</span></a>
+          <a class="brand" href="#/" style="color:#ECE4D2">${brandMark(14)}</a>
           <a class="auth-back" href="#/" style="color:#999488">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
@@ -2833,7 +2894,7 @@ function renderExplore() {
     const proj = PROJECTS.find(x => x.id === p.id);
     return `
       <div class="exp-card" onclick="openProject('${p.id}')">
-        <div class="media">${projectThumbSVG(proj?.hero || 'residential').replace('viewBox="0 0 40 40"', 'viewBox="0 0 40 40" preserveAspectRatio="xMidYMid slice"')}
+        <div class="media">${spaceMedia(proj?.hero || 'residential', 0)}
           <span class="badge">${p.phase.toUpperCase()}</span>
           <div class="prog"><div class="b" style="width:${p.progress}%"></div></div>
         </div>
@@ -3023,7 +3084,7 @@ function spaceCardHTML(name, i, floorId, isCust) {
   const likes = LIKES[key] || 0; const liked = LIKES[key + ':you'];
   const cmts = COMMENTS[key] || [];
   return `<div class="space" data-key="${key}">
-    <div class="space-media">${spaceSVG(name, i)}<span class="badge">${floorId.toUpperCase()} · ${String(i+1).padStart(2,'0')}</span>
+    <div class="space-media">${spaceMedia(name, i)}<span class="badge">${floorId.toUpperCase()} · ${String(i+1).padStart(2,'0')}</span>
       <span class="space-count-badge">👍 <span class="lc">${likes}</span> · 💬 <span class="cc">${cmts.length}</span></span>
       <div class="space-actions">
         <button class="space-action ${liked ? 'on' : ''}" data-act="like" title="Like">👍</button>
@@ -3196,7 +3257,7 @@ function renderApp() {
   root.innerHTML = `
     <div class="app-shell">
       <header class="topnav">
-        <a class="brand" href="#/">${brandMark(15)}<span class="brand-tag">Studio</span></a>
+        <a class="brand" href="#/">${brandMark(15)}</a>
         <div class="nav-center">
           <div class="nav-tabs">
             <a class="nav-tab" href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>${isCust ? 'My site' : 'Explore'}</a>
@@ -3732,7 +3793,7 @@ function closeLB() { $('#lb').dataset.open = 'false'; LB.annot = false; const b 
 window.openLB = openLB; window.closeLB = closeLB;
 function renderLBStage() {
   const img = LB.imgs[LB.i];
-  $('#lbStage').innerHTML = spaceSVG(LB.name, img.variant, 900, 560).replace('viewBox="0 0 200 130"', 'viewBox="0 0 200 130" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%"');
+  $('#lbStage').innerHTML = `<div style="position:absolute;inset:0;background:#0F1216">${spaceMedia(LB.name, img.variant, 1600, 1000).replace('object-fit:cover', 'object-fit:contain')}</div>`;
   $('#lbCount').textContent = `${LB.i + 1} / ${LB.imgs.length} · ${img.cap}`;
   const liked = LIKES[LB.key + ':you'];
   $('#lbLikeBtn').textContent = (liked ? '❤️ Liked' : '👍 Like') + ` (${LIKES[LB.key] || 0})`;
@@ -3970,7 +4031,7 @@ document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undoAnn(); }
 });
 function renderLBStrip() {
-  $('#lbStrip').innerHTML = LB.imgs.map((img, k) => `<div class="lb-thumb" ${k === LB.i ? 'data-active="true"' : ''} onclick="lbGo(${k})">${spaceSVG(LB.name, img.variant)}</div>`).join('');
+  $('#lbStrip').innerHTML = LB.imgs.map((img, k) => `<div class="lb-thumb" ${k === LB.i ? 'data-active="true"' : ''} onclick="lbGo(${k})">${spaceMedia(LB.name, img.variant, 200, 130)}</div>`).join('');
 }
 function renderLBComments() {
   const cmts = COMMENTS[LB.key] || [];
@@ -4044,7 +4105,7 @@ function openPhase(phaseName, status) {
       </div>
       <h3 style="font-size:14px;margin:20px 0 8px">Site photos from this phase</h3>
       <div class="phase-thumbs">
-        ${['Bedroom', 'Kitchen', 'Living', 'Site'].map((n, i) => `<div class="phase-thumb" onclick="closeModal();setTimeout(()=>openLB('phase:${phaseName}:${n}','ground','${n}',${i}),100)">${spaceSVG(n, i)}</div>`).join('')}
+        ${['Bedroom', 'Kitchen', 'Living', 'Site'].map((n, i) => `<div class="phase-thumb" onclick="closeModal();setTimeout(()=>openLB('phase:${phaseName}:${n}','ground','${n}',${i}),100)">${spaceMedia(n, i)}</div>`).join('')}
       </div>
       ${isDone ? `<button class="cert-btn" onclick="closeModal();setTimeout(openCert,150)"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 15l-3.5-3.5"/><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="txt"><div class="h">This phase is complete — view certificate</div><div class="s">Signed by Ar. Nishant Yadav</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>` : ''}
     </div></div>
