@@ -1,4 +1,8 @@
 <title>BricBook — The site plan for construction collaboration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1EAD5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{
   --ground:#F1EAD5;--surface:#FBF6E7;--surface-2:#EDE4CC;--ink:#14171B;--ink-2:#3B3F45;
@@ -27,10 +31,13 @@
   --shadow-lg:0 24px 60px -20px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box}
-html{font-family:var(--sans);color-scheme:light dark}
+html{font-family:var(--sans);color-scheme:light dark;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;background:var(--ground);color:var(--ink);font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior-y:none;
   font-feature-settings:"cv02","cv03","cv11";overflow-x:hidden}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn,.icon-btn,.chip,.qtag,.mkt-filter,.mt-btn,.cat-btn,.nav-tab,.view-toggle button,.view-switch button,.audience button,.mobile-tabs a,.mobile-tabs button{user-select:none;-webkit-user-select:none}
 button,input,textarea,select{font-family:inherit;color:inherit;font-size:14px}
 button{cursor:pointer;border:none;background:none;padding:0}
 a{color:inherit;text-decoration:none}
@@ -1082,6 +1089,271 @@ a{color:inherit;text-decoration:none}
 .toast[data-open=true]{display:inline-flex;animation:tsl .3s ease}
 @keyframes tsl{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 
+/* ============ Mobile: native app feel ============ */
+.mobile-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--hairline);z-index:60;padding:6px 4px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(12px);background:color-mix(in oklab,var(--surface) 92%,transparent)}
+.mobile-tabs .row{display:grid;grid-template-columns:repeat(5,1fr);max-width:520px;margin:0 auto}
+.mobile-tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;color:var(--muted);border-radius:8px;font-size:10.5px;font-weight:500;letter-spacing:.01em;transition:color .12s,background .12s;position:relative;min-height:52px}
+.mobile-tabs a[data-active=true]{color:var(--brass)}
+.mobile-tabs a[data-active=true]::before{content:"";position:absolute;top:2px;left:50%;transform:translateX(-50%);width:24px;height:3px;background:var(--brass);border-radius:0 0 3px 3px}
+.mobile-tabs a:active{background:var(--ground)}
+.mobile-tabs a .dot{position:absolute;top:6px;right:calc(50% - 14px);width:6px;height:6px;background:var(--terra);border-radius:50%}
+.mobile-tabs .fab{background:var(--brass);color:#FBF6E7;border-radius:50%;width:52px;height:52px;margin:0 auto;box-shadow:0 4px 14px rgba(168,122,68,.4);transform:translateY(-8px)}
+[data-theme=dark] .mobile-tabs .fab{color:var(--ground)}
+.mobile-tabs .fab svg{transform:scale(1.15)}
+
+/* Sticky bottom sign-in bar on landing mobile */
+.m-signin{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--hairline);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:50;gap:8px;backdrop-filter:blur(12px);background:color-mix(in oklab,var(--surface) 94%,transparent)}
+.m-signin .btn{flex:1;justify-content:center;min-height:48px;font-size:14px;font-weight:600}
+
+@media(max-width:768px){
+  /* Larger tap targets everywhere */
+  .btn{min-height:44px;padding:0 16px;font-size:14px}
+  .btn-sm{min-height:36px;padding:0 12px}
+  .btn-lg{min-height:52px;padding:0 22px;font-size:15px}
+  .icon-btn{width:40px;height:40px}
+  input,select,textarea{font-size:16px!important}  /* prevents iOS zoom */
+  .field input,.field select,.field textarea{min-height:48px;padding:0 14px}
+  .field textarea{padding:12px 14px}
+
+  /* Compact landing */
+  .ln-nav-inner{padding:12px 16px}
+  .ln-nav .cta .btn.btn-navy{display:none}  /* CTA moves to sticky bottom bar */
+  .m-signin.on-landing{display:flex}
+
+  /* Landing hero mobile */
+  .mkt-hero{padding:32px 16px 24px}
+  .mkt-hero h1{font-size:38px;line-height:1.05;margin-bottom:16px}
+  .mkt-hero p.lede{font-size:15px;margin-bottom:24px}
+
+  /* Big single tap-target search on mobile → opens sheet */
+  .mkt-search{padding:8px;border-radius:14px;flex-direction:column;gap:0}
+  .mkt-search .cell{padding:14px 16px;flex:1 1 auto;border-radius:10px}
+  .mkt-search .cell + .cell{border-top:1px solid var(--hairline)}
+  .mkt-search .cell + .cell::before{display:none}
+  .mkt-search .cell.hide-md{display:flex}
+  .mkt-search .cell .val,.mkt-search .cell input,.mkt-search .cell select{font-size:14px}
+  .mkt-search .cta{width:100%;margin:8px 0 0;min-height:52px;font-size:15px}
+
+  .mkt-filters-row{padding:0 4px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .mkt-filters-row .lbl{display:none}
+  .mkt-filter,.mkt-more{white-space:nowrap;flex-shrink:0;min-height:36px}
+  .mkt-quick{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .mkt-quick .qtag{flex-shrink:0;min-height:36px}
+  .mkt-quick .lb{display:none}
+  .mkt-stats{grid-template-columns:repeat(2,1fr);margin-top:24px;max-width:none}
+  .mkt-stats .st{padding:14px 12px}
+  .mkt-stats .st .n{font-size:22px}
+
+  /* Marketplace sections */
+  .mkt-section{padding:36px 16px}
+  .mkt-section-head{margin-bottom:20px}
+  .mkt-section-head .fs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;max-width:100%;-webkit-overflow-scrolling:touch}
+  .mkt-section-head .fs button{white-space:nowrap;flex-shrink:0;min-height:36px}
+  .arch-grid,.arch-grid.featured{grid-template-columns:1fr;gap:16px}
+  .arch .cover{aspect-ratio:16/10}
+  .arch .info{padding:14px 16px 6px}
+  .arch .av-wrap{width:52px;height:52px;top:-26px;left:16px}
+  .arch .av-wrap .av{font-size:17px}
+  .arch .info .head{padding-left:60px;min-height:32px}
+  .arch .info .nm{font-size:17px}
+  .arch .stats{padding:12px 16px}
+  .arch .foot{padding:12px 16px;min-height:44px}
+
+  /* Architect profile mobile */
+  .aprofile{padding:0 16px 100px}
+  .aprofile-hero{border-radius:12px;margin-bottom:20px}
+  .aprofile-cover{aspect-ratio:2/1}
+  .aprofile-body{padding:16px;margin-top:-40px;gap:14px}
+  .aprofile-av{width:80px;height:80px;padding:4px}
+  .aprofile-av .av{font-size:26px}
+  .aprofile-info h1{font-size:22px;margin-bottom:4px}
+  .aprofile-info .fm{font-size:11px}
+  .aprofile-info .meta{font-size:12px;gap:8px}
+  .aprofile-info .meta .dot{display:none}
+  .aprofile-cta{width:100%}
+  .aprofile-cta .btn{min-height:44px}
+  .aprofile-tabs{padding:0 16px}
+  .aprofile-tabs a{padding:12px 12px;font-size:13px}
+  .aprofile-cols{gap:16px}
+  .ap-block{padding:20px 16px;border-radius:10px}
+  .ap-portfolio{grid-template-columns:1fr 1fr;gap:8px}
+  .ap-stats{grid-template-columns:repeat(2,1fr)}
+  .ap-side{position:static}
+  .ap-contact,.ap-info-block{padding:18px 16px}
+
+  /* App shell — hide desktop rail + top tabs on mobile */
+  .app-shell{grid-template-rows:56px 1fr auto}
+  .topnav{grid-template-columns:auto 1fr auto;padding:0 12px;height:56px;gap:6px}
+  .brand-tag{display:none}
+  .nav-center{display:none}
+  .nav-actions .icon-btn:not(:last-child){display:none}
+  .app-body{grid-template-columns:1fr;padding-bottom:72px}
+  .rail{display:none}
+  .mobile-tabs{display:block}
+
+  /* Workspace mobile */
+  .ws-header{padding:16px 16px 0}
+  .ws-crumbs{display:none}
+  .ws-title h1{font-size:22px}
+  .ws-title-meta{font-size:11.5px;gap:8px}
+  .ws-title-meta .geo-card{padding:3px 8px 3px 3px;font-size:11px}
+  .ws-title-meta .geo-card .co{display:none}
+  .progress-phases{grid-template-columns:repeat(5,1fr);gap:2px;overflow-x:auto;padding-bottom:2px}
+  .progress-phases .phase{padding:8px 4px;flex-shrink:0}
+  .progress-phases .phase .pn{font-size:8.5px;letter-spacing:.06em}
+  .progress-phases .phase .pt{font-size:10px}
+  .progress-phases .phase:nth-child(4),.progress-phases .phase:nth-child(5){display:flex}
+  .module-tabs{padding:0 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  .mt-btn{padding:14px 12px;flex-shrink:0;white-space:nowrap;min-height:48px}
+  .ws-content{padding:16px 12px 40px}
+
+  /* Gallery mobile */
+  .hero-card{border-radius:10px;margin-bottom:16px}
+  .hero-media{aspect-ratio:16/10}
+  .hero-overlay{padding:14px}
+  .hero-caption{font-size:16px}
+  .hero-sub{font-size:11.5px}
+  .hero-actions .btn{padding:0 10px;font-size:11.5px;min-height:34px}
+  .caption-field{padding:10px 14px;gap:8px}
+  .save-hint{display:none}
+  .spaces-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .space-media{aspect-ratio:4/3}
+  .space-meta{padding:10px}
+  .space-name{font-size:13px}
+
+  /* Files mobile */
+  .file-toolbar{gap:10px}
+  .category-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;max-width:100%}
+  .cat-btn{flex-shrink:0;white-space:nowrap;min-height:36px;padding:8px 14px}
+  .files-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .drawing{padding:12px}
+  .drawing-name{font-size:13px}
+
+  /* Chat mobile → full height */
+  .chat{height:calc(100vh - 56px - 200px - 72px);min-height:360px;border-radius:10px}
+  .chat-thread{padding:14px 16px;gap:14px}
+  .msg{grid-template-columns:28px 1fr;gap:10px}
+  .msg-avatar{width:28px;height:28px;font-size:10.5px}
+  .msg-text{font-size:14px}
+  .composer-input textarea{font-size:15px}
+
+  /* Folders mobile */
+  .folder-row{grid-template-columns:28px 1fr auto;gap:10px;padding:14px 12px;min-height:60px}
+  .folder-row .folder-date{display:none}
+
+  /* Floors: horizontal strip below header on mobile */
+  .floors{width:100%;flex-direction:row;padding:10px 12px;overflow-x:auto;border-left:none;border-top:1px solid var(--hairline);gap:8px;position:sticky;top:56px;z-index:5;-webkit-overflow-scrolling:touch}
+  .floors-title{display:none}
+  .floor{flex-shrink:0;flex-direction:row;padding:8px 12px;min-height:36px;gap:6px}
+  .floor[data-active=true]::before{display:none}
+  .floor-icon{width:16px;height:16px}
+  .floor-icon svg{width:14px!important;height:14px!important}
+  .workspace{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+
+  /* Modals → bottom sheets */
+  .modal-scrim{padding:0;align-items:flex-end}
+  .modal{border-radius:16px 16px 0 0;max-height:88vh;width:100%;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal::before{content:"";display:block;width:44px;height:4px;background:var(--hairline-2);border-radius:2px;margin:8px auto 0;flex-shrink:0}
+  .modal-head{padding:12px 16px}
+  .modal-head h3{font-size:14px}
+  .modal-body{padding:16px}
+  .create-body{padding:16px!important}
+
+  /* Certificate mobile — smaller padding */
+  .cert{padding:24px 20px}
+  .cert-title{font-size:32px}
+  .cert-body{font-size:14px}
+  .cert-project{font-size:22px}
+  .cert-sign-row{grid-template-columns:1fr;gap:20px}
+  .cert-stamp{width:72px;height:72px}
+  .cert-actions{flex-direction:column;gap:8px}
+  .cert-actions .btn{width:100%}
+
+  /* Lightbox mobile */
+  .lb-scrim{padding:0}
+  .lb-head{padding:12px 14px calc(8px + env(safe-area-inset-top));margin-bottom:8px;position:sticky;top:0;background:rgba(10,10,12,.94);z-index:5;backdrop-filter:blur(6px)}
+  .lb-head .nm{font-size:16px}
+  .lb-head .mt{font-size:10px}
+  .lb-head .cta{gap:4px}
+  .lb-head .cta .btn{padding:8px 10px;min-height:36px;font-size:11.5px}
+  .lb-head .cta .btn span{display:none}
+  .lb-body{grid-template-columns:1fr;gap:0;padding:0 8px 8px}
+  .lb-stage{border-radius:10px}
+  .lb-nav{width:36px;height:36px}
+  .lb-side{display:none}
+  .pencil-fab{width:52px;height:52px;bottom:20px;right:16px;top:auto}
+  .draw-tb{top:auto;bottom:80px;padding:8px;max-width:calc(100% - 24px);gap:6px}
+  .draw-tb .grp{padding:0 2px}
+  .draw-tb .tool{width:36px;height:36px}
+  .draw-tb .swatch{width:24px;height:24px}
+  .draw-tb .sz{width:30px;height:30px}
+  .draw-tb .act{padding:8px 10px}
+  .draw-tb .act.danger{display:none}
+
+  /* Explore mobile */
+  .explore{padding:16px 12px 40px}
+  .explore-hero,.cust-hero{padding:20px 16px;border-radius:12px}
+  .explore-hero .greeting,.cust-hero h1{font-size:24px}
+  .explore-hero .sub,.cust-hero .sub{font-size:13.5px;margin-bottom:16px}
+  .explore-stats{gap:6px}
+  .estat{padding:12px 10px}
+  .estat .vl{font-size:22px}
+  .cust-hero .kv{padding:10px 4px}
+  .cust-hero .kv .v{font-size:16px}
+  .cust-hero .kv .v.mono{font-size:12px}
+  .exp-grid{grid-template-columns:1fr;gap:14px}
+  .exp-card .body{padding:14px}
+  .exp-card .foot{padding:12px 14px}
+  .feed-item{padding:12px;grid-template-columns:32px 1fr;gap:10px}
+  .feed-item .av{width:32px;height:32px}
+  .feed-item .wa-btn,.feed-item .btn{grid-column:2;justify-self:start;margin-top:6px;min-height:36px}
+
+  /* Map view mobile */
+  .map-wrap{grid-template-columns:1fr;gap:12px}
+  .map-list{max-height:none;order:2}
+  .map-stage{order:1;min-height:340px;height:340px}
+  .map-pin .dot{width:24px;height:24px;border-width:2px}
+  .map-pin .dot span{font-size:9px}
+
+  /* Auth mobile */
+  .auth{grid-template-columns:1fr}
+  .auth-side{padding:24px 20px calc(24px + env(safe-area-inset-bottom));min-height:100vh}
+  .auth-visual{display:none}
+  .auth-body h1{font-size:26px}
+  .audience{padding:4px;border-radius:10px}
+  .audience button{padding:10px 12px;font-size:12px;min-height:52px}
+  .field-row{grid-template-columns:1fr;gap:10px}
+
+  /* Settings mobile */
+  .settings-page{padding:20px 12px 40px}
+  .settings-page h1{font-size:24px}
+  .settings-nav{gap:0;padding-bottom:0}
+  .settings-nav a{padding:12px 12px;font-size:13px;min-height:44px}
+  .settings-card{padding:18px 14px}
+  .profile-hero{gap:14px;flex-wrap:wrap}
+  .profile-avatar-lg{width:64px;height:64px;font-size:26px}
+  .profile-hero .info h2{font-size:22px}
+  .profile-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .pstat{padding:12px}
+  .pstat .vl{font-size:22px}
+
+  /* Toast bigger on mobile */
+  .toast{bottom:90px;font-size:13.5px;padding:12px 20px;max-width:calc(100% - 32px)}
+
+  /* Landing footer + how section compact */
+  .footer{padding:32px 16px 24px}
+  .how{padding:28px 20px;margin:24px auto;border-radius:14px}
+  .how h2{font-size:24px;margin-bottom:24px}
+  .how-steps{gap:20px}
+  .pull{padding:0 20px;margin:40px auto}
+  .pull blockquote{font-size:20px}
+  .pull cite{font-size:12px}
+  .bento{gap:12px}
+  .bento .card{padding:20px;border-radius:12px}
+  .bento .card h3{font-size:22px}
+}
+
 /* Responsive */
 @media(max-width:1100px){:root{--rail-w:260px;--floors-w:76px}.ws-header,.module-tabs,.ws-content,.explore{padding-left:24px;padding-right:24px}}
 @media(max-width:860px){
@@ -1979,7 +2251,12 @@ function renderLanding() {
         </div>
       </div>
 
-      <footer class="footer" id="footer">
+      <div class="m-signin on-landing">
+        <button class="btn btn-ghost" onclick="nav('/login')">Sign in</button>
+        <button class="btn btn-navy" onclick="nav('/signup')">List your practice →</button>
+      </div>
+
+      <footer class="footer" id="footer" style="padding-bottom:calc(80px + env(safe-area-inset-bottom))">
         <div class="footer-inner">
           <div>
             <div class="brand">${brandMark(15)}<span class="brand-tag">Studio</span></div>
@@ -2954,6 +3231,33 @@ function renderApp() {
 
         <section class="workspace" id="workspace"></section>
       </div>
+
+      <nav class="mobile-tabs" aria-label="App tabs">
+        <div class="row">
+          <a href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-8h-6v8H5a2 2 0 0 1-2-2z"/></svg>
+            <span>${isCust ? 'My site' : 'Home'}</span>
+          </a>
+          <a href="#/app" ${sub === '/app' ? 'data-active="true"' : ''}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>${isCust ? 'Photos' : 'Projects'}</span>
+          </a>
+          <button onclick="if(!location.hash.startsWith('#/app'))nav('/app');state.module='chat';setTimeout(()=>renderWorkspace(),50)" aria-label="Chat">
+            <span class="fab" style="display:inline-flex;align-items:center;justify-content:center;color:inherit">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </span>
+            <span style="margin-top:2px">Chat</span>
+          </button>
+          <a href="#/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>${isCust ? 'Team' : 'People'}</span>
+          </a>
+          <a href="#/app/profile" ${sub === '/app/profile' || sub === '/app/settings' ? 'data-active="true"' : ''}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Me</span>
+          </a>
+        </div>
+      </nav>
 
       <div class="dropdown" id="userDropdown">
         <div class="dropdown-head">
