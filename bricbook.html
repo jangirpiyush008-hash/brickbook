@@ -357,7 +357,22 @@ a{color:inherit;text-decoration:none}
 .rail-list::-webkit-scrollbar{width:8px}
 .rail-list::-webkit-scrollbar-thumb{background:var(--hairline-2);border-radius:4px}
 .rail-section{padding:12px 8px 4px;font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;font-family:var(--mono);font-weight:500}
-.project-row{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:var(--radius);cursor:pointer;position:relative;transition:background .12s}
+.rail-sort{position:relative}
+.rail-sort select{width:100%;height:32px;padding:0 30px 0 10px;background:var(--ground);border:1px solid var(--hairline);border-radius:var(--radius);outline:none;font-family:var(--sans);font-size:12.5px;color:var(--ink-2);cursor:pointer;appearance:none;-webkit-appearance:none}
+.rail-sort::after{content:"";position:absolute;right:12px;top:50%;transform:translateY(-25%);border:4px solid transparent;border-top-color:var(--muted);pointer-events:none}
+.rail-stats{padding:12px 12px 6px;margin-top:6px;border-top:1px solid var(--hairline);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.rail-stat{padding:8px 10px;border:1px solid var(--hairline);border-radius:6px;background:var(--surface)}
+.rail-stat .k{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.rail-stat .v{font-family:var(--serif);font-size:20px;font-weight:400;line-height:1;letter-spacing:-.01em;color:var(--ink)}
+.rail-stat .v em{color:var(--brass);font-style:italic}
+.rail-stat.done .v em{color:var(--sage)}
+.rail-stat.active .v em{color:var(--brass)}
+.rail-stat.wip .v em{color:var(--amber)}
+.fav-btn{border:none;background:transparent;color:var(--faint);cursor:pointer;padding:2px;line-height:1;flex-shrink:0;transition:color .15s}
+.fav-btn:hover{color:var(--brass)}
+.fav-btn.on{color:var(--brass)}
+.project-last{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.02em;margin-top:2px}
+.project-row{display:flex;align-items:center;gap:8px;padding:8px 8px;border-radius:var(--radius);cursor:pointer;position:relative;transition:background .12s}
 .project-row:hover{background:var(--ground)}
 .project-row[data-active=true]{background:var(--navy-tint)}
 .project-row[data-active=true]::before{content:"";position:absolute;left:-8px;top:8px;bottom:8px;width:3px;background:var(--brass);border-radius:0 2px 2px 0}
@@ -373,14 +388,14 @@ a{color:inherit;text-decoration:none}
 .workspace-main{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--hairline-2) transparent}
 .workspace-main::-webkit-scrollbar{width:10px}
 .workspace-main::-webkit-scrollbar-thumb{background:var(--hairline-2);border-radius:5px}
-.ws-header{padding:24px 32px 0;position:sticky;top:0;background:var(--ground);z-index:10}
+.ws-header{padding:24px 32px 0;background:var(--ground)}
 .ws-crumbs{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:6px}
 .ws-crumbs .code{font-family:var(--mono);color:var(--brass);font-size:11px;padding:2px 6px;background:var(--brass-tint);border-radius:4px}
 .ws-title{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
 .ws-title h1{margin:0;font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;color:var(--ink)}
 .ws-title-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 
-.module-tabs{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--hairline);padding:0 32px;background:var(--ground);position:sticky;top:0;z-index:9;margin-top:4px}
+.module-tabs{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--hairline);padding:0 32px;background:var(--ground);margin-top:4px}
 .mt-btn{padding:12px 14px;font-size:13.5px;font-weight:500;color:var(--muted);display:inline-flex;align-items:center;gap:8px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
 .mt-btn:hover{color:var(--ink)}
 .mt-btn[data-active=true]{color:var(--ink);border-bottom-color:var(--brass)}
@@ -644,14 +659,22 @@ a{color:inherit;text-decoration:none}
 .progress .bar{height:100%;background:linear-gradient(90deg,var(--brass) 0%,var(--brass-2) 100%);border-radius:6px;position:relative;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .progress .bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimBar 2s infinite}
 @keyframes shimBar{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:12px}
-.phase{padding:10px 8px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:4px;text-align:center}
-.phase.done{background:var(--brass-tint);border-color:var(--brass);color:var(--brass)}
-.phase.active{background:var(--navy-tint);border-color:var(--navy);color:var(--navy);position:relative}
+.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px}
+.phase{padding:14px 12px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;text-align:left;transition:all .18s;position:relative;overflow:hidden;min-height:78px;display:flex;flex-direction:column;justify-content:space-between}
+.phase:hover{border-color:var(--hairline-2);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.phase.done{background:linear-gradient(135deg,var(--brass-tint) 0%,var(--surface) 100%);border-color:var(--brass);color:var(--brass)}
+.phase.active{background:linear-gradient(135deg,var(--navy-tint) 0%,var(--surface) 100%);border-color:var(--navy);color:var(--navy)}
+.phase.active::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--brass)}
 [data-theme=dark] .phase.active{color:var(--navy-2)}
-.phase .pn{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;font-weight:600}
-.phase .pt{font-size:11px;color:var(--muted)}
-.phase.done .pt,.phase.active .pt{color:inherit;opacity:.8}
+.phase .pn{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:4px}
+.phase .pt{font-size:12.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:4px}
+.phase.done .pt{color:var(--brass)}
+.phase.done .pt::before{content:"✓";font-weight:700}
+.phase.active .pt{color:inherit}
+.phase.active .pt::before{content:"●";color:var(--brass);animation:pulseDot 1.4s infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+.phase .pindex{position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:600}
+.phase.done .pindex,.phase.active .pindex{color:inherit;opacity:.6}
 
 /* Team card row */
 .team-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
@@ -1083,6 +1106,54 @@ a{color:inherit;text-decoration:none}
 .geo-card .mini{width:22px;height:22px;border-radius:50%;background:var(--brass-tint);color:var(--brass);display:inline-flex;align-items:center;justify-content:center}
 .geo-card b{color:var(--ink);font-weight:500;font-family:var(--sans)}
 .geo-card .co{font-family:var(--mono);font-size:10px;color:var(--faint);margin-left:4px}
+
+/* Help & Support FAB */
+.help-fab{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--ground);padding:12px 18px;border-radius:28px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -6px rgba(20,23,27,.35),0 2px 4px rgba(20,23,27,.15);z-index:55;cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid transparent}
+.help-fab:hover{transform:translateY(-2px);box-shadow:0 14px 30px -6px rgba(20,23,27,.45),0 4px 8px rgba(20,23,27,.2)}
+.help-fab .ic{width:22px;height:22px;background:var(--brass);color:#FBF6E7;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;font-weight:400;font-style:italic}
+[data-theme=dark] .help-fab .ic{color:var(--ground)}
+@media(max-width:768px){.help-fab{bottom:88px;right:16px;padding:10px 14px;font-size:12.5px}.help-fab span:not(.ic){display:none}}
+
+/* Job Search page */
+.jobs-page{max-width:1240px;margin:0 auto;padding:32px 32px 60px}
+.jobs-page h1{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;margin:0 0 4px}
+.jobs-page .sub{color:var(--muted);margin:0 0 24px;font-size:14px}
+.job-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.job-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,transform .15s;cursor:pointer}
+.job-card:hover{border-color:var(--hairline-2);transform:translateY(-2px)}
+.job-card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.job-card .role{font-family:var(--serif);font-size:20px;font-weight:400;letter-spacing:-.005em;line-height:1.15;margin:0}
+.job-card .co{font-family:var(--mono);font-size:11px;color:var(--brass);letter-spacing:.02em;text-transform:uppercase;margin-top:2px}
+.job-card .badge{font-family:var(--mono);font-size:10px;padding:3px 8px;background:var(--brass-tint);color:var(--brass);border-radius:10px;letter-spacing:.06em;white-space:nowrap}
+.job-card .desc{font-size:13px;color:var(--ink-2);line-height:1.5}
+.job-card .tags{display:flex;flex-wrap:wrap;gap:5px}
+.job-card .tags span{font-family:var(--mono);font-size:10.5px;padding:2px 8px;background:var(--ground);border:1px solid var(--hairline);border-radius:10px;color:var(--muted)}
+.job-card .foot{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--hairline);font-size:12px;color:var(--muted)}
+.job-card .foot .rate{font-family:var(--serif);font-size:16px;color:var(--ink);letter-spacing:-.005em}
+.job-card .foot .rate em{color:var(--brass);font-style:italic}
+
+/* Add-user modal */
+.user-search{border:1px solid var(--hairline);border-radius:8px;background:var(--ground);padding:6px 10px;display:flex;align-items:center;gap:8px}
+.user-search input{flex:1;border:none;background:transparent;outline:none;font-size:14px;height:36px}
+.user-search svg{color:var(--muted);flex-shrink:0}
+.user-results{max-height:280px;overflow-y:auto;margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.user-row{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:6px;cursor:pointer;transition:background .12s}
+.user-row:hover{background:var(--ground)}
+.user-row .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#FBF6E7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+[data-theme=dark] .user-row .av{color:var(--ground)}
+.user-row .info{min-width:0}
+.user-row .nm{font-size:13.5px;font-weight:500;color:var(--ink)}
+.user-row .un{font-family:var(--mono);font-size:11px;color:var(--brass);margin-top:1px}
+.user-row .meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:1px}
+.user-row .add-btn{padding:6px 10px;background:var(--brass);color:#fff;border-radius:5px;font-size:11.5px;font-weight:500}
+[data-theme=dark] .user-row .add-btn{color:var(--ground)}
+.user-row .added{padding:6px 10px;background:var(--sage);color:#fff;border-radius:5px;font-size:11.5px;font-weight:500}
+.user-row.disabled{opacity:.5;cursor:not-allowed}
+.user-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.user-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;background:var(--brass-tint);border:1px solid var(--brass);color:var(--brass);border-radius:14px;font-size:11.5px}
+.user-chip button{border:none;background:rgba(0,0,0,.08);width:16px;height:16px;border-radius:50%;color:inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;line-height:1}
+.user-chip button:hover{background:rgba(0,0,0,.2)}
 
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:20px;font-size:13px;box-shadow:var(--shadow-lg);z-index:200;display:none;align-items:center;gap:10px}
@@ -1593,10 +1664,23 @@ a{color:inherit;text-decoration:none}
 <script>
 /* ============ Auth store ============ */
 const DEMO = {
-  studio:   { email: 'demo@bricbook.com',      password: 'demo1234',  name: 'Piyush Jangir',   company: 'Sundara Studio',   role: 'Architect',     kind: 'studio' },
-  customer: { email: 'client@kaustubh.com',    password: 'client1234', name: 'Kaustubh Sharma', company: 'Kaustubh Residence', role: 'Homeowner',   kind: 'customer', projectId: 'spdl01', customerId: 'CUST-SPDL01-K7A2' },
-  admin:    { email: 'admin@bricbook.com',     password: 'admin1234', name: 'Admin',           company: 'BricBook Ops',      role: 'Administrator', kind: 'admin' },
+  professional: { email: 'demo@bricbook.com',   password: 'demo1234',   name: 'Nishant Yadav',   username: 'nishant.yadav',    company: 'Sundara Studio',     role: 'Principal Architect', kind: 'professional' },
+  user:         { email: 'client@kaustubh.com', password: 'client1234', name: 'Kaustubh Sharma', username: 'kaustubh.sharma',  company: 'Kaustubh Residence', role: 'Homeowner',           kind: 'user', projectId: 'spdl01', customerId: 'CUST-SPDL01-K7A2' },
+  admin:        { email: 'admin@bricbook.com',  password: 'admin1234',  name: 'BricBook Ops',    username: 'admin',            company: 'BricBook Platform',  role: 'Administrator',       kind: 'admin' },
 };
+DEMO.studio = DEMO.professional; DEMO.customer = DEMO.user;
+const USERS = [
+  { username: 'kaustubh.sharma', name: 'Kaustubh Sharma',  role: 'Owner',            city: 'Mumbai' },
+  { username: 'anita.sharma',    name: 'Anita Sharma',     role: 'Family',           city: 'Mumbai' },
+  { username: 'karan.sharma',    name: 'Karan Sharma',     role: 'Family',           city: 'Bangalore' },
+  { username: 'neha.iyer',       name: 'Neha Iyer',        role: 'Project Manager',  city: 'Mumbai' },
+  { username: 'jake.mendes',     name: 'Jake Mendes',      role: 'Site Engineer',    city: 'Mumbai' },
+  { username: 'priya.menon',     name: 'Priya Menon',      role: 'Structural Eng.',  city: 'Bangalore' },
+  { username: 'mark.rathi',      name: 'Mark Rathi',       role: 'Procurement',      city: 'Mumbai' },
+  { username: 'sarah.karim',     name: 'Sarah Karim',      role: 'Site Supervisor',  city: 'Mumbai' },
+  { username: 'nishant.yadav',   name: 'Nishant Yadav',    role: 'Architect',        city: 'Mumbai' },
+  { username: 'aditya.rao',      name: 'Aditya Rao',       role: 'Structural Eng.',  city: 'Bangalore' },
+];
 const LIKES = {}; const COMMENTS = {}; const ANNOTS = {};
 
 /* ============ Architects directory ============ */
@@ -1622,7 +1706,7 @@ const AUTH = {
 };
 
 /* ============ Router ============ */
-const ROUTES = ['/', '/login', '/signup', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros'];
+const ROUTES = ['/', '/login', '/signup', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
 function currentRoute() {
   const h = (location.hash || '#/').slice(1);
   return h || '/';
@@ -1632,18 +1716,27 @@ window.nav = nav;
 
 /* ============ Mock data ============ */
 const PROJECTS = [
-  { id: "spdl01",  name: "Kaustubh",         code: "SPDL01",  unread: 3, hero: "residential", city: "Mumbai",     area: "Bandra West",    x: 90,  y: 268, lat: "19.055° N", lng: "72.827° E" },
-  { id: "spdl31",  name: "Vikas",            code: "SPDL31",  unread: 0, hero: "villa",       city: "Pune",       area: "Koregaon Park",  x: 118, y: 292, lat: "18.539° N", lng: "73.895° E" },
-  { id: "spdl54",  name: "Ajay",             code: "SPDL54",  unread: 1, hero: "modern",      city: "Bangalore",  area: "Whitefield",     x: 170, y: 378, lat: "12.970° N", lng: "77.750° E" },
-  { id: "spdl45",  name: "Kamlesh",          code: "SPDL45",  unread: 0, hero: "residential", city: "Ahmedabad",  area: "Bodakdev",       x: 108, y: 218, lat: "23.032° N", lng: "72.510° E" },
-  { id: "spdl84",  name: "Rajiv",            code: "SPDL84",  unread: 0, hero: "villa",       city: "Delhi NCR",  area: "Gurgaon Sec 43", x: 178, y: 148, lat: "28.457° N", lng: "77.075° E" },
-  { id: "spdl94",  name: "Aron farms",       code: "SPDL94",  unread: 0, hero: "farms",       city: "Chandigarh", area: "Sector 8",       x: 172, y: 118, lat: "30.746° N", lng: "76.786° E" },
-  { id: "spdl44",  name: "United Strangers", code: "SPDL44",  unread: 2, hero: "modern",      city: "Mumbai",     area: "Lower Parel",    x: 92,  y: 274, lat: "18.994° N", lng: "72.826° E" },
-  { id: "spdl24",  name: "Mannat",           code: "SPDL24",  unread: 0, hero: "residential", city: "Hyderabad",  area: "Jubilee Hills",  x: 188, y: 338, lat: "17.428° N", lng: "78.408° E" },
-  { id: "spdl35",  name: "Aipl",             code: "SPDL35",  unread: 0, hero: "villa",       city: "Chennai",    area: "ECR Road",       x: 228, y: 398, lat: "12.910° N", lng: "80.244° E" },
-  { id: "spdl101", name: "Project X",        code: "SPDL101", unread: 0, hero: "modern",      city: "Kochi",      area: "Fort Kochi",     x: 158, y: 430, lat: "9.966° N",  lng: "76.240° E" },
-  { id: "spdl11",  name: "HM house",         code: "SPDL11",  unread: 0, hero: "residential", city: "Goa",        area: "Assagao",        x: 82,  y: 320, lat: "15.610° N", lng: "73.746° E" },
+  { id: "spdl01",  name: "Kaustubh",         code: "SPDL01",  unread: 3, hero: "residential", city: "Mumbai",     area: "Bandra West",    x: 90,  y: 268, lat: "19.055° N", lng: "72.827° E", client: 'Kaustubh Sharma',    architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 84, status: 'in-progress', lastActive: '2m ago',   pinned: true,  users: ['kaustubh.sharma','anita.sharma','karan.sharma','neha.iyer','jake.mendes'] },
+  { id: "spdl31",  name: "Vikas",            code: "SPDL31",  unread: 0, hero: "villa",       city: "Pune",       area: "Koregaon Park",  x: 118, y: 292, lat: "18.539° N", lng: "73.895° E", client: 'Vikas Reddy',        architect: 'Nishant Yadav', poc: 'Nishant Yadav', progress: 22, status: 'active',       lastActive: '4h ago',   pinned: false, users: ['nishant.yadav','jake.mendes'] },
+  { id: "spdl54",  name: "Ajay",             code: "SPDL54",  unread: 1, hero: "modern",      city: "Bangalore",  area: "Whitefield",     x: 170, y: 378, lat: "12.970° N", lng: "77.750° E", client: 'Ajay Kumar',         architect: 'Nishant Yadav', poc: 'Priya Menon', progress: 68, status: 'in-progress',  lastActive: 'Today 11:12', pinned: true,  users: ['nishant.yadav','priya.menon','ajay.kumar'] },
+  { id: "spdl45",  name: "Kamlesh",          code: "SPDL45",  unread: 0, hero: "residential", city: "Ahmedabad",  area: "Bodakdev",       x: 108, y: 218, lat: "23.032° N", lng: "72.510° E", client: 'Kamlesh Patel',      architect: 'Aditya Rao',   poc: 'Nishant Yadav', progress: 42, status: 'in-progress',  lastActive: 'Yesterday', pinned: false, users: ['aditya.rao','nishant.yadav'] },
+  { id: "spdl84",  name: "Rajiv",            code: "SPDL84",  unread: 0, hero: "villa",       city: "Delhi NCR",  area: "Gurgaon Sec 43", x: 178, y: 148, lat: "28.457° N", lng: "77.075° E", client: 'Rajiv Malhotra',     architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 55, status: 'active',        lastActive: '2 days ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
+  { id: "spdl94",  name: "Aron farms",       code: "SPDL94",  unread: 0, hero: "farms",       city: "Chandigarh", area: "Sector 8",       x: 172, y: 118, lat: "30.746° N", lng: "76.786° E", client: 'Aron Bansal',        architect: 'Sundeep Vasan', poc: 'Nishant Yadav', progress: 12, status: 'active',      lastActive: '3 days ago', pinned: false, users: ['nishant.yadav'] },
+  { id: "spdl44",  name: "United Strangers", code: "SPDL44",  unread: 2, hero: "modern",      city: "Mumbai",     area: "Lower Parel",    x: 92,  y: 274, lat: "18.994° N", lng: "72.826° E", client: 'US Collective',      architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 91, status: 'in-progress',   lastActive: 'Today 09:44', pinned: false, users: ['nishant.yadav','neha.iyer'] },
+  { id: "spdl24",  name: "Mannat",           code: "SPDL24",  unread: 0, hero: "residential", city: "Hyderabad",  area: "Jubilee Hills",  x: 188, y: 338, lat: "17.428° N", lng: "78.408° E", client: 'Mannat Suri',        architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 66, status: 'in-progress',   lastActive: '1 week ago', pinned: false, users: ['nishant.yadav'] },
+  { id: "spdl35",  name: "Aipl",             code: "SPDL35",  unread: 0, hero: "villa",       city: "Chennai",    area: "ECR Road",       x: 228, y: 398, lat: "12.910° N", lng: "80.244° E", client: 'AIPL Estates',       architect: 'Meera Nair',   poc: 'Nishant Yadav', progress: 48, status: 'active',        lastActive: '5 days ago', pinned: false, users: ['nishant.yadav','meera.nair'] },
+  { id: "spdl101", name: "Project X",        code: "SPDL101", unread: 0, hero: "modern",      city: "Kochi",      area: "Fort Kochi",     x: 158, y: 430, lat: "9.966° N",  lng: "76.240° E", client: 'Confidential',       architect: 'Nishant Yadav', poc: 'Nishant Yadav', progress: 34, status: 'active',       lastActive: '2 weeks ago', pinned: false, users: ['nishant.yadav'] },
+  { id: "spdl11",  name: "HM house",         code: "SPDL11",  unread: 0, hero: "residential", city: "Goa",        area: "Assagao",        x: 82,  y: 320, lat: "15.610° N", lng: "73.746° E", client: 'H&M Family',         architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 100, status: 'completed',    lastActive: '3 months ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
 ];
+/* Auto-generated project code helper — checks all existing codes for uniqueness */
+function nextProjectCode() {
+  let n = 100 + Math.floor(Math.random() * 900);
+  let code;
+  do { code = 'SPDL' + (n++); } while (PROJECTS.some(p => p.code === code));
+  return code;
+}
+/* Convenience getters */
+function projectStat(id) { return PROJECTS.find(p => p.id === id) || {}; }
 const FLOORS = [
   { id: "basement", short: "BSMT", label: "Basement" },
   { id: "ground", short: "GRND", label: "Ground" },
@@ -2546,7 +2639,7 @@ function renderArchitectProfile(slug) {
 /* ============ Auth pages ============ */
 function authVisual(kind = 'default') {
   const isAdmin = kind === 'admin';
-  const isCust = kind === 'customer';
+  const isCust = kind === 'customer' || kind === 'user';
   const quote = isAdmin
     ? `<p class="quote">Administrator access. All actions are <em>logged</em>.</p><p class="cite">This portal will move to admin.bricbook.com — a private subdomain — after launch.</p>`
     : isCust
@@ -2581,9 +2674,9 @@ function authVisual(kind = 'default') {
 
 function renderLogin() {
   const root = $('#root');
-  const aud = state.audience || 'studio';
-  const isCust = aud === 'customer';
-  const demoUser = isCust ? DEMO.customer : DEMO.studio;
+  const aud = state.audience || 'professional';
+  const isCust = aud === 'user' || aud === 'customer';
+  const demoUser = isCust ? DEMO.user : DEMO.professional;
   root.innerHTML = `
     <div class="auth">
       <div class="auth-side">
@@ -2595,11 +2688,11 @@ function renderLogin() {
           <h1>Welcome back.</h1>
           <p class="sub">${isCust ? 'Sign in to see your project — every photo, drawing, and update the studio ships to your site.' : 'Sign in to your studio dashboard. All your projects, in one place.'}</p>
           <div class="audience" role="tablist">
-            <button onclick="setAudience('studio')" ${aud === 'studio' ? 'data-active="true"' : ''}>
-              <div style="text-align:left"><div>Studio / Architect</div><div class="sub">Manage projects</div></div>
+            <button onclick="setAudience('professional')" ${aud === 'professional' ? 'data-active="true"' : ''}>
+              <div style="text-align:left"><div>Professional</div><div class="sub">Architect · Contractor</div></div>
             </button>
-            <button onclick="setAudience('customer')" ${aud === 'customer' ? 'data-active="true"' : ''}>
-              <div style="text-align:left"><div>Customer / Client</div><div class="sub">View my project</div></div>
+            <button onclick="setAudience('user')" ${(aud === 'user' || aud === 'customer') ? 'data-active="true"' : ''}>
+              <div style="text-align:left"><div>User</div><div class="sub">Client · Family · Team</div></div>
             </button>
           </div>
           <div class="demo-panel">
@@ -2882,38 +2975,24 @@ function renderExplore() {
       </div>
     </div>
   `;
-  const projData = [
-    { id: 'spdl01', name: 'Kaustubh Residence', code: 'SPDL01', progress: 84, phase: 'Interior', arch: 'You', poc: 'Neha Iyer', client: 'Kaustubh Sharma' },
-    { id: 'spdl45', name: 'Kamlesh Residence', code: 'SPDL45', progress: 42, phase: 'Structure', arch: 'Aditya Rao', poc: 'You', client: 'Kamlesh Patel' },
-    { id: 'spdl54', name: 'Ajay Villa', code: 'SPDL54', progress: 68, phase: 'Services', arch: 'You', poc: 'Priya Menon', client: 'Ajay Kumar' },
-    { id: 'spdl31', name: 'Vikas Residence', code: 'SPDL31', progress: 22, phase: 'Foundation', arch: 'You', poc: 'You', client: 'Vikas Reddy' },
-    { id: 'spdl44', name: 'United Strangers', code: 'SPDL44', progress: 91, phase: 'Handover', arch: 'You', poc: 'Neha Iyer', client: 'US Collective' },
-    { id: 'spdl94', name: 'Aron Farmhouse', code: 'SPDL94', progress: 12, phase: 'Site Prep', arch: 'Sundeep V', poc: 'You', client: 'Aron Bansal' },
-  ];
+  const projData = PROJECTS.slice(0, 6).map(p => ({ id: p.id, name: p.name + ' Residence', code: p.code, progress: p.progress, phase: p.status === 'completed' ? 'Handover' : p.progress > 80 ? 'Interior' : p.progress > 40 ? 'Structure' : 'Foundation', arch: p.architect, poc: p.poc, client: p.client }));
   const gridHTML = projData.map(p => {
     const proj = PROJECTS.find(x => x.id === p.id);
     return `
       <div class="exp-card" onclick="openProject('${p.id}')">
         <div class="media">${spaceMedia(proj?.hero || 'residential', 0)}
-          <span class="badge">${p.phase.toUpperCase()}</span>
+          <span class="badge">${p.code}</span>
           <div class="prog"><div class="b" style="width:${p.progress}%"></div></div>
         </div>
         <div class="body">
           <div class="h">
             <div>
-              <div class="nm">${p.name}</div>
-              <div class="cd">${p.code} · 📍 ${proj?.area || ''}, ${proj?.city || ''}</div>
+              <div class="nm">${p.client}</div>
+              <div class="cd">${p.code}</div>
             </div>
-            <span class="chip sage" style="font-size:10px">${p.progress > 80 ? 'Ahead' : p.progress > 40 ? 'On track' : 'Early'}</span>
+            <span class="chip sage" style="font-size:10px">${p.progress}%</span>
           </div>
-          <div class="meta">
-            <span>ARCH · ${p.arch}</span>
-            <span>POC · ${p.poc}</span>
-          </div>
-        </div>
-        <div class="foot">
-          <span class="pct"><b>${p.progress}%</b> complete</span>
-          <button class="btn btn-sm" style="background:#25D366;color:#fff" onclick="event.stopPropagation();openWA('${p.name}','Weekly update: currently at ${p.progress}% (${p.phase} phase)','Site update.pdf')">Send update</button>
+          <div class="meta"><span>📍 ${proj?.city || ''}</span><span>${p.phase}</span></div>
         </div>
       </div>
     `;
@@ -3034,11 +3113,11 @@ function renderCustomerExplore() {
           <div class="progress-lbl"><span>Overall completion</span><span>Handover · <b>${new Date(Date.now() + meta.days * 86400000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</b></span></div>
           <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
           <div class="progress-phases">
-            <div class="phase done" onclick="openPhase('Site prep','done')" style="cursor:pointer"><div class="pn">Site prep</div><div class="pt">Done</div></div>
-            <div class="phase done" onclick="openPhase('Foundation','done')" style="cursor:pointer"><div class="pn">Foundation</div><div class="pt">Done</div></div>
-            <div class="phase done" onclick="openPhase('Structure','done')" style="cursor:pointer"><div class="pn">Structure</div><div class="pt">Done</div></div>
-            <div class="phase active" onclick="openPhase('Interior','active')" style="cursor:pointer"><div class="pn">Interior</div><div class="pt">Now</div></div>
-            <div class="phase" onclick="openPhase('Handover','pending')" style="cursor:pointer"><div class="pn">Handover</div><div class="pt">—</div></div>
+            <div class="phase done" onclick="openPhase('Site prep','done')" style="cursor:pointer"><span class="pindex">01</span><div class="pn">Site prep</div><div class="pt">Complete</div></div>
+            <div class="phase done" onclick="openPhase('Foundation','done')" style="cursor:pointer"><span class="pindex">02</span><div class="pn">Foundation</div><div class="pt">Complete</div></div>
+            <div class="phase done" onclick="openPhase('Structure','done')" style="cursor:pointer"><span class="pindex">03</span><div class="pn">Structure</div><div class="pt">Complete</div></div>
+            <div class="phase active" onclick="openPhase('Interior','active')" style="cursor:pointer"><span class="pindex">04</span><div class="pn">Interior</div><div class="pt">In progress</div></div>
+            <div class="phase" onclick="openPhase('Handover','pending')" style="cursor:pointer"><span class="pindex">05</span><div class="pn">Handover</div><div class="pt">Upcoming</div></div>
           </div>
           <button class="cert-btn" onclick="openCert()"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="txt"><div class="h">View your handover certificate</div><div class="s">Signed by Ar. Nishant Yadav · Principal Architect</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
@@ -3141,7 +3220,8 @@ function attachSpaceHandlers(root) {
 
 /* ============ Create / Join / Pros ============ */
 function openCreate() {
-  const uid = 'CUST-SPDL' + (100 + Math.floor(Math.random()*900)) + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  const code = nextProjectCode();
+  const uid = 'CUST-' + code + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
   $('#modalName').textContent = 'Create a new project';
   $('#modalCode').textContent = 'NEW';
   $('#modal').dataset.open = 'true';
@@ -3151,21 +3231,26 @@ function openCreate() {
     <div class="create-body">
       <div class="field"><label>Project name</label><input id="cpName" placeholder="e.g. Kumar Villa" autofocus></div>
       <div class="field-row">
-        <div class="field"><label>Project code</label><input id="cpCode" placeholder="SPDL120" style="font-family:var(--mono)"></div>
+        <div class="field">
+          <label>Project code <span style="color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">· auto-generated · locked</span></label>
+          <input id="cpCode" value="${code}" readonly style="font-family:var(--mono);background:var(--surface-2);cursor:not-allowed" title="Project codes are unique across BricBook. Only admins can edit.">
+          <span class="hint">Immutable once assigned — only BricBook admins can change it.</span>
+        </div>
         <div class="field"><label>Type</label><select><option>Residence</option><option>Villa</option><option>Farmhouse</option><option>Interior only</option><option>Commercial</option></select></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Client name</label><input placeholder="Kumar Sharma"></div>
+        <div class="field"><label>Client name</label><input id="cpClient" placeholder="Kumar Sharma"></div>
         <div class="field"><label>Client WhatsApp</label><input placeholder="+91 …"></div>
       </div>
+      <div class="field"><label>Client username <span style="color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">· must be unique</span></label><input placeholder="@username (e.g. kumar.sharma)" style="font-family:var(--mono)"></div>
       <div class="uid-preview">
-        <div><div class="lb">Auto-generated Customer ID</div><div class="cd">${uid}</div></div>
+        <div><div class="lb">Customer access ID</div><div class="cd">${uid}</div></div>
         <div class="info">Every photo you WhatsApp to BricBook with this ID auto-syncs to the client's dashboard.</div>
       </div>
-      <div class="check"><input type="checkbox" id="cpInvite" checked><label for="cpInvite">Send this ID to client via WhatsApp when I create the project</label></div>
+      <div class="check"><input type="checkbox" id="cpInvite" checked><label for="cpInvite">Send code + ID to client via WhatsApp when I create the project</label></div>
       <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:8px;border-top:1px solid var(--hairline)">
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-brass" onclick="createProject('${uid}')">Create project</button>
+        <button class="btn btn-brass" onclick="createProject('${uid}')">Create ${code}</button>
       </div>
     </div>
   `;
@@ -3190,9 +3275,143 @@ function openJoin() {
 }
 window.openCreate = openCreate; window.openJoin = openJoin; window.createProject = createProject;
 
+/* ============ Jobs board ============ */
+const JOBS = [
+  { role: '3BHK Residence · Design & Execution',       co: 'Malhotra Family',    loc: 'Gurgaon',   type: 'Full project', rate: '₹1.4 – 1.8 Cr', posted: '2 days ago', tags: ['Residential','2,400 sqft','Start Nov'] },
+  { role: 'Interior only · 4BHK apartment',            co: 'Sharma Residence',   loc: 'Mumbai',    type: 'Interior',     rate: '₹32 L',        posted: 'Yesterday',   tags: ['Interior','1,800 sqft','Furnished'] },
+  { role: 'Farmhouse · Ground-up build',                co: 'Bansal Family',      loc: 'Chandigarh',type: 'Full project', rate: '₹3.5 Cr+',      posted: '3 days ago',  tags: ['Farmhouse','8,000 sqft','Landscape'] },
+  { role: 'Structural consultation · G+5 apartment',   co: 'AIPL Estates',       loc: 'Chennai',   type: 'Consulting',   rate: '₹8 – 12 L',    posted: 'Today',       tags: ['Structural','Consulting','6 months'] },
+  { role: 'Heritage restoration · colonial bungalow',   co: 'Nair Trust',        loc: 'Kochi',     type: 'Restoration',  rate: '₹1.2 Cr',       posted: '5 days ago',  tags: ['Heritage','Restoration','Slow'] },
+  { role: 'Sustainable · IGBC-certified villa',         co: 'Green Living Co.',   loc: 'Bangalore', type: 'Full project', rate: '₹4 – 6 Cr',    posted: '1 week ago',   tags: ['Sustainable','Passive','IGBC Gold'] },
+  { role: 'Sample flat · builder show unit',            co: 'Godrej Properties',  loc: 'Pune',      type: 'Interior',     rate: '₹18 L',         posted: '4 days ago',  tags: ['Show flat','Interior','Fast'] },
+  { role: 'Office · 12,000 sqft fit-out',               co: 'Zomato',             loc: 'Delhi NCR', type: 'Commercial',   rate: '₹2.4 Cr',       posted: 'Today',       tags: ['Commercial','Fit-out','Grade A'] },
+];
+function renderJobs() {
+  const ws = $('#workspace'); if (!ws) return;
+  ws.innerHTML = `
+    <div class="workspace-main"><div class="jobs-page">
+      <h1>Job search <span class="chip navy" style="vertical-align:middle;margin-left:8px;font-size:11px">${JOBS.length} open</span></h1>
+      <p class="sub">Live briefs from clients looking for architects on BricBook. Filter and apply — replies stay in the platform, not scattered across email and WhatsApp.</p>
+      <div class="job-filters">
+        <button class="chip navy" onclick="toast('All types')">All types</button>
+        <button class="chip" onclick="toast('Residential filter')">Residential</button>
+        <button class="chip" onclick="toast('Interior filter')">Interior</button>
+        <button class="chip" onclick="toast('Commercial filter')">Commercial</button>
+        <button class="chip" onclick="toast('Consulting filter')">Consulting</button>
+        <button class="chip" onclick="toast('Above ₹1 Cr')">Budget ₹1 Cr+</button>
+        <button class="chip" onclick="toast('Posted this week')">This week</button>
+      </div>
+      <div class="jobs-grid">
+        ${JOBS.map(j => `
+          <div class="job-card" onclick="toast('Job details would open')">
+            <div class="top">
+              <div><h3 class="role">${j.role}</h3><div class="co">${j.co} · ${j.loc}</div></div>
+              <span class="badge">${j.type}</span>
+            </div>
+            <p class="desc">${j.co} is looking for a ${j.type.toLowerCase()} partner for a ${j.tags[0].toLowerCase()} brief in ${j.loc}. Response window: 7 days.</p>
+            <div class="tags">${j.tags.map(t => `<span>${t}</span>`).join('')}</div>
+            <div class="foot">
+              <span class="rate"><em>${j.rate}</em></span>
+              <span>${j.posted}</span>
+            </div>
+            <button class="btn btn-brass btn-sm" onclick="event.stopPropagation();toast('Application submitted — reply within 24h')" style="margin-top:6px">Apply · one click</button>
+          </div>
+        `).join('')}
+      </div>
+    </div></div>
+  `;
+}
+
+/* ============ Help & Support ============ */
+function openHelp() {
+  $('#modalName').textContent = 'Help & Support';
+  $('#modalCode').textContent = 'HELP';
+  const body = $('#modal .modal-body'); body.style.background = 'var(--surface)';
+  body.innerHTML = `
+    <div style="padding:24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+        <a class="settings-card" style="margin:0;padding:16px;cursor:pointer" onclick="toast('Chat opened')">
+          <div style="width:36px;height:36px;background:var(--brass-tint);color:var(--brass);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">💬</div>
+          <div style="font-weight:600;font-size:13.5px">Live chat</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Typical reply · under 5 min</div>
+        </a>
+        <a class="settings-card" style="margin:0;padding:16px;cursor:pointer" onclick="openWA('BricBook Support','I need help with my project','')">
+          <div style="width:36px;height:36px;background:#25D36620;color:#25D366;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg>
+          </div>
+          <div style="font-weight:600;font-size:13.5px">WhatsApp us</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">+91 98 20xx xxxx</div>
+        </a>
+        <a class="settings-card" style="margin:0;padding:16px;cursor:pointer" onclick="toast('Docs opened in new tab')">
+          <div style="width:36px;height:36px;background:var(--navy-tint);color:var(--navy);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">📖</div>
+          <div style="font-weight:600;font-size:13.5px">Help center</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Guides, FAQs, video tutorials</div>
+        </a>
+        <a class="settings-card" style="margin:0;padding:16px;cursor:pointer" onclick="toast('Ticket created — reply within 24h')">
+          <div style="width:36px;height:36px;background:var(--surface-2);color:var(--ink);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">✉️</div>
+          <div style="font-weight:600;font-size:13.5px">Email support</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">support@bricbook.com</div>
+        </a>
+      </div>
+      <div class="settings-card" style="margin:0;padding:16px">
+        <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Quick answers</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${['How do I invite my client to a project?','Where does the WhatsApp integration send from?','Can I export a completion certificate as PDF?','How do I change my architect signature?','What happens if I hit my storage limit?'].map(q => `<a onclick="toast('Article opened')" style="padding:8px 10px;border-radius:5px;cursor:pointer;color:var(--ink-2);font-size:13px;transition:background .12s" onmouseover="this.style.background='var(--ground)'" onmouseout="this.style.background=''">→ ${q}</a>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  $('#modal').dataset.open = 'true';
+}
+window.openHelp = openHelp;
+
+/* ============ Add users to project ============ */
+const projectMembers = {}; // per-session added users
+function openAddUsers() {
+  const p = project();
+  const already = new Set([...(p.users || []), ...(projectMembers[p.id] || [])]);
+  $('#modalName').textContent = 'Invite people to ' + p.name;
+  $('#modalCode').textContent = p.code;
+  const body = $('#modal .modal-body'); body.style.background = 'var(--surface)';
+  body.innerHTML = `
+    <div style="padding:20px 20px 24px">
+      <p style="color:var(--muted);margin:0 0 14px;font-size:13px">Invite family, teammates, or stakeholders by username. They'll only see this project — nothing else in your studio.</p>
+      <div class="user-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg><input id="userQ" placeholder="Search by @username or name…" autofocus oninput="renderUserResults()"></div>
+      <div id="userSel"></div>
+      <div class="user-results" id="userResults"></div>
+      <div style="display:flex;justify-content:space-between;gap:10px;padding-top:14px;border-top:1px solid var(--hairline);margin-top:14px">
+        <div style="font-size:12px;color:var(--muted);align-self:center">${already.size} on this project</div>
+        <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="closeModal()">Done</button><button class="btn btn-brass" onclick="closeModal();toast('Invitations sent')">Send invitations</button></div>
+      </div>
+    </div>
+  `;
+  renderUserResults();
+  $('#modal').dataset.open = 'true';
+}
+function renderUserResults() {
+  const p = project(); if (!p) return;
+  const q = ($('#userQ')?.value || '').trim().toLowerCase();
+  const already = new Set([...(p.users || []), ...(projectMembers[p.id] || [])]);
+  const results = USERS.filter(u => !q || u.username.includes(q) || u.name.toLowerCase().includes(q));
+  $('#userResults').innerHTML = results.length
+    ? results.map(u => {
+        const on = already.has(u.username);
+        return `<div class="user-row ${on ? 'disabled' : ''}"><div class="av">${initials(u.name)}</div><div class="info"><div class="nm">${u.name}</div><div class="un">@${u.username}</div><div class="meta">${u.role} · ${u.city}</div></div>${on ? '<span class="added">✓ Added</span>' : `<button class="add-btn" onclick="addUserToProject('${u.username}')">Add</button>`}</div>`;
+      }).join('')
+    : `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">No matches. Not on BricBook yet? <a onclick="toast('Invite sent by email')" style="color:var(--brass);cursor:pointer;text-decoration:underline">Send an email invite →</a></div>`;
+}
+function addUserToProject(username) {
+  const p = project(); if (!p) return;
+  projectMembers[p.id] = projectMembers[p.id] || [];
+  if (!projectMembers[p.id].includes(username)) projectMembers[p.id].push(username);
+  toast('@' + username + ' added');
+  renderUserResults();
+}
+window.openAddUsers = openAddUsers; window.renderUserResults = renderUserResults; window.addUserToProject = addUserToProject;
+
 function renderPros() {
   const ws = $('#workspace'); if (!ws) return;
-  const u = AUTH.get(); const isCust = u?.kind === 'customer';
+  const u = AUTH.get(); const isCust = (u?.kind === 'user' || u?.kind === 'customer');
   const pros = [
     { nm: 'Piyush Jangir', rl: 'Lead architect', em: 'piyush@sundara.studio', proj: 11, ph: 148, yr: 12 },
     { nm: 'Neha Iyer', rl: 'Project manager', em: 'neha@sundara.studio', proj: 8, ph: 92, yr: 8 },
@@ -3251,7 +3470,7 @@ function renderApp() {
   const u = AUTH.get();
   if (!u) { nav('/login'); return; }
   const sub = currentRoute();
-  const isCust = u.kind === 'customer';
+  const isCust = (u.kind === 'user' || u.kind === 'customer');
   if (isCust && u.projectId) state.projectId = u.projectId;
   const root = $('#root');
   root.innerHTML = `
@@ -3260,15 +3479,16 @@ function renderApp() {
         <a class="brand" href="#/">${brandMark(15)}</a>
         <div class="nav-center">
           <div class="nav-tabs">
-            <a class="nav-tab" href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>${isCust ? 'My site' : 'Explore'}</a>
+            <a class="nav-tab" href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>${isCust ? 'My site' : 'Home'}</a>
             <a class="nav-tab" href="#/app" ${sub === '/app' ? 'data-active="true"' : ''}>${isCust ? 'Drawings' : 'Projects'}</a>
             <a class="nav-tab" href="#/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>${isCust ? 'My team' : 'Professionals'}</a>
+            ${!isCust ? `<a class="nav-tab" href="#/app/jobs" ${sub === '/app/jobs' ? 'data-active="true"' : ''}>Jobs</a>` : ''}
           </div>
           <label class="gsearch"><span>${iconSVG('search')}</span><input type="search" placeholder="${isCust ? 'Search photos, drawings, updates…' : 'Search projects, drawings, teams…'}"><kbd>⌘K</kbd></label>
         </div>
         <div class="nav-actions">
+          ${!isCust ? `<button class="btn btn-ghost btn-sm" onclick="nav('/app/jobs')" title="Browse construction jobs" style="margin-right:4px">${iconSVG('search').replace('width="16"','width="12"').replace('height="16"','height="12"')} Job search</button>` : ''}
           <button class="icon-btn" onclick="toggleTheme()" title="Theme">${iconSVG('sun')}</button>
-          <button class="icon-btn" onclick="toast('Docs open in a new tab')" title="Help">${iconSVG('help')}</button>
           <button class="icon-btn" onclick="toast('3 new updates · 7 unread messages')" title="Notifications">${iconSVG('bell')}<span class="dot"></span></button>
           <div class="avatar" id="avBtn" onclick="toggleDropdown(event)" title="Account">${initials(u.name)}</div>
         </div>
@@ -3277,21 +3497,37 @@ function renderApp() {
       <div class="app-body">
         <aside class="rail">
           <div class="rail-top">
-            <div class="rail-controls">
-              <div class="view-toggle" id="viewToggle"><button data-view="grid" data-active="true">${iconSVG('grid')}</button><button data-view="list">${iconSVG('list')}</button></div>
-              ${isCust ? '' : `
-              <div class="rail-actions">
-                <button class="btn btn-ghost btn-sm" onclick="openJoin()">${iconSVG('logIn')} Join</button>
-                <button class="btn btn-brass btn-sm" onclick="openCreate()">${iconSVG('plus')} Create</button>
+            ${isCust ? '' : `
+              <div class="rail-controls">
+                <div class="rail-sort" style="flex:1">
+                  <select id="railSort" onchange="renderRail(document.getElementById('railSearch')?.value || '')">
+                    <option value="pinned">Pinned first</option>
+                    <option value="az">Name · A – Z</option>
+                    <option value="za">Name · Z – A</option>
+                    <option value="recent">Last activity</option>
+                    <option value="code">Project code</option>
+                  </select>
+                </div>
+                <div class="rail-actions">
+                  <button class="btn btn-ghost btn-sm" onclick="openJoin()" title="Join a project">${iconSVG('logIn')}</button>
+                  <button class="btn btn-brass btn-sm" onclick="openCreate()">${iconSVG('plus')} New</button>
+                </div>
               </div>`}
-            </div>
-            <label class="rail-search"><span>${iconSVG('search')}</span><input type="search" placeholder="${isCust ? 'Search my project' : 'Search projects'}" id="railSearch"></label>
+            <label class="rail-search"><span>${iconSVG('search')}</span><input type="search" placeholder="${isCust ? 'Search my project' : 'Search by name, client, code…'}" id="railSearch"></label>
           </div>
           <div class="rail-list" id="railList"></div>
+          ${isCust ? '' : `<div class="rail-stats" title="Portfolio at a glance">
+            <div class="rail-stat"><div class="k">Total</div><div class="v"><em id="statTotal">${PROJECTS.length}</em></div></div>
+            <div class="rail-stat active"><div class="k">Active</div><div class="v"><em id="statActive">${PROJECTS.filter(p=>p.status==='active').length}</em></div></div>
+            <div class="rail-stat wip"><div class="k">In progress</div><div class="v"><em id="statWIP">${PROJECTS.filter(p=>p.status==='in-progress').length}</em></div></div>
+            <div class="rail-stat done"><div class="k">Completed</div><div class="v"><em id="statDone">${PROJECTS.filter(p=>p.status==='completed').length}</em></div></div>
+          </div>`}
         </aside>
 
         <section class="workspace" id="workspace"></section>
       </div>
+
+      <button class="help-fab" onclick="openHelp()" title="Help & support"><span class="ic">?</span><span>Help &amp; Support</span></button>
 
       <nav class="mobile-tabs" aria-label="App tabs">
         <div class="row">
@@ -3338,6 +3574,8 @@ function renderApp() {
     renderRail(); renderSettingsShell(sub);
   } else if (sub === '/app/pros') {
     renderRail(); renderPros();
+  } else if (sub === '/app/jobs') {
+    renderRail(); renderJobs();
   } else if (sub === '/app/explore' || sub === '/app') {
     renderRail();
     if (sub === '/app/explore') { isCust ? renderCustomerExplore() : renderExplore(); }
@@ -3365,26 +3603,50 @@ window.toggleDropdown = toggleDropdown;
 function renderRail(filter = '') {
   const list = $('#railList'); if (!list) return;
   list.innerHTML = '';
-  const u = AUTH.get(); const isCust = u?.kind === 'customer';
+  const u = AUTH.get(); const isCust = (u?.kind === 'user' || u?.kind === 'customer');
   const q = filter.trim().toLowerCase();
-  const src = isCust ? PROJECTS.filter(p => p.id === u.projectId) : PROJECTS;
-  const active = src.filter(p => !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q));
-  list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: isCust ? 'Your project' : 'Active' }));
-  active.forEach(p => {
+  const sort = $('#railSort')?.value || 'pinned';
+  const src = isCust ? PROJECTS.filter(p => p.id === u.projectId) : PROJECTS.slice();
+  let active = src.filter(p => !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (p.client || '').toLowerCase().includes(q) || (p.city || '').toLowerCase().includes(q));
+  const rank = { 'in-progress': 0, active: 1, completed: 2 };
+  if (sort === 'az')       active.sort((a, b) => a.name.localeCompare(b.name));
+  else if (sort === 'za')  active.sort((a, b) => b.name.localeCompare(a.name));
+  else if (sort === 'code')active.sort((a, b) => a.code.localeCompare(b.code));
+  else if (sort === 'recent') active.sort((a, b) => (a.status === 'completed') - (b.status === 'completed'));
+  else /* pinned */ active.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (rank[a.status] ?? 3) - (rank[b.status] ?? 3));
+
+  if (!isCust) {
+    const pinned = active.filter(p => p.pinned);
+    const others = active.filter(p => !p.pinned);
+    if (sort === 'pinned' && pinned.length) {
+      list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: '★ Pinned' }));
+      pinned.forEach(p => list.appendChild(railRow(p)));
+      list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: 'All projects' }));
+      others.forEach(p => list.appendChild(railRow(p)));
+    } else {
+      list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: sort === 'az' ? 'A – Z' : sort === 'za' ? 'Z – A' : sort === 'code' ? 'By code' : 'Recent activity' }));
+      active.forEach(p => list.appendChild(railRow(p)));
+    }
+  } else {
+    list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: 'Your project' }));
+    active.forEach(p => list.appendChild(railRow(p)));
+  }
+  function railRow(p) {
     const row = document.createElement('div');
     row.className = 'project-row'; row.tabIndex = 0;
     if (p.id === state.projectId) row.dataset.active = 'true';
     row.innerHTML = `
       <div class="project-thumb">${projectThumbSVG(p.hero)}</div>
-      <div class="project-meta"><div class="project-name">${p.name}</div><div class="project-code">${p.code} · ${p.city}</div></div>
+      <div class="project-meta" style="min-width:0;flex:1"><div class="project-name">${p.name}</div><div class="project-code">${p.code} · ${p.city}</div><div class="project-last">${p.lastActive || '—'}</div></div>
+      ${!isCust ? `<button class="fav-btn ${p.pinned ? 'on' : ''}" title="${p.pinned ? 'Unpin' : 'Pin to top'}" onclick="event.stopPropagation();togglePin('${p.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="${p.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>` : ''}
       ${p.unread > 0 ? `<span class="project-badge"></span>` : ''}
     `;
     row.addEventListener('click', () => {
-      state.projectId = p.id; p.unread = 0;
+      state.projectId = p.id; p.unread = 0; p.lastActive = 'now';
       if (currentRoute() !== '/app') nav('/app'); else { renderRail($('#railSearch').value); renderWorkspace(); }
     });
-    list.appendChild(row);
-  });
+    return row;
+  }
   if (!active.length) list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: 'No matches' }));
   if (isCust) {
     const info = document.createElement('div');
@@ -3392,12 +3654,14 @@ function renderRail(filter = '') {
     info.innerHTML = `<div class="rail-section" style="padding:0 0 8px">Your project ID</div><div class="customer-badge">${u.customerId || 'CUST-SPDL01-K7A2'}</div><p style="margin:10px 0 0;font-size:11px;color:var(--muted);line-height:1.4">Studio uploads tagged with this ID appear here automatically.</p>`;
     list.appendChild(info);
   }
-  // View toggle
-  const vt = $('#viewToggle'); if (vt) $$('button', vt).forEach(b => b.addEventListener('click', () => {
-    $$('button', vt).forEach(x => delete x.dataset.active); b.dataset.active = 'true';
-    toast(`View: ${b.dataset.view}`);
-  }));
 }
+function togglePin(id) {
+  const p = PROJECTS.find(x => x.id === id); if (!p) return;
+  p.pinned = !p.pinned;
+  renderRail($('#railSearch')?.value || '');
+  toast(p.pinned ? `Pinned ${p.name}` : `Unpinned ${p.name}`);
+}
+window.togglePin = togglePin;
 
 function renderWorkspace() {
   const ws = $('#workspace'); if (!ws) return;
@@ -3408,12 +3672,9 @@ function renderWorkspace() {
     files: Object.values(DRAWING_TYPES).reduce((s, a) => s + a.length, 0),
     chat: 128, folders: Object.values(FOLDERS_BY_CAT).reduce((s, a) => s + a.length, 0),
   };
-  const meta = {
-    spdl01: { progress: 84, phase: 'Interior', arch: 'You', poc: 'Neha Iyer', client: 'Kaustubh Sharma', days: 42 },
-    spdl45: { progress: 42, phase: 'Structure', arch: 'Aditya Rao', poc: 'You', client: 'Kamlesh Patel', days: 128 },
-    spdl54: { progress: 68, phase: 'Services', arch: 'You', poc: 'Priya Menon', client: 'Ajay Kumar', days: 66 },
-    spdl31: { progress: 22, phase: 'Foundation', arch: 'You', poc: 'You', client: 'Vikas Reddy', days: 210 },
-  }[p.id] || { progress: 55, phase: 'Structure', arch: 'You', poc: 'Priya Menon', client: p.name, days: 90 };
+  const phases = { 84:'Interior', 42:'Structure', 68:'Services', 22:'Foundation', 91:'Handover', 12:'Site prep', 55:'Structure', 66:'Interior', 48:'Services', 34:'Foundation', 100:'Handover' };
+  const days = { 84:42, 42:128, 68:66, 22:210, 91:22, 12:340, 55:120, 66:96, 48:180, 34:280, 100:0 };
+  const meta = { progress: p.progress || 55, phase: phases[p.progress] || 'Structure', arch: p.architect || 'Nishant Yadav', poc: p.poc || 'Neha Iyer', client: p.client || (p.name + ' family'), days: days[p.progress] ?? 90 };
 
   ws.innerHTML = `
     <div class="workspace-main">
@@ -3435,20 +3696,21 @@ function renderWorkspace() {
             <span>POC · <b style="color:var(--ink)">${meta.poc}</b></span>
             <span>·</span>
             <span>${meta.days} days to handover</span>
-            <button class="btn btn-sm" style="background:#25D366;color:#fff;margin-left:8px" onclick="openWA('${p.name}','Weekly update: currently at ${meta.progress}% (${meta.phase} phase).','Project ${p.code} · weekly.pdf')"><svg width="12" height="12" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send to client</button>
+            <button class="btn btn-ghost btn-sm" onclick="openAddUsers()" title="Invite people to this project" style="margin-left:8px">${iconSVG('plus').replace('width="16"','width="12"').replace('height="16"','height="12"')} Invite</button>
+            <button class="btn btn-sm" style="background:#25D366;color:#fff" onclick="openWA('${p.name}','Weekly update: currently at ${meta.progress}% (${meta.phase} phase).','Project ${p.code} · weekly.pdf')"><svg width="12" height="12" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send to client</button>
           </div>
         </div>
         <div class="progress-wrap" style="margin:0 0 14px">
           <div class="progress-lbl"><span>${meta.phase} phase · <b>${meta.progress}%</b> complete</span><span>Handover in ${meta.days} days · <a onclick="openCert()" style="color:var(--brass);cursor:pointer;text-decoration:underline">view certificate</a></span></div>
           <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
           <div class="progress-phases">
-            ${['Site prep','Foundation','Structure','Interior','Handover'].map(pn => {
+            ${['Site prep','Foundation','Structure','Interior','Handover'].map((pn, ix) => {
               const cutoffs = { 'Site prep': 10, 'Foundation': 30, 'Structure': 60, 'Interior': 85, 'Handover': 95 };
               const done = meta.progress > cutoffs[pn];
               const active = !done && (pn === meta.phase || (meta.phase === 'Services' && pn === 'Interior'));
               const cls = done ? 'done' : active ? 'active' : '';
-              const lbl = done ? 'Done' : active ? 'Now' : '—';
-              return `<div class="phase ${cls}" onclick="openPhase('${pn}','${done ? 'done' : active ? 'active' : 'pending'}')" style="cursor:pointer"><div class="pn">${pn}</div><div class="pt">${lbl}</div></div>`;
+              const lbl = done ? 'Complete' : active ? 'In progress' : 'Upcoming';
+              return `<div class="phase ${cls}" onclick="openPhase('${pn}','${done ? 'done' : active ? 'active' : 'pending'}')" style="cursor:pointer"><span class="pindex">0${ix+1}</span><div class="pn">${pn}</div><div class="pt">${lbl}</div></div>`;
             }).join('')}
           </div>
         </div>
@@ -3698,8 +3960,8 @@ function renderSettings() {
 /* ============ Actions ============ */
 function fillDemo(kind) {
   if (kind === 'admin') { $('#adEmail').value = DEMO.admin.email; $('#adPwd').value = DEMO.admin.password; }
-  else if (kind === 'customer') { $('#liEmail').value = DEMO.customer.email; $('#liPwd').value = DEMO.customer.password; }
-  else { $('#liEmail').value = DEMO.studio.email; $('#liPwd').value = DEMO.studio.password; }
+  else if (kind === 'user' || kind === 'customer') { $('#liEmail').value = DEMO.user.email; $('#liPwd').value = DEMO.user.password; }
+  else { $('#liEmail').value = DEMO.professional.email; $('#liPwd').value = DEMO.professional.password; }
   toast('Demo credentials filled');
 }
 function loginFlow(user, note) {
@@ -3710,15 +3972,19 @@ function loginFlow(user, note) {
 function signIn(e) {
   e.preventDefault();
   const em = $('#liEmail').value.trim().toLowerCase(); const pw = $('#liPwd').value;
-  const aud = state.audience || 'studio';
-  if (em === DEMO.customer.email && pw === DEMO.customer.password) {
-    loginFlow({ ...DEMO.customer });
-  } else if (em === DEMO.studio.email && pw === DEMO.studio.password) {
-    loginFlow({ ...DEMO.studio });
-  } else if (aud === 'customer') {
-    loginFlow({ email: em, name: em.split('@')[0].replace(/[.]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), company: 'Your Residence', role: 'Homeowner', kind: 'customer', projectId: 'spdl01', customerId: 'CUST-' + em.split('@')[0].toUpperCase().slice(0,4) + '-' + Math.random().toString(36).slice(2,6).toUpperCase() });
+  const aud = state.audience || 'professional';
+  if (em === DEMO.user.email && pw === DEMO.user.password) {
+    loginFlow({ ...DEMO.user });
+  } else if (em === DEMO.professional.email && pw === DEMO.professional.password) {
+    loginFlow({ ...DEMO.professional });
   } else {
-    loginFlow({ email: em, name: em.split('@')[0].replace(/[.]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), company: 'Your Studio', role: 'Member', kind: 'studio' });
+    const nm = em.split('@')[0].replace(/[.]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const un = em.split('@')[0].replace(/[^a-z0-9.]/g, '.');
+    if (aud === 'user' || aud === 'customer') {
+      loginFlow({ email: em, name: nm, username: un, company: 'Your Residence', role: 'Homeowner', kind: 'user', projectId: 'spdl01', customerId: 'CUST-' + em.split('@')[0].toUpperCase().slice(0,4) + '-' + Math.random().toString(36).slice(2,6).toUpperCase() });
+    } else {
+      loginFlow({ email: em, name: nm, username: un, company: 'Your Studio', role: 'Architect', kind: 'professional' });
+    }
   }
   return false;
 }
@@ -3731,7 +3997,7 @@ function signInAdmin(e) {
   return false;
 }
 function googleAuth(kind) {
-  const u = kind === 'admin' ? DEMO.admin : kind === 'customer' ? DEMO.customer : DEMO.studio;
+  const u = kind === 'admin' ? DEMO.admin : (kind === 'user' || kind === 'customer') ? DEMO.user : DEMO.professional;
   loginFlow({ ...u, provider: 'google' }, 'Signed in with Google');
 }
 window.googleAuth = googleAuth;
@@ -3740,14 +4006,15 @@ function suStep(e, n) {
   if (n < 3) { state.signupStep = n + 1; renderSignup(); }
   else {
     const name = ($('#suFirst')?.value || 'New') + ' ' + ($('#suLast')?.value || 'User');
+    const username = name.toLowerCase().replace(/[^a-z]/g, '.');
     state.signupStep = 1;
-    loginFlow({ email: 'you@studio.com', name, company: 'Your Studio', role: 'Architect', kind: 'client' }, 'Studio created — welcome!');
+    loginFlow({ email: 'you@studio.com', name, username, company: 'Your Studio', role: 'Architect', kind: 'professional' }, 'Studio created — welcome!');
   }
   return false;
 }
 function skipInvites() {
   state.signupStep = 1;
-  loginFlow({ email: 'you@studio.com', name: 'New Studio', company: 'Your Studio', role: 'Architect', kind: 'client' }, 'Studio created — invite team anytime');
+  loginFlow({ email: 'you@studio.com', name: 'New Studio', username: 'new.studio', company: 'Your Studio', role: 'Architect', kind: 'professional' }, 'Studio created — invite team anytime');
 }
 window.skipInvites = skipInvites;
 function sendReset(e) { e.preventDefault(); toast('Reset link sent (demo) — redirecting…'); setTimeout(() => nav('/reset'), 900); return false; }
@@ -4119,7 +4386,7 @@ function openCert() {
   const p = project(); const u = AUTH.get() || {};
   $('#certProj').textContent = `${p.name} Residence`;
   $('#certCode').textContent = `PROJECT · ${p.code} · ${u.customerId || 'CUST-' + p.code + '-K7A2'}`;
-  const client = u.kind === 'customer' ? u.name : { spdl01: 'Kaustubh Sharma', spdl45: 'Kamlesh Patel', spdl54: 'Ajay Kumar', spdl31: 'Vikas Reddy', spdl44: 'US Collective' }[p.id] || (p.name + ' family');
+  const client = (u.kind === 'user' || u.kind === 'customer') ? u.name : { spdl01: 'Kaustubh Sharma', spdl45: 'Kamlesh Patel', spdl54: 'Ajay Kumar', spdl31: 'Vikas Reddy', spdl44: 'US Collective' }[p.id] || (p.name + ' family');
   $('#certClient').textContent = client;
   $('#certClientSig').textContent = client.split(' ')[0] + ' ' + (client.split(' ')[1] ? client.split(' ')[1][0] + '.' : '');
   $('#certDate').textContent = 'Issued · ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + ' · Mumbai';
