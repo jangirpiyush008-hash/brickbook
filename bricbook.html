@@ -829,7 +829,107 @@ a{color:inherit;text-decoration:none}
 .cert-foot{display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid #D4C39A;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8A6B3E;letter-spacing:.06em}
 .cert-actions{display:flex;justify-content:center;gap:10px;margin-top:20px}
 
-/* ============ Architect marketplace ============ */
+/* ============ Editorial home v14 ============ */
+.ed-hero{position:relative;height:min(88vh,760px);min-height:560px;overflow:hidden;background:#0C0E12}
+.ed-hero .bg{position:absolute;inset:0}
+.ed-hero .bg img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.85) saturate(1.1);animation:kburns 22s ease-in-out infinite alternate}
+@keyframes kburns{from{transform:scale(1.02)}to{transform:scale(1.14)}}
+.ed-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,14,18,.35) 0%,rgba(12,14,18,.15) 35%,rgba(12,14,18,.65) 100%),linear-gradient(90deg,rgba(12,14,18,.45) 0%,transparent 50%);pointer-events:none}
+.ed-hero .rail-top-fade{position:absolute;top:0;left:0;right:0;height:120px;background:linear-gradient(180deg,rgba(12,14,18,.55) 0%,transparent 100%);pointer-events:none;z-index:1}
+.ed-hero .wrap{position:relative;z-index:2;height:100%;max-width:1240px;margin:0 auto;padding:80px 32px 44px;display:flex;flex-direction:column;color:#F5EFD9}
+.ed-hero .issue{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:rgba(245,239,217,.72);display:flex;align-items:center;gap:14px}
+.ed-hero .issue span::before{content:"—";margin-right:8px;opacity:.5}
+.ed-hero .issue span:first-child::before{display:none}
+.ed-hero .lede{margin-top:auto;max-width:900px}
+.ed-hero h1{font-family:var(--serif);font-size:clamp(48px,7.2vw,104px);line-height:.95;letter-spacing:-.03em;font-weight:400;color:#F5EFD9;margin:0 0 24px;text-wrap:balance}
+.ed-hero h1 em{font-style:italic;color:var(--brass-2)}
+.ed-hero .sub{font-family:var(--serif);font-style:italic;font-size:clamp(17px,1.6vw,22px);line-height:1.4;color:rgba(245,239,217,.82);max-width:56ch;margin:0}
+.ed-hero .foot{margin-top:44px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,239,217,.7)}
+.ed-hero .foot .credit{max-width:32ch}
+.ed-hero .foot .credit b{color:#F5EFD9;font-weight:500;letter-spacing:.05em}
+.ed-hero .foot .scroll{display:inline-flex;align-items:center;gap:6px}
+.ed-hero .foot .scroll .arrow{width:1px;height:22px;background:rgba(245,239,217,.5);position:relative}
+.ed-hero .foot .scroll .arrow::after{content:"";position:absolute;bottom:-1px;left:-2px;width:5px;height:5px;border-right:1px solid rgba(245,239,217,.5);border-bottom:1px solid rgba(245,239,217,.5);transform:rotate(45deg)}
+@media(max-width:768px){.ed-hero{min-height:520px;height:82vh}.ed-hero .wrap{padding:32px 20px 20px}.ed-hero .issue{font-size:9.5px}.ed-hero .foot{flex-direction:column;align-items:flex-start;gap:14px;font-size:10px}}
+
+/* Ticker under hero */
+.ed-ticker{background:var(--ink);color:var(--ground);padding:14px 0;overflow:hidden;position:relative;border-bottom:1px solid var(--hairline)}
+.ed-ticker .track{display:flex;gap:56px;animation:tk 42s linear infinite;white-space:nowrap;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase}
+.ed-ticker .track span::before{content:"◆";margin-right:24px;color:var(--brass);font-size:8px;vertical-align:middle;opacity:.7}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Registry (search + count) */
+.ed-registry{max-width:1240px;margin:0 auto;padding:64px 32px 24px}
+.ed-reg-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:28px;padding-bottom:32px;margin-bottom:32px;border-bottom:1px solid var(--hairline)}
+.ed-reg-head .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+.ed-reg-head h2{font-family:var(--serif);font-size:clamp(36px,5vw,56px);letter-spacing:-.025em;line-height:1;margin:0;font-weight:400;max-width:16ch}
+.ed-reg-head h2 em{font-style:italic;color:var(--brass)}
+.ed-reg-head .meta{text-align:right;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.ed-reg-head .meta b{font-family:var(--serif);font-size:32px;font-weight:400;color:var(--ink);display:block;letter-spacing:-.01em;margin-bottom:2px}
+@media(max-width:768px){.ed-reg-head{grid-template-columns:1fr;gap:14px}.ed-reg-head .meta{text-align:left}}
+
+/* Editorial architect cards — portrait, numbered */
+.ed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px 24px}
+@media(max-width:1100px){.ed-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.ed-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px}}
+@media(max-width:520px){.ed-grid{grid-template-columns:1fr;gap:32px}}
+.ed-arch{display:flex;flex-direction:column;gap:12px;cursor:pointer;position:relative}
+.ed-arch .idx{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:#F5EFD9;padding:5px 9px;background:rgba(12,14,18,.55);backdrop-filter:blur(6px);border-radius:3px;z-index:2}
+.ed-arch .photo{aspect-ratio:4/5;background:var(--surface-2);overflow:hidden;position:relative;border-radius:2px}
+.ed-arch .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.55) 100%);pointer-events:none}
+.ed-arch .photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.4,0,.2,1)}
+.ed-arch:hover .photo img{transform:scale(1.06)}
+.ed-arch .over{position:absolute;bottom:16px;left:16px;right:16px;color:#F5EFD9;z-index:2}
+.ed-arch .over .studio{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,239,217,.85);margin-bottom:4px}
+.ed-arch .over .nm{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:-.01em;line-height:1;text-wrap:balance}
+.ed-arch .over .nm em{font-style:italic;color:var(--brass-2)}
+.ed-arch .caption{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+.ed-arch .caption .r{color:var(--ink);font-family:var(--serif);font-size:14px;letter-spacing:-.005em}
+.ed-arch .caption .r em{color:var(--brass);font-style:italic}
+.ed-arch .arch-spec{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-2);line-height:1.35;margin-top:-2px}
+
+/* Featured spread */
+.ed-feature{max-width:1240px;margin:100px auto;padding:0 32px}
+.ed-feature .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-bottom:20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:14px}
+.ed-feature .lbl::before,.ed-feature .lbl::after{content:"";display:block;width:80px;height:1px;background:var(--hairline)}
+.ed-feature-body{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center}
+@media(max-width:900px){.ed-feature{padding:0 20px;margin:60px auto}.ed-feature-body{grid-template-columns:1fr;gap:28px}}
+.ed-feature-img{position:relative;aspect-ratio:4/5}
+.ed-feature-img img{width:100%;height:100%;object-fit:cover;display:block;border-radius:2px}
+.ed-feature-img .plate{position:absolute;bottom:16px;left:16px;right:16px;color:#F5EFD9;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.ed-feature .body h3{font-family:var(--serif);font-size:clamp(34px,3.8vw,48px);letter-spacing:-.02em;font-weight:400;line-height:1.05;margin:0 0 20px;text-wrap:balance}
+.ed-feature .body h3 em{font-style:italic;color:var(--brass)}
+.ed-feature .body .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:12px}
+.ed-feature .body p{font-family:var(--serif);font-size:16px;line-height:1.55;color:var(--ink-2);margin:0 0 16px;max-width:52ch}
+.ed-feature .body p.pq{font-style:italic;color:var(--ink);font-size:22px;line-height:1.4;padding-left:22px;border-left:3px solid var(--brass);margin:24px 0}
+.ed-feature .body .cred{display:flex;align-items:center;gap:14px;padding-top:20px;border-top:1px solid var(--hairline);margin-top:28px}
+.ed-feature .body .cred .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#FBF6E7;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px}
+[data-theme=dark] .ed-feature .body .cred .av{color:var(--ground)}
+.ed-feature .body .cred .info .nm{font-family:var(--serif);font-size:16px;letter-spacing:-.005em}
+.ed-feature .body .cred .info .loc{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);margin-top:2px}
+.ed-feature .body .rd{margin-left:auto;font-size:13px;color:var(--brass);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+
+/* Recent work masonry */
+.ed-recent{max-width:1240px;margin:0 auto;padding:80px 32px}
+.ed-recent-head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:24px;margin-bottom:32px;border-bottom:1px solid var(--hairline);flex-wrap:wrap;gap:10px}
+.ed-recent-head h2{font-family:var(--serif);font-size:clamp(28px,3.4vw,40px);letter-spacing:-.02em;margin:0;font-weight:400;line-height:1}
+.ed-recent-head h2 em{font-style:italic;color:var(--brass)}
+.ed-recent-head .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.ed-mgrid{columns:4;column-gap:14px}
+@media(max-width:1100px){.ed-mgrid{columns:3}}
+@media(max-width:768px){.ed-recent{padding:56px 20px}.ed-mgrid{columns:2;column-gap:10px}}
+@media(max-width:420px){.ed-mgrid{columns:1}}
+.ed-mgrid .tile{break-inside:avoid;margin-bottom:14px;cursor:pointer;position:relative;overflow:hidden;border-radius:2px;background:var(--surface-2)}
+.ed-mgrid .tile img{width:100%;height:auto;display:block;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.ed-mgrid .tile:hover img{transform:scale(1.04)}
+.ed-mgrid .tile .cap{position:absolute;bottom:8px;left:10px;right:10px;color:#F5EFD9;font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s;text-transform:uppercase;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.ed-mgrid .tile:hover .cap{opacity:1;transform:translateY(0)}
+.ed-mgrid .tile .cap b{color:var(--brass-2);font-weight:600;letter-spacing:.05em}
+
+/* Section separators */
+.ed-sep{max-width:1240px;margin:0 auto;padding:0 32px}
+.ed-sep hr{border:0;height:1px;background:var(--hairline);margin:0}
+
 .mkt-hero{max-width:1240px;margin:0 auto;padding:60px 32px 40px;position:relative}
 .mkt-hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin-bottom:18px;display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--brass);border-radius:20px;background:var(--brass-tint)}
 .mkt-hero h1{font-family:var(--serif);font-size:clamp(40px,6.5vw,72px);line-height:1.02;letter-spacing:-.025em;margin:0 0 20px;font-weight:400;max-width:16ch;text-wrap:balance}
@@ -2128,6 +2228,30 @@ function renderLanding() {
         </div>
       </nav>
 
+      <section class="ed-hero">
+        <div class="bg"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=2000&auto=format&fit=crop&q=85" alt="" onerror="this.remove()"></div>
+        <div class="rail-top-fade"></div>
+        <div class="wrap">
+          <div class="issue"><span>Issue 01</span><span>Summer 2026</span><span>Mumbai · Bangalore · Chennai · Delhi · Kochi</span></div>
+          <div class="lede">
+            <h1>The atlas of the <em>Indian home,</em> drawn by its architects.</h1>
+            <p class="sub">A quiet directory of the twelve thousand practices building this country's houses — with the drawings, portfolios, and reviews to prove it.</p>
+          </div>
+          <div class="foot">
+            <div class="credit">Photographed at <b>Kaustubh Residence</b>, Bandra West · Ar. Nishant Yadav, Sundara Studio</div>
+            <div class="scroll">Continue reading<span class="arrow"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="ed-ticker">
+        <div class="track">
+          <span>The Bandra Residence</span><span>Sundara Studio · Mumbai</span><span>Casa Vera · Bangalore</span><span>The Fifth Wall · Mumbai</span><span>Kapoor Design · Delhi</span><span>Iron &amp; Ivory · Chandigarh</span><span>Nair &amp; Associates · Chennai</span><span>Studio Verde · Pune</span><span>Krishnan Architects · Hyderabad</span><span>Sundeep Studio · Kochi</span>
+          <span>The Bandra Residence</span><span>Sundara Studio · Mumbai</span><span>Casa Vera · Bangalore</span><span>The Fifth Wall · Mumbai</span><span>Kapoor Design · Delhi</span><span>Iron &amp; Ivory · Chandigarh</span><span>Nair &amp; Associates · Chennai</span><span>Studio Verde · Pune</span><span>Krishnan Architects · Hyderabad</span><span>Sundeep Studio · Kochi</span>
+        </div>
+      </div>
+
+      <div style="display:none">
       <div class="hero-wrap">
         <div class="hero-grid"></div>
         <div class="mkt-hero">
@@ -2187,26 +2311,63 @@ function renderLanding() {
         </div>
       </div>
 
-      <section class="mkt-section" id="directory">
-        <div class="mkt-section-head">
+      </div><!-- /display:none legacy -->
+
+      <section class="ed-registry" id="directory">
+        <div class="ed-reg-head">
           <div>
-            <span class="eyebrow" style="display:block;margin-bottom:8px">Featured this month</span>
-            <h2>Handpicked. <em>Booked out.</em></h2>
+            <div class="lbl">§ 1 · The Directory</div>
+            <h2>Twelve architects, <em>chosen by the editors.</em></h2>
           </div>
-          <div class="fs">
-            <button data-active="true">All</button><button>Residential</button><button>Interior</button><button>Sustainable</button><button>Heritage</button><button>Landscape</button>
+          <div class="meta">
+            <b>12,438</b>practices · 48 cities
           </div>
         </div>
-        <div class="arch-grid featured" id="archFeat"></div>
+        <div class="ed-grid" id="edFeat"></div>
       </section>
 
-      <section class="mkt-section" style="padding-top:20px">
-        <div class="mkt-section-head">
-          <h2>Every architect. <em>Zero commissions.</em></h2>
-          <div class="fs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--muted);align-self:center">${ARCHITECTS.length} of 12,438</span></div>
+      <div class="ed-feature">
+        <div class="lbl">§ 2 · This Month</div>
+        <div class="ed-feature-body">
+          <div class="ed-feature-img">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&auto=format&fit=crop&q=85" alt="" onerror="this.remove()">
+            <div class="plate"><span>The Bandra Residence</span><span>SPDL 01</span></div>
+          </div>
+          <div class="body">
+            <div class="kicker">The Interview</div>
+            <h3>"A home is the <em>slowest thing</em> you'll ever build."</h3>
+            <p>Nishant Yadav opens the door of the Kaustubh Residence with his shoes off. The floor is Kota — not marble, not vitrified. "Marble would have been cheaper," he says, half-smiling. It's been fourteen months on a footprint of 2,400 square feet, and the family is moving in on Thursday.</p>
+            <p class="pq">"Our clients don't want a house. They want a place they can grow old in. The two are not the same building."</p>
+            <p>Sundara Studio has built eighty-four such places across Maharashtra since 2014. What sets them apart isn't a signature — it's a refusal to have one. Every project takes its cues from the site, the family, and the state of the sun that afternoon.</p>
+            <div class="cred">
+              <div class="av">NY</div>
+              <div class="info"><div class="nm">Ar. Nishant Yadav</div><div class="loc">Sundara Studio · Mumbai · Est. 2014</div></div>
+              <a class="rd" onclick="nav('/architect/nishant-yadav')" style="cursor:pointer">Read the full interview →</a>
+            </div>
+          </div>
         </div>
-        <div class="arch-grid" id="archAll"></div>
-        <div style="text-align:center;margin-top:32px"><button class="btn btn-ghost btn-lg" onclick="toast('Loading more architects…')">Load more ${iconSVG('chevD')}</button></div>
+      </div>
+
+      <div class="ed-sep"><hr></div>
+
+      <section class="ed-recent" id="recent">
+        <div class="ed-recent-head">
+          <h2>§ 3 · Recent <em>work</em></h2>
+          <span class="lbl">Curated · updated weekly</span>
+        </div>
+        <div class="ed-mgrid" id="edMasonry"></div>
+      </section>
+
+      <section class="ed-registry" style="padding-top:24px;padding-bottom:64px">
+        <div class="ed-reg-head">
+          <div>
+            <div class="lbl">§ 4 · The Full Registry</div>
+            <h2>Every architect. <em>Zero commissions.</em></h2>
+          </div>
+          <div class="meta"><b>${ARCHITECTS.length}</b>of 12,438 shown</div>
+        </div>
+        <div class="ed-grid" id="edAll"></div>
+        <div style="text-align:center;margin-top:44px"><button class="btn btn-ghost btn-lg" onclick="toast('Loading more architects…')">Load next 12 architects</button></div>
       </section>
 
       <div class="trust">
@@ -2445,18 +2606,53 @@ function renderLanding() {
   });
   const feat = ARCHITECTS.filter(a => a.feat);
   const all = ARCHITECTS.filter(a => !a.feat);
-  const fEl = $('#archFeat'); if (fEl) fEl.innerHTML = feat.map(archCardHTML).join('');
-  const aEl = $('#archAll'); if (aEl) aEl.innerHTML = all.map(archCardHTML).join('');
-  $$('.arch').forEach(el => el.addEventListener('click', e => {
-    if (e.target.closest('.fav')) { e.stopPropagation(); e.target.closest('.fav').classList.toggle('on'); toast('Added to shortlist'); return; }
-    nav('/architect/' + el.dataset.slug);
-  }));
+  const fEd = $('#edFeat'); if (fEd) fEd.innerHTML = feat.map((a, i) => edArchHTML(a, i, feat.length)).join('');
+  const aEd = $('#edAll'); if (aEd) aEd.innerHTML = all.map((a, i) => edArchHTML(a, i, all.length)).join('');
+  $$('.ed-arch').forEach(el => el.addEventListener('click', () => nav('/architect/' + el.dataset.slug)));
+  const mg = $('#edMasonry'); if (mg) mg.innerHTML = masonryHTML();
   $$('.mkt-quick .qtag,.mkt-section-head .fs button').forEach(b => b.addEventListener('click', () => {
     b.parentElement.querySelectorAll('button,.qtag').forEach(x => x.classList.remove('actv'));
     b.parentElement.querySelectorAll('[data-active]').forEach(x => delete x.dataset.active);
     b.classList.add('actv'); b.dataset.active = 'true';
     toast('Filtered by: ' + b.textContent.trim());
   }));
+}
+
+function edArchHTML(a, i, total) {
+  const [first, ...rest] = a.name.replace('Ar. ','').split(' ');
+  const last = rest.join(' ');
+  return `<div class="ed-arch" data-slug="${a.slug}">
+    <div class="photo">
+      <span class="idx">№ ${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}</span>
+      ${spaceMedia(a.spec[0], a.cover, 500, 620)}
+      <div class="over">
+        <div class="studio">${a.firm}</div>
+        <div class="nm">${first} <em>${last}</em></div>
+      </div>
+    </div>
+    <div class="arch-spec">${a.bio.split('.')[0]}.</div>
+    <div class="caption">
+      <span>${a.loc.toUpperCase()} · ${a.yrs} YRS · ${a.proj} projects</span>
+      <span class="r"><em>${a.avg}</em>★</span>
+    </div>
+  </div>`;
+}
+function masonryHTML() {
+  const shots = [
+    { seed: 'Bedroom',  i: 0, cap: 'The Kaustubh Residence', code: 'SPDL 01' },
+    { seed: 'Kitchen',  i: 2, cap: 'The Ajay Villa',          code: 'SPDL 54' },
+    { seed: 'Living',   i: 4, cap: 'United Strangers',        code: 'SPDL 44' },
+    { seed: 'Balcony',  i: 6, cap: 'Aron Farmhouse',           code: 'SPDL 94' },
+    { seed: 'Bathroom', i: 5, cap: 'Kamlesh Residence',        code: 'SPDL 45' },
+    { seed: 'Entrance', i: 7, cap: 'Mannat Villa',             code: 'SPDL 24' },
+    { seed: 'Dining',   i: 3, cap: 'Rajiv Estate',             code: 'SPDL 84' },
+    { seed: 'Master Bedroom', i: 0, cap: 'The Vikas House',    code: 'SPDL 31' },
+    { seed: 'Terrace',  i: 6, cap: 'The Aipl Residence',       code: 'SPDL 35' },
+    { seed: 'Kitchen',  i: 1, cap: 'The Project X',            code: 'SPDL 101'},
+    { seed: 'Bedroom',  i: 3, cap: 'HM House · Goa',           code: 'SPDL 11' },
+    { seed: 'Living',   i: 2, cap: 'The Fifth Wall Loft',      code: 'SPDL 66' },
+  ];
+  return shots.map(s => `<div class="tile">${spaceMedia(s.seed, s.i, 600, 800).replace('object-fit:cover;display:block','object-fit:cover;display:block;height:auto')}<div class="cap"><b>${s.code}</b> · ${s.cap}</div></div>`).join('');
 }
 
 function archCardHTML(a) {
