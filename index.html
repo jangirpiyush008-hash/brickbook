@@ -607,6 +607,30 @@ a{color:inherit;text-decoration:none}
 .pro-card .actions{display:flex;gap:6px}
 
 /* Customer welcome banner */
+/* Consolidated project card — header + all sections nested */
+.proj-card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-xl);margin-bottom:24px;overflow:hidden;position:relative}
+.proj-head{background:linear-gradient(135deg,var(--brass) 0%,var(--brass-2) 100%);color:#FBF6E7;padding:24px 28px 26px;position:relative;overflow:hidden}
+[data-theme=dark] .proj-head{color:var(--ground)}
+.proj-head::before{content:"";position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none}
+.proj-head .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;margin-bottom:6px}
+.proj-head .ey{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
+.proj-head h1{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.015em;margin:0;line-height:1;position:relative}
+.proj-head .sub{opacity:.85;margin:8px 0 0;position:relative;max-width:60ch;font-size:14px;line-height:1.5}
+.proj-head .code-pill{font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:5px 10px;background:rgba(255,255,255,.18);border-radius:16px;backdrop-filter:blur(4px);white-space:nowrap;align-self:flex-start;flex-shrink:0}
+.proj-body{padding:22px 28px 24px;background:var(--surface)}
+.proj-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--ground);border:1px solid var(--hairline);border-radius:10px;padding:14px 4px;margin-bottom:22px}
+.proj-meta div{padding:0 16px;border-right:1px solid var(--hairline);min-width:0}
+.proj-meta div:last-child{border-right:none}
+.proj-meta .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.proj-meta .v{font-family:var(--serif);font-size:22px;line-height:1.1;font-weight:400;letter-spacing:-.005em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-meta .v.mono{font-family:var(--mono);font-size:13.5px;letter-spacing:.03em}
+.proj-meta .v .co{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:400;margin-top:3px;letter-spacing:.03em}
+.proj-section{padding-top:20px;margin-top:20px;border-top:1px solid var(--hairline)}
+.proj-section:first-child{padding-top:0;margin-top:0;border-top:none}
+.proj-section-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+.proj-section-lbl .r{color:var(--brass);font-weight:500}
+@media(max-width:700px){.proj-head{padding:20px 20px 22px}.proj-head h1{font-size:26px}.proj-body{padding:20px 20px 22px}.proj-meta{grid-template-columns:repeat(2,1fr);gap:14px 0}.proj-meta div{border-right:none;border-bottom:1px solid var(--hairline);padding-bottom:12px}.proj-meta div:nth-last-child(-n+2){border-bottom:none;padding-bottom:0}}
+
 .cust-hero{background:linear-gradient(135deg,var(--brass) 0%,var(--brass-2) 100%);color:#FBF6E7;border-radius:var(--radius-xl);padding:32px;margin-bottom:24px;position:relative;overflow:hidden}
 [data-theme=dark] .cust-hero{color:var(--ground)}
 .cust-hero::before{content:"";position:absolute;top:-40px;right:-40px;width:220px;height:220px;background:rgba(255,255,255,.1);border-radius:50%}
@@ -3293,29 +3317,46 @@ function renderCustomerExplore() {
   ws.innerHTML = `
     <div class="workspace-main">
       <div class="explore">
-        <div class="cust-hero">
-          <span class="eyebrow">Your project · Live status</span>
-          <h1>${p.name} Residence</h1>
-          <p class="sub">Every photo, drawing, and update from your site — as soon as it happens. Reply, like, or approve directly. Everything you see is delivered to your WhatsApp too.</p>
-          <div class="kv">
-            <div><div class="k">Progress</div><div class="v">${meta.progress}%</div></div>
-            <div><div class="k">Phase</div><div class="v">${meta.phase}</div></div>
-            <div><div class="k">Location</div><div class="v mono" style="font-size:14px">${p.area}<br><span style="font-size:11px;opacity:.75">${p.city} · ${p.lat}</span></div></div>
-            <div><div class="k">Project ID</div><div class="v mono" style="font-size:14px">${u.customerId || 'CUST-SPDL01-K7A2'}</div></div>
-          </div>
-        </div>
+        <div class="proj-card">
+          <header class="proj-head">
+            <div class="top">
+              <div>
+                <div class="ey">Your project · Live status</div>
+                <h1>${p.name} Residence</h1>
+              </div>
+              <span class="code-pill">${p.code} · ${meta.phase.toUpperCase()}</span>
+            </div>
+            <p class="sub">Every photo, drawing, and update from your site — as soon as it happens. Reply, like, or approve directly. Everything you see is also delivered to your WhatsApp.</p>
+          </header>
 
-        <div class="progress-wrap" style="margin:0 0 24px">
-          <div class="progress-lbl"><span>Overall completion</span><span>Handover · <b>${new Date(Date.now() + meta.days * 86400000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</b></span></div>
-          <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
-          <div class="progress-phases">
-            <div class="phase done" onclick="openPhase('Site prep','done')" style="cursor:pointer"><span class="pindex">01</span><div class="pn">Site prep</div><div class="pt">Complete</div></div>
-            <div class="phase done" onclick="openPhase('Foundation','done')" style="cursor:pointer"><span class="pindex">02</span><div class="pn">Foundation</div><div class="pt">Complete</div></div>
-            <div class="phase done" onclick="openPhase('Structure','done')" style="cursor:pointer"><span class="pindex">03</span><div class="pn">Structure</div><div class="pt">Complete</div></div>
-            <div class="phase active" onclick="openPhase('Interior','active')" style="cursor:pointer"><span class="pindex">04</span><div class="pn">Interior</div><div class="pt">In progress</div></div>
-            <div class="phase" onclick="openPhase('Handover','pending')" style="cursor:pointer"><span class="pindex">05</span><div class="pn">Handover</div><div class="pt">Upcoming</div></div>
+          <div class="proj-body">
+            <div class="proj-meta">
+              <div><div class="k">Progress</div><div class="v">${meta.progress}%</div></div>
+              <div><div class="k">Phase</div><div class="v">${meta.phase}</div></div>
+              <div><div class="k">Location</div><div class="v mono">${p.area}<span class="co">${p.city} · ${p.lat}</span></div></div>
+              <div><div class="k">Project ID</div><div class="v mono">${u.customerId || 'CUST-SPDL01-K7A2'}</div></div>
+            </div>
+
+            <div class="proj-section">
+              <div class="proj-section-lbl"><span>Overall completion</span><span>Handover · <span class="r">${new Date(Date.now() + meta.days * 86400000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span></span></div>
+              <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
+            </div>
+
+            <div class="proj-section">
+              <div class="proj-section-lbl"><span>Phase timeline</span><span>Click a phase for milestones + site photos</span></div>
+              <div class="progress-phases">
+                <div class="phase done" onclick="openPhase('Site prep','done')" style="cursor:pointer"><span class="pindex">01</span><div class="pn">Site prep</div><div class="pt">Complete</div></div>
+                <div class="phase done" onclick="openPhase('Foundation','done')" style="cursor:pointer"><span class="pindex">02</span><div class="pn">Foundation</div><div class="pt">Complete</div></div>
+                <div class="phase done" onclick="openPhase('Structure','done')" style="cursor:pointer"><span class="pindex">03</span><div class="pn">Structure</div><div class="pt">Complete</div></div>
+                <div class="phase active" onclick="openPhase('Interior','active')" style="cursor:pointer"><span class="pindex">04</span><div class="pn">Interior</div><div class="pt">In progress</div></div>
+                <div class="phase" onclick="openPhase('Handover','pending')" style="cursor:pointer"><span class="pindex">05</span><div class="pn">Handover</div><div class="pt">Upcoming</div></div>
+              </div>
+            </div>
+
+            <div class="proj-section" style="padding-top:22px">
+              <button class="cert-btn" style="margin-top:0" onclick="openCert()"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="txt"><div class="h">View your handover certificate</div><div class="s">Signed by Ar. Nishant Yadav · Principal Architect</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
           </div>
-          <button class="cert-btn" onclick="openCert()"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="txt"><div class="h">View your handover certificate</div><div class="s">Signed by Ar. Nishant Yadav · Principal Architect</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
 
         <div class="explore-section">
