@@ -389,20 +389,57 @@ a{color:inherit;text-decoration:none}
 .workspace-main::-webkit-scrollbar{width:10px}
 .workspace-main::-webkit-scrollbar-thumb{background:var(--hairline-2);border-radius:5px}
 .ws-header{padding:24px 32px 0;background:var(--ground)}
-.ws-crumbs{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:6px}
-.ws-crumbs .code{font-family:var(--mono);color:var(--brass);font-size:11px;padding:2px 6px;background:var(--brass-tint);border-radius:4px}
-.ws-title{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.ws-crumbs{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:10px}
+.ws-crumbs .code{font-family:var(--mono);color:var(--brass);font-size:11px;padding:3px 8px;background:var(--brass-tint);border-radius:4px;letter-spacing:.05em}
+.ws-back{display:inline-flex;align-items:center;gap:5px;padding:5px 10px 5px 7px;border:1px solid var(--hairline);border-radius:20px;font-size:12px;color:var(--muted);background:var(--surface);cursor:pointer;transition:all .15s}
+.ws-back:hover{color:var(--ink);border-color:var(--hairline-2);background:var(--surface-2)}
+.ws-title{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
 .ws-title h1{margin:0;font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;color:var(--ink)}
-.ws-title-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.ws-title-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 
-.module-tabs{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--hairline);padding:0 32px;background:var(--ground);margin-top:4px}
-.mt-btn{padding:12px 14px;font-size:13.5px;font-weight:500;color:var(--muted);display:inline-flex;align-items:center;gap:8px;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
-.mt-btn:hover{color:var(--ink)}
-.mt-btn[data-active=true]{color:var(--ink);border-bottom-color:var(--brass)}
-.mt-btn .count{font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:1px 5px;background:var(--surface-2);border-radius:8px;line-height:1.4}
-.mt-btn[data-active=true] .count{background:var(--navy-tint);color:var(--navy)}
-[data-theme=dark] .mt-btn[data-active=true] .count{color:var(--navy-2)}
+/* Pin icon (location) */
+.geo-icon{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--surface);border:1px solid var(--hairline);color:var(--brass);cursor:pointer;position:relative;transition:background .15s,border-color .15s}
+.geo-icon:hover{background:var(--brass-tint);border-color:var(--brass)}
+.geo-icon .tt{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:6px 10px;border-radius:5px;font-size:11.5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;font-family:var(--sans);font-weight:500;z-index:8}
+.geo-icon .tt::after{content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:var(--ink)}
+.geo-icon .tt small{display:block;font-family:var(--mono);font-size:10px;opacity:.7;margin-top:2px;letter-spacing:.03em}
+.geo-icon:hover .tt{opacity:1}
+
+/* About-project dropdown */
+.about-wrap{position:relative}
+.about-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;background:var(--surface);border:1px solid var(--hairline);border-radius:20px;font-size:12.5px;color:var(--ink-2);cursor:pointer;transition:all .15s;font-weight:500}
+.about-btn:hover{border-color:var(--hairline-2);background:var(--surface-2)}
+.about-btn[data-open=true]{border-color:var(--focus);background:var(--surface-2)}
+.about-btn .chev{transition:transform .18s}
+.about-btn[data-open=true] .chev{transform:rotate(180deg)}
+.about-pop{position:absolute;top:calc(100% + 6px);left:0;min-width:280px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-lg);z-index:10;display:none}
+.about-pop[data-open=true]{display:block}
+.about-pop .hd{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.about-pop .row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:7px 0;font-size:13px;color:var(--ink-2)}
+.about-pop .row + .row{border-top:1px solid var(--hairline)}
+.about-pop .row .k{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;align-self:center}
+.about-pop .row .v{font-weight:500;color:var(--ink)}
+
+.module-tabs{display:flex;align-items:center;gap:8px;padding:16px 32px 14px;background:var(--ground);border-bottom:1px solid var(--hairline);flex-wrap:wrap}
+.mt-btn{padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--hairline);border-radius:7px;transition:all .15s;letter-spacing:-.005em}
+.mt-btn:hover{color:var(--ink);background:var(--surface-2);border-color:var(--hairline-2);transform:translateY(-1px)}
+.mt-btn[data-active=true]{color:var(--brass);background:var(--brass-tint);border-color:var(--brass)}
+.mt-btn .count{font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:1px 6px;background:var(--ground);border-radius:8px;line-height:1.4;font-weight:500}
+.mt-btn:hover .count{background:var(--surface)}
+.mt-btn[data-active=true] .count{background:rgba(255,255,255,.55);color:var(--brass)}
+[data-theme=dark] .mt-btn[data-active=true] .count{background:rgba(0,0,0,.25);color:var(--brass)}
 .ws-content{padding:24px 32px 60px}
+
+/* Inline floor strip (used inside Files + Gallery, replaces right sidebar) */
+.floor-strip{display:flex;align-items:center;gap:6px;padding:10px 12px;background:var(--surface);border:1px solid var(--hairline);border-radius:8px;overflow-x:auto;margin-bottom:16px;-webkit-overflow-scrolling:touch}
+.floor-strip .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-right:8px;border-right:1px solid var(--hairline);margin-right:2px;white-space:nowrap;font-weight:600}
+.fst{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--muted);background:transparent;border:1px solid transparent;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.fst:hover{color:var(--ink);background:var(--ground)}
+.fst[data-active=true]{color:var(--brass);background:var(--brass-tint);border-color:var(--brass)}
+.fst svg{opacity:.7}
+.fst[data-active=true] svg{opacity:1}
+.fst.add{color:var(--brass);margin-left:auto}
+.fst.add:hover{background:var(--brass-tint)}
 
 /* Floors */
 .floors{width:var(--floors-w);border-left:1px solid var(--hairline);background:var(--surface);padding:20px 12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
@@ -683,22 +720,23 @@ a{color:inherit;text-decoration:none}
 .progress .bar{height:100%;background:linear-gradient(90deg,var(--brass) 0%,var(--brass-2) 100%);border-radius:6px;position:relative;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .progress .bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimBar 2s infinite}
 @keyframes shimBar{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px}
-.phase{padding:14px 12px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;text-align:left;transition:all .18s;position:relative;overflow:hidden;min-height:78px;display:flex;flex-direction:column;justify-content:space-between}
-.phase:hover{border-color:var(--hairline-2);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
-.phase.done{background:linear-gradient(135deg,var(--brass-tint) 0%,var(--surface) 100%);border-color:var(--brass);color:var(--brass)}
-.phase.active{background:linear-gradient(135deg,var(--navy-tint) 0%,var(--surface) 100%);border-color:var(--navy);color:var(--navy)}
-.phase.active::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--brass)}
+.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+.phase{padding:8px 10px;background:var(--surface);border:1px solid var(--hairline);border-radius:7px;text-align:left;transition:all .15s;position:relative;overflow:hidden;display:flex;align-items:center;gap:8px;min-height:0}
+.phase:hover{border-color:var(--hairline-2);background:var(--surface-2)}
+.phase.done{background:var(--brass-tint);border-color:var(--brass);color:var(--brass)}
+.phase.active{background:var(--navy-tint);border-color:var(--navy);color:var(--navy)}
 [data-theme=dark] .phase.active{color:var(--navy-2)}
-.phase .pn{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:4px}
-.phase .pt{font-size:12.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:4px}
+.phase .pindex{font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:600;flex-shrink:0;padding:2px 5px;background:var(--surface);border-radius:3px;position:static}
+.phase.done .pindex,.phase.active .pindex{color:inherit;background:rgba(255,255,255,.6)}
+[data-theme=dark] .phase.done .pindex,[data-theme=dark] .phase.active .pindex{background:rgba(0,0,0,.25)}
+.phase .pn{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:-.005em;margin:0;flex:1;line-height:1.2;text-transform:none;color:inherit}
+.phase .pt{font-size:10.5px;color:var(--muted);font-weight:500;font-family:var(--mono);letter-spacing:.03em;text-transform:uppercase;flex-shrink:0}
 .phase.done .pt{color:var(--brass)}
-.phase.done .pt::before{content:"✓";font-weight:700}
+.phase.done .pt::before{content:"✓ ";font-weight:700}
 .phase.active .pt{color:inherit}
-.phase.active .pt::before{content:"●";color:var(--brass);animation:pulseDot 1.4s infinite}
+.phase.active .pt::before{content:"● ";color:var(--brass);animation:pulseDot 1.4s infinite}
 @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
-.phase .pindex{position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:600}
-.phase.done .pindex,.phase.active .pindex{color:inherit;opacity:.6}
+@media(max-width:900px){.progress-phases{grid-template-columns:repeat(5,1fr);gap:4px}.phase{padding:7px 8px;flex-direction:column;align-items:flex-start;gap:2px}.phase .pt{font-size:9px}.phase .pn{font-size:11px}}
 
 /* Team card row */
 .team-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
@@ -3917,28 +3955,34 @@ function renderWorkspace() {
     <div class="workspace-main">
       <div class="ws-header">
         <div class="ws-crumbs">
-          <a href="#/app/explore" style="color:var(--muted)">Explore</a>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
-          <span>Projects</span>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
-          <span>${p.name}</span><span class="code">${p.code}</span>
+          <button class="ws-back" onclick="nav('/app/explore')" title="Back to all projects"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back</button>
+          <span class="code">${p.code}</span>
         </div>
         <div class="ws-title">
           <h1>${p.name} Residence</h1>
           <div class="ws-title-meta">
             <span class="chip sage">${meta.progress > 80 ? 'Ahead' : meta.progress > 40 ? 'On track' : 'Early phase'}</span>
-            <span class="geo-card" onclick="state.module='gallery';nav('/app/explore');setTimeout(()=>{document.querySelector('[data-v=map]')?.click()},200)" style="cursor:pointer" title="Open on map"><span class="mini"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><b>${p.area}</b>, ${p.city}<span class="co">${p.lat} · ${p.lng}</span></span>
-            <span>Client · <b style="color:var(--ink)">${meta.client}</b></span>
-            <span>·</span>
-            <span>Architect · <b style="color:var(--ink)">${meta.arch}</b></span>
-            <span>·</span>
-            <span>POC · <b style="color:var(--ink)">${meta.poc}</b></span>
-            <span>·</span>
-            <span>${meta.days} days to handover</span>
-            <button class="btn btn-ghost btn-sm" onclick="openAddUsers()" title="Invite people to this project" style="margin-left:8px">${iconSVG('plus').replace('width="16"','width="12"').replace('height="16"','height="12"')} Invite</button>
+            <span class="geo-icon" onclick="state.module='gallery';nav('/app/explore');setTimeout(()=>{document.querySelector('[data-v=map]')?.click()},200)" title="Open on map">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="tt"><b>${p.area}</b>, ${p.city}<small>${p.lat} · ${p.lng}</small></span>
+            </span>
+            <div class="about-wrap">
+              <button class="about-btn" onclick="toggleAbout(event)" data-open="false">${iconSVG('user').replace('width="16"','width="13"').replace('height="16"','height="13"')} About project <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+              <div class="about-pop" data-open="false">
+                <div class="hd">Project team</div>
+                <div class="row"><span class="k">Client</span><span class="v">${meta.client}</span></div>
+                <div class="row"><span class="k">Architect</span><span class="v">${meta.arch}</span></div>
+                <div class="row"><span class="k">POC</span><span class="v">${meta.poc}</span></div>
+                <div class="row"><span class="k">Started</span><span class="v">${new Date(Date.now() - (365-meta.days)*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
+                <div class="row"><span class="k">Handover</span><span class="v">${new Date(Date.now() + meta.days*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="openAddUsers()" title="Invite people to this project">${iconSVG('plus').replace('width="16"','width="12"').replace('height="16"','height="12"')} Invite</button>
             <button class="btn btn-sm" style="background:#25D366;color:#fff" onclick="openWA('${p.name}','Weekly update: currently at ${meta.progress}% (${meta.phase} phase).','Project ${p.code} · weekly.pdf')"><svg width="12" height="12" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send to client</button>
           </div>
         </div>
         <div class="progress-wrap" style="margin:0 0 14px">
-          <div class="progress-lbl"><span>${meta.phase} phase · <b>${meta.progress}%</b> complete</span><span>Handover in ${meta.days} days · <a onclick="openCert()" style="color:var(--brass);cursor:pointer;text-decoration:underline">view certificate</a></span></div>
+          <div class="progress-lbl"><span>${meta.phase} phase · <b>${meta.progress}%</b> complete</span><span><a onclick="openCert()" style="color:var(--brass);cursor:pointer;text-decoration:underline">View certificate</a></span></div>
           <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
           <div class="progress-phases">
             ${['Site prep','Foundation','Structure','Interior','Handover'].map((pn, ix) => {
@@ -3960,23 +4004,39 @@ function renderWorkspace() {
       </div>
       <div class="ws-content" id="wsContent"></div>
     </div>
-    ${needsFloors ? renderFloors() : ''}
   `;
   $$('.mt-btn', ws).forEach(b => {
     if (b.dataset.mod === state.module) b.dataset.active = 'true';
     b.addEventListener('click', () => { state.module = b.dataset.mod; renderWorkspace(); });
   });
-  if (needsFloors) $$('.floor[data-floor]').forEach(b => b.addEventListener('click', () => { state.floorId = b.dataset.floor; renderWorkspace(); }));
   renderModule();
 }
 
-function renderFloors() {
-  return `<aside class="floors">
-    <div class="floors-title">Floor</div>
-    ${FLOORS.map(f => `<button class="floor" data-floor="${f.id}" ${f.id === state.floorId ? 'data-active="true"' : ''}><span class="floor-icon">${iconSVG('fs').replace('width="16"','width="20"').replace('height="16"','height="20"')}</span><span class="floor-label">${f.short}</span></button>`).join('')}
-    <button class="floor floor-add"><span class="floor-icon">${iconSVG('plus').replace('width="16"','width="18"').replace('height="16"','height="18"')}</span><span class="floor-label">Add+</span></button>
-  </aside>`;
+function renderFloors() { return ''; /* deprecated — floors now inline via floorStrip() */ }
+function floorStrip() {
+  return `<div class="floor-strip" id="floorStrip">
+    <span class="lbl">Floor plan</span>
+    ${FLOORS.map(f => `<button class="fst" data-floor="${f.id}" ${f.id === state.floorId ? 'data-active="true"' : ''}>${iconSVG('fs').replace('width="16"','width="13"').replace('height="16"','height="13"')} ${f.short}</button>`).join('')}
+    <button class="fst add" onclick="toast('Add a new floor')">${iconSVG('plus').replace('width="16"','width="13"').replace('height="16"','height="13"')} Add+</button>
+  </div>`;
 }
+function attachFloorStripHandlers(root) {
+  $$('.fst[data-floor]', root).forEach(b => b.addEventListener('click', () => { state.floorId = b.dataset.floor; renderModule(); }));
+}
+function toggleAbout(e) {
+  e.stopPropagation();
+  const btn = e.currentTarget;
+  const pop = btn.nextElementSibling;
+  const open = btn.dataset.open !== 'true';
+  btn.dataset.open = open ? 'true' : 'false';
+  pop.dataset.open = open ? 'true' : 'false';
+  if (open) setTimeout(() => document.addEventListener('click', closeAbout, { once: true }), 0);
+}
+function closeAbout() {
+  document.querySelectorAll('.about-btn').forEach(b => b.dataset.open = 'false');
+  document.querySelectorAll('.about-pop').forEach(p => p.dataset.open = 'false');
+}
+window.toggleAbout = toggleAbout;
 
 function renderModule() {
   const c = $('#wsContent'); if (!c) return;
@@ -4009,11 +4069,13 @@ function renderGallery(c) {
       <h2>Spaces on this floor</h2>
       <div class="section-head2-meta"><span class="code">${f.short}</span><span>${spaces.length} spaces</span><span>·</span><span>Sorted by: last updated</span></div>
     </div>
+    ${floorStrip()}
     <div class="spaces-grid" id="galSpaces">
       ${spaces.map((n, i) => spaceCardHTML(n, i, state.floorId, false)).join('')}
     </div>
   `;
   attachSpaceHandlers($('#galSpaces'));
+  attachFloorStripHandlers(c);
 }
 
 function renderFiles(c) {
@@ -4021,6 +4083,7 @@ function renderFiles(c) {
   const drawings = DRAWING_TYPES[state.fileCat] || [];
   const f = floor();
   c.innerHTML = `
+    ${floorStrip()}
     <div class="file-toolbar">
       <div class="category-tabs">
         ${cats.map(cat => `<button class="cat-btn" data-cat="${cat}" ${cat === state.fileCat ? 'data-active="true"' : ''}>${catIcon(cat)} ${cat}</button>`).join('')}
@@ -4042,6 +4105,7 @@ function renderFiles(c) {
   `;
   $$('.cat-btn[data-cat]', c).forEach(b => b.addEventListener('click', () => { state.fileCat = b.dataset.cat; renderModule(); }));
   $$('.drawing', c).forEach(d => d.addEventListener('click', () => openModal(d.dataset.name, d.dataset.code)));
+  attachFloorStripHandlers(c);
 }
 
 function renderChat(c) {
