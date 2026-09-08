@@ -1302,8 +1302,22 @@ a{color:inherit;text-decoration:none}
 
 /* Job Search page */
 .jobs-page{max-width:1240px;margin:0 auto;padding:32px 32px 60px}
-.jobs-page h1{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;margin:0 0 4px}
-.jobs-page .sub{color:var(--muted);margin:0 0 24px;font-size:14px}
+.jobs-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.jobs-head .lhs h1{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;margin:0 0 4px}
+.jobs-head .sub{color:var(--muted);margin:0;font-size:14px;max-width:60ch;line-height:1.5}
+.jobs-head .rhs{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0}
+.jobs-head .post-btn{padding:12px 20px;background:var(--brass);color:#FBF6E7;border-radius:8px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px -4px rgba(168,122,68,.45);transition:transform .15s,background .15s;border:1.5px solid var(--brass);white-space:nowrap}
+[data-theme=dark] .jobs-head .post-btn{color:var(--ground)}
+.jobs-head .post-btn:hover{transform:translateY(-1px);background:var(--brass-2);border-color:var(--brass-2)}
+.jobs-head .post-btn svg{opacity:.9}
+.jobs-head .rhs-hint{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.03em}
+.job-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hairline);border-radius:8px;overflow:hidden;border:1px solid var(--hairline);margin-bottom:22px}
+.job-stats .st{background:var(--surface);padding:14px 16px}
+.job-stats .st .l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.job-stats .st .n{font-family:var(--serif);font-size:24px;font-weight:400;line-height:1;letter-spacing:-.01em}
+.job-stats .st .n em{color:var(--brass);font-style:italic}
+.job-stats .st .d{font-family:var(--mono);font-size:11px;color:var(--sage);margin-top:3px}
+@media(max-width:768px){.job-stats{grid-template-columns:repeat(2,1fr)}.jobs-head .rhs{width:100%;align-items:stretch}.jobs-head .post-btn{justify-content:center;width:100%}}
 .job-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
 .jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
 .job-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,transform .15s;cursor:pointer}
@@ -3703,24 +3717,52 @@ const JOBS = [
   { role: 'Sample flat · builder show unit',            co: 'Godrej Properties',  loc: 'Pune',      type: 'Interior',     rate: '₹18 L',         posted: '4 days ago',  tags: ['Show flat','Interior','Fast'] },
   { role: 'Office · 12,000 sqft fit-out',               co: 'Zomato',             loc: 'Delhi NCR', type: 'Commercial',   rate: '₹2.4 Cr',       posted: 'Today',       tags: ['Commercial','Fit-out','Grade A'] },
 ];
+const APPLIED_JOBS = new Set();
+let JOBS_FILTER = 'all';
+function jobsMatchingFilter() {
+  if (JOBS_FILTER === 'all') return JOBS;
+  if (JOBS_FILTER === 'budget') return JOBS.filter(j => /Cr\+?/.test(j.rate) || /^\s*₹[1-9]\d*.*Cr/.test(j.rate));
+  if (JOBS_FILTER === 'week')   return JOBS.filter(j => /today|yesterday|day/i.test(j.posted));
+  return JOBS.filter(j => j.type.toLowerCase() === JOBS_FILTER);
+}
 function renderJobs() {
   const ws = $('#workspace'); if (!ws) return;
+  const list = jobsMatchingFilter();
   ws.innerHTML = `
     <div class="workspace-main"><div class="jobs-page">
-      <h1>Job search <span class="chip navy" style="vertical-align:middle;margin-left:8px;font-size:11px">${JOBS.length} open</span></h1>
-      <p class="sub">Live briefs from clients looking for architects on BricBook. Filter and apply — replies stay in the platform, not scattered across email and WhatsApp.</p>
-      <div class="job-filters">
-        <button class="chip navy" onclick="toast('All types')">All types</button>
-        <button class="chip" onclick="toast('Residential filter')">Residential</button>
-        <button class="chip" onclick="toast('Interior filter')">Interior</button>
-        <button class="chip" onclick="toast('Commercial filter')">Commercial</button>
-        <button class="chip" onclick="toast('Consulting filter')">Consulting</button>
-        <button class="chip" onclick="toast('Above ₹1 Cr')">Budget ₹1 Cr+</button>
-        <button class="chip" onclick="toast('Posted this week')">This week</button>
+      <div class="jobs-head">
+        <div class="lhs">
+          <h1>Job search <span class="chip navy" style="vertical-align:middle;margin-left:8px;font-size:11px">${list.length} of ${JOBS.length} open</span></h1>
+          <p class="sub">Live briefs from clients looking for architects on BricBook. Filter and apply — replies stay in the platform, not scattered across email and WhatsApp.</p>
+        </div>
+        <div class="rhs">
+          <button class="post-btn" onclick="openPostJob()">${iconSVG('plus').replace('width="16"','width="14"').replace('height="16"','height="14"')} Post a requirement</button>
+          <span class="rhs-hint">Your posts stay live for 30 days · free</span>
+        </div>
       </div>
+
+      <div class="job-stats">
+        <div class="st"><div class="l">Open right now</div><div class="n"><em>${JOBS.length}</em></div><div class="d">+3 this week</div></div>
+        <div class="st"><div class="l">You've applied to</div><div class="n">${APPLIED_JOBS.size}</div><div class="d">Track under Profile</div></div>
+        <div class="st"><div class="l">Avg. client reply</div><div class="n"><em>4h</em></div><div class="d">Under 24h · 88%</div></div>
+        <div class="st"><div class="l">Your win rate</div><div class="n">32<em>%</em></div><div class="d">Above network avg</div></div>
+      </div>
+
+      <div class="job-filters">
+        <button class="chip ${JOBS_FILTER === 'all' ? 'navy' : ''}" onclick="setJobsFilter('all')">All types</button>
+        <button class="chip ${JOBS_FILTER === 'full project' ? 'navy' : ''}" onclick="setJobsFilter('full project')">Full project</button>
+        <button class="chip ${JOBS_FILTER === 'interior' ? 'navy' : ''}" onclick="setJobsFilter('interior')">Interior</button>
+        <button class="chip ${JOBS_FILTER === 'commercial' ? 'navy' : ''}" onclick="setJobsFilter('commercial')">Commercial</button>
+        <button class="chip ${JOBS_FILTER === 'consulting' ? 'navy' : ''}" onclick="setJobsFilter('consulting')">Consulting</button>
+        <button class="chip ${JOBS_FILTER === 'restoration' ? 'navy' : ''}" onclick="setJobsFilter('restoration')">Restoration</button>
+        <button class="chip ${JOBS_FILTER === 'budget' ? 'navy' : ''}" onclick="setJobsFilter('budget')">Budget ₹1 Cr+</button>
+        <button class="chip ${JOBS_FILTER === 'week' ? 'navy' : ''}" onclick="setJobsFilter('week')">Posted this week</button>
+      </div>
+
       <div class="jobs-grid">
-        ${JOBS.map(j => `
-          <div class="job-card" onclick="toast('Job details would open')">
+        ${list.length === 0 ? `<div style="grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--hairline-2);border-radius:12px"><p style="margin:0 0 12px;font-size:14px">No open jobs match this filter.</p><button class="btn btn-ghost btn-sm" onclick="setJobsFilter('all')">Show all</button></div>` : list.map((j, i) => {
+          const applied = APPLIED_JOBS.has(j.role);
+          return `<div class="job-card" onclick="toast('Job details would open')">
             <div class="top">
               <div><h3 class="role">${j.role}</h3><div class="co">${j.co} · ${j.loc}</div></div>
               <span class="badge">${j.type}</span>
@@ -3731,13 +3773,76 @@ function renderJobs() {
               <span class="rate"><em>${j.rate}</em></span>
               <span>${j.posted}</span>
             </div>
-            <button class="btn btn-brass btn-sm" onclick="event.stopPropagation();toast('Application submitted — reply within 24h')" style="margin-top:6px">Apply · one click</button>
-          </div>
-        `).join('')}
+            ${applied
+              ? `<button class="btn btn-sm" style="background:var(--sage);color:#fff;margin-top:6px" disabled>✓ Applied · awaiting reply</button>`
+              : `<button class="btn btn-brass btn-sm" onclick="event.stopPropagation();applyJob('${j.role.replace(/'/g,"\\'")}')" style="margin-top:6px">Apply · one click</button>`}
+          </div>`;
+        }).join('')}
       </div>
     </div></div>
   `;
 }
+function setJobsFilter(f) { JOBS_FILTER = f; renderJobs(); }
+function applyJob(role) {
+  APPLIED_JOBS.add(role);
+  toast('Application submitted — reply within 24h');
+  renderJobs();
+}
+window.setJobsFilter = setJobsFilter; window.applyJob = applyJob;
+
+function openPostJob() {
+  $('#modalName').textContent = 'Post a requirement';
+  $('#modalCode').textContent = 'NEW BRIEF';
+  const modal = $('#modal'); modal.classList.remove('person-modal');
+  $('#modal').dataset.open = 'true';
+  const body = $('#modal .modal-body'); body.style.background = 'var(--surface)';
+  body.innerHTML = `
+    <div style="padding:22px 24px 24px">
+      <p style="color:var(--muted);margin:0 0 18px;font-size:13px;line-height:1.5">Post a live brief to 12,000+ verified architects on BricBook. Free for 30 days · replies come to you here, not scattered across WhatsApp and email.</p>
+
+      <div class="field"><label>Project title</label><input id="pjTitle" placeholder="e.g. 3BHK Residence · Design & Execution" autofocus></div>
+      <div class="field-row">
+        <div class="field"><label>Type</label><select id="pjType"><option>Full project</option><option>Interior</option><option>Commercial</option><option>Consulting</option><option>Restoration</option><option>Landscape</option></select></div>
+        <div class="field"><label>Where</label><select id="pjLoc"><option>Mumbai</option><option>Delhi NCR</option><option>Bangalore</option><option>Chennai</option><option>Pune</option><option>Hyderabad</option><option>Kolkata</option><option>Ahmedabad</option><option>Kochi</option><option>Chandigarh</option><option>Goa</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Budget range</label><select id="pjBudget"><option>Under ₹50 L</option><option>₹50 L – ₹1 Cr</option><option>₹1 – 3 Cr</option><option>₹3 – 10 Cr</option><option>₹10 Cr+</option><option>Not sure yet</option></select></div>
+        <div class="field"><label>Start by</label><select id="pjStart"><option>This month</option><option>Next 3 months</option><option>Next 6 months</option><option>This year</option><option>Just exploring</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Built-up area</label><select id="pjSize"><option>Under 1,000 sqft</option><option>1,000 – 2,000 sqft</option><option>2,000 – 5,000 sqft</option><option>5,000 – 10,000 sqft</option><option>10,000+ sqft</option></select></div>
+        <div class="field"><label>Response window</label><select id="pjWindow"><option>7 days</option><option>3 days</option><option>14 days</option><option>30 days</option></select></div>
+      </div>
+      <div class="field"><label>Brief</label><textarea id="pjBrief" placeholder="Describe what you're building — number of rooms, style you like, any references, must-haves. Two or three lines is enough." style="min-height:100px"></textarea></div>
+      <div class="field"><label>Tags <span style="color:var(--faint);font-weight:400;text-transform:none;letter-spacing:0">· comma-separated</span></label><input id="pjTags" placeholder="e.g. Sustainable, IGBC Gold, Passive cooling"></div>
+
+      <div class="check"><input type="checkbox" id="pjWA" checked><label for="pjWA">Also notify me on WhatsApp when a shortlisted architect applies</label></div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:14px;border-top:1px solid var(--hairline)">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-brass" onclick="submitPostJob()">Post to 12,000+ architects</button>
+      </div>
+    </div>
+  `;
+}
+function submitPostJob() {
+  const title = ($('#pjTitle')?.value || '').trim();
+  if (!title) { toast('Please add a project title'); $('#pjTitle')?.focus(); return; }
+  const j = {
+    role: title,
+    co: (AUTH.get()?.company || 'You'),
+    loc: $('#pjLoc').value,
+    type: $('#pjType').value,
+    rate: $('#pjBudget').value,
+    posted: 'Just now',
+    tags: [($('#pjSize').value.split(' –')[0] || ''), ($('#pjStart').value || ''), ...($('#pjTags').value.split(',').map(s => s.trim()).filter(Boolean))].filter(Boolean).slice(0, 4),
+  };
+  JOBS.unshift(j);
+  closeModal();
+  toast('Posted · notifying 12,000+ architects now');
+  if (currentRoute() === '/app/jobs') renderJobs();
+}
+window.openPostJob = openPostJob; window.submitPostJob = submitPostJob;
 
 /* ============ Help & Support ============ */
 function openHelp() {
