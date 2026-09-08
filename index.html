@@ -340,6 +340,8 @@ a{color:inherit;text-decoration:none}
 
 /* Body */
 .app-body{display:grid;grid-template-columns:var(--rail-w) 1fr;overflow:hidden;min-height:0}
+.app-body.no-rail{grid-template-columns:1fr}
+.app-body.no-rail .rail{display:none}
 
 /* Rail */
 .rail{background:var(--surface);border-right:1px solid var(--hairline);display:flex;flex-direction:column;min-height:0}
@@ -735,7 +737,14 @@ a{color:inherit;text-decoration:none}
 .progress .bar{height:100%;background:linear-gradient(90deg,var(--brass) 0%,var(--brass-2) 100%);border-radius:6px;position:relative;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .progress .bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimBar 2s infinite}
 @keyframes shimBar{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+/* Progress + phases: shrink label/bar; wrap phases in a bordered box */
+.progress-wrap .progress-lbl{font-size:10.5px;letter-spacing:.06em}
+.progress-wrap .progress{height:6px}
+.phase-box{margin-top:12px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow-sm)}
+.phase-box-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.phase-box-lbl .r{color:var(--brass);font-weight:600}
+
+.progress-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:0}
 .phase{padding:5px 8px;background:var(--surface);border:1px solid var(--hairline);border-radius:5px;text-align:left;transition:all .15s;position:relative;overflow:hidden;display:flex;align-items:center;gap:6px;min-height:0}
 .phase:hover{border-color:var(--hairline-2);background:var(--surface-2)}
 .phase.done{background:var(--brass-tint);border-color:var(--brass);color:var(--brass)}
@@ -1332,6 +1341,34 @@ a{color:inherit;text-decoration:none}
 .user-chip button{border:none;background:rgba(0,0,0,.08);width:16px;height:16px;border-radius:50%;color:inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;line-height:1}
 .user-chip button:hover{background:rgba(0,0,0,.2)}
 
+/* Clickable person names + person profile popover */
+.person-lnk{color:inherit;cursor:pointer;font-weight:inherit;border-bottom:1px dashed transparent;transition:border-color .15s,color .15s}
+.person-lnk:hover{color:var(--brass);border-bottom-color:var(--brass)}
+.person-modal .modal{max-width:520px}
+.person-modal .modal-body{background:var(--surface);padding:0}
+.person-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#FBF6E7;padding:28px 28px 24px;position:relative;overflow:hidden}
+[data-theme=dark] .person-hero{color:var(--ground)}
+.person-hero::after{content:"";position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.08);border-radius:50%}
+.person-hero .top{display:flex;align-items:center;gap:16px;position:relative}
+.person-hero .av{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.22);color:#FBF6E7;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:24px;font-weight:400;flex-shrink:0}
+[data-theme=dark] .person-hero .av{background:rgba(20,23,27,.28);color:var(--ground)}
+.person-hero .info h3{font-family:var(--serif);font-size:26px;font-weight:400;margin:0 0 4px;letter-spacing:-.01em;line-height:1.05}
+.person-hero .info .fm{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.person-hero .info .role{font-family:var(--serif);font-style:italic;font-size:14px;opacity:.9;margin-top:4px}
+.person-body{padding:20px 28px 24px}
+.person-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hairline);border-radius:8px;overflow:hidden;border:1px solid var(--hairline);margin-bottom:18px}
+.person-stats .st{background:var(--surface);padding:12px;text-align:center}
+.person-stats .n{font-family:var(--serif);font-size:22px;font-weight:400;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.person-stats .n em{color:var(--brass);font-style:italic}
+.person-stats .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.person-body .kv{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.person-body .kv .row{display:grid;grid-template-columns:90px 1fr;gap:12px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--hairline)}
+.person-body .kv .row:last-child{border-bottom:none}
+.person-body .kv .row .k{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;align-self:center}
+.person-body .kv .row .v{color:var(--ink);font-weight:500}
+.person-cta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.person-cta .btn{width:100%;justify-content:center;min-height:44px}
+
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:20px;font-size:13px;box-shadow:var(--shadow-lg);z-index:200;display:none;align-items:center;gap:10px}
 .toast[data-open=true]{display:inline-flex;animation:tsl .3s ease}
@@ -1906,6 +1943,63 @@ const PROJECTS = [
   { id: "spdl11",  name: "HM house",         code: "SPDL11",  unread: 0, hero: "residential", city: "Goa",        area: "Assagao",        x: 82,  y: 320, lat: "15.610° N", lng: "73.746° E", client: 'H&M Family',         architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 100, status: 'completed',    lastActive: '3 months ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
 ];
 /* Look up the firm/studio for an architect name (falls back to a friendly default) */
+/* Person profile popover — pops on click of any linked architect / POC / team member */
+const PEOPLE_EXTRA = {
+  'Neha Iyer':    { role: 'Project Manager · Sundara Studio',    firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 8,  projects: 42, phone: '+91 98 20xx 4411', email: 'neha.iyer@sundarastudio.studio',    joined: 'Aug 2018' },
+  'Priya Menon':  { role: 'Structural Engineer',                  firm: 'Casa Vera',         city: 'Bangalore', yrs: 10, projects: 56, phone: '+91 98 76xx 3390', email: 'priya.menon@casavera.studio',        joined: 'Feb 2016' },
+  'Sarah Karim':  { role: 'Site Supervisor',                      firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 4,  projects: 12, phone: '+91 99 12xx 7788', email: 'sarah.karim@sundarastudio.studio',   joined: 'Jun 2022' },
+  'Jake Mendes':  { role: 'Site Engineer',                        firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 3,  projects: 9,  phone: '+91 99 22xx 6612', email: 'jake.mendes@sundarastudio.studio',   joined: 'Jan 2023' },
+  'Mark Rathi':   { role: 'Procurement Lead',                     firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 10, projects: 62, phone: '+91 98 11xx 4477', email: 'mark.rathi@sundarastudio.studio',    joined: 'May 2016' },
+};
+function openPerson(name) {
+  const clean = (name || '').replace(/^Ar\.\s*/, '');
+  const arch = (typeof ARCHITECTS !== 'undefined') ? ARCHITECTS.find(a => a.name.replace(/^Ar\.\s*/, '').toLowerCase() === clean.toLowerCase()) : null;
+  const extra = PEOPLE_EXTRA[clean] || {};
+  const info = arch
+    ? { name: 'Ar. ' + clean, role: (arch.spec[0] || 'Architect') + ' · Principal', firm: arch.firm, city: arch.loc, yrs: arch.yrs, projects: arch.proj, avg: arch.avg, phone: '+91 98 76xx ' + Math.floor(1000+Math.random()*9000), email: clean.toLowerCase().replace(/\s+/g,'.') + '@' + arch.firm.toLowerCase().replace(/[^a-z]/g,'') + '.studio', joined: 'Est. ' + (2026 - arch.yrs), isArchitect: true, slug: arch.slug }
+    : { name: clean, role: extra.role || 'Team member', firm: extra.firm || firmForArchitect(clean).firm, city: extra.city || 'Mumbai', yrs: extra.yrs || 5, projects: extra.projects || 12, avg: '—', phone: extra.phone || '+91 98 xxxx xxxx', email: extra.email || (clean.toLowerCase().replace(/\s+/g,'.') + '@bricbook.com'), joined: extra.joined || 'Team member', isArchitect: false };
+  const initials2 = info.name.replace(/^Ar\.\s*/, '').split(' ').map(w => w[0]).slice(0,2).join('');
+  $('#modalName').textContent = info.name;
+  $('#modalCode').textContent = info.firm.toUpperCase().slice(0, 22);
+  const modal = $('#modal'); modal.classList.add('person-modal');
+  const body = $('#modal .modal-body'); body.style.background = 'var(--surface)';
+  body.innerHTML = `
+    <div class="person-hero">
+      <div class="top">
+        <div class="av">${initials2}</div>
+        <div class="info">
+          <h3>${info.name}</h3>
+          <div class="fm">${info.firm} · ${info.city}</div>
+          <div class="role">${info.role}</div>
+        </div>
+      </div>
+    </div>
+    <div class="person-body">
+      <div class="person-stats">
+        <div class="st"><div class="n"><em>${info.yrs}</em>y</div><div class="l">Experience</div></div>
+        <div class="st"><div class="n"><em>${info.projects}</em></div><div class="l">Projects</div></div>
+        <div class="st"><div class="n"><em>${info.avg}</em>${info.avg !== '—' ? '★' : ''}</div><div class="l">Rating</div></div>
+      </div>
+      <div class="kv">
+        <div class="row"><span class="k">Firm</span><span class="v">${info.firm}</span></div>
+        <div class="row"><span class="k">City</span><span class="v">${info.city}</span></div>
+        <div class="row"><span class="k">Email</span><span class="v" style="font-family:var(--mono);font-size:12px">${info.email}</span></div>
+        <div class="row"><span class="k">Phone</span><span class="v" style="font-family:var(--mono)">${info.phone}</span></div>
+        <div class="row"><span class="k">${info.isArchitect ? 'Founded' : 'On team since'}</span><span class="v">${info.joined}</span></div>
+      </div>
+      <div class="person-cta">
+        <button class="btn" style="background:#25D366;color:#fff" onclick="closeModal();openWA('${info.name}','Hi ${info.name.split(' ').slice(-1)}, quick question','')"><svg width="14" height="14" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> WhatsApp</button>
+        <button class="btn btn-navy" onclick="closeModal();${info.isArchitect ? `nav('/architect/${info.slug}')` : `toast('Opening chat with ${info.name}')`}">${info.isArchitect ? 'View full profile →' : 'Open chat →'}</button>
+      </div>
+    </div>
+  `;
+  modal.dataset.open = 'true';
+}
+window.openPerson = openPerson;
+/* Ensure modal loses person-modal class when closed via other handlers */
+const _origCloseModal = window.closeModal;
+if (_origCloseModal) window.closeModal = function() { _origCloseModal(); $('#modal')?.classList.remove('person-modal'); };
+
 function firmForArchitect(archName) {
   if (!archName) return { firm: 'Independent Practice', prefix: 'Ar.', founded: '', city: '' };
   const clean = archName.replace(/^Ar\.\s*/, '');
@@ -3400,7 +3494,7 @@ function renderCustomerExplore() {
                 ${(() => {
                   const firm = firmForArchitect(meta.arch);
                   const initials2 = meta.arch.split(' ').map(w => w[0]).slice(0,2).join('');
-                  return `<div class="managed" title="Managed by ${firm.firm}">
+                  return `<div class="managed" title="Managed by ${firm.firm} — click to view profile" style="cursor:pointer" onclick="openPerson('${meta.arch}')">
                     <div class="av">${initials2}</div>
                     <div class="txt">
                       <div class="lbl">Managed by</div>
@@ -3448,15 +3542,15 @@ function renderCustomerExplore() {
         <div class="explore-section">
           <h2>Your team</h2>
           <div class="team-row">
-            <div class="team-card">
+            <div class="team-card" style="cursor:pointer" onclick="openPerson('${meta.arch}')">
               <div class="av">${initials(meta.arch)}</div>
-              <div class="info"><div class="role">Lead architect · ${firmForArchitect(meta.arch).firm}</div><div class="nm">Ar. ${meta.arch}</div><div class="em">${meta.arch.toLowerCase().replace(/\s+/g,'.')}@${firmForArchitect(meta.arch).firm.toLowerCase().replace(/[^a-z]/g,'')}.studio</div></div>
-              <div class="cta"><button class="icon-btn" onclick="openWA('${meta.arch}','Hi ${meta.arch}, quick question about the site.','')" title="WhatsApp"><svg width="16" height="16" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg></button><button class="icon-btn" onclick="toast('Opening chat with ${meta.arch}')">${iconSVG('chat')}</button></div>
+              <div class="info"><div class="role">Lead architect · ${firmForArchitect(meta.arch).firm}</div><div class="nm person-lnk">Ar. ${meta.arch}</div><div class="em">${meta.arch.toLowerCase().replace(/\s+/g,'.')}@${firmForArchitect(meta.arch).firm.toLowerCase().replace(/[^a-z]/g,'')}.studio</div></div>
+              <div class="cta"><button class="icon-btn" onclick="event.stopPropagation();openWA('${meta.arch}','Hi ${meta.arch}, quick question about the site.','')" title="WhatsApp"><svg width="16" height="16" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg></button><button class="icon-btn" onclick="event.stopPropagation();toast('Opening chat with ${meta.arch}')">${iconSVG('chat')}</button></div>
             </div>
-            <div class="team-card">
+            <div class="team-card" style="cursor:pointer" onclick="openPerson('${meta.poc}')">
               <div class="av" style="background:linear-gradient(135deg,var(--brass),var(--brass-2))">${initials(meta.poc)}</div>
-              <div class="info"><div class="role">Your project manager</div><div class="nm">${meta.poc}</div><div class="em">neha@sundara.studio</div></div>
-              <div class="cta"><button class="icon-btn" onclick="openWA('${meta.poc}','Hi ${meta.poc}, need an update on the site.','')" title="WhatsApp"><svg width="16" height="16" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg></button><button class="icon-btn" onclick="toast('Opening chat with ${meta.poc}')">${iconSVG('chat')}</button></div>
+              <div class="info"><div class="role">Your project manager · ${firmForArchitect(meta.poc).firm}</div><div class="nm person-lnk">${meta.poc}</div><div class="em">${meta.poc.toLowerCase().replace(/\s+/g,'.')}@${firmForArchitect(meta.poc).firm.toLowerCase().replace(/[^a-z]/g,'')}.studio</div></div>
+              <div class="cta"><button class="icon-btn" onclick="event.stopPropagation();openWA('${meta.poc}','Hi ${meta.poc}, need an update on the site.','')" title="WhatsApp"><svg width="16" height="16" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg></button><button class="icon-btn" onclick="event.stopPropagation();toast('Opening chat with ${meta.poc}')">${iconSVG('chat')}</button></div>
             </div>
           </div>
         </div>
@@ -3817,7 +3911,7 @@ function renderApp() {
         </div>
       </header>
 
-      <div class="app-body">
+      <div class="app-body ${sub === '/app' ? '' : 'no-rail'}">
         <aside class="rail">
           <div class="rail-top">
             ${isCust ? '' : `
@@ -3907,7 +4001,7 @@ function renderApp() {
     renderRail(); renderWorkspace();
   }
 
-  $('#railSearch').addEventListener('input', e => renderRail(e.target.value));
+  $('#railSearch')?.addEventListener('input', e => renderRail(e.target.value));
   document.addEventListener('click', outsideDropdown);
 }
 
@@ -4019,9 +4113,9 @@ function renderWorkspace() {
               <div class="about-pop" data-open="false">
                 <div class="hd">Project team</div>
                 <div class="row"><span class="k">Client</span><span class="v">${meta.client}</span></div>
-                <div class="row"><span class="k">Architect</span><span class="v">Ar. ${meta.arch}</span></div>
+                <div class="row"><span class="k">Architect</span><span class="v"><span class="person-lnk" onclick="closeAbout();openPerson('${meta.arch}')">Ar. ${meta.arch}</span></span></div>
                 <div class="row"><span class="k">Studio</span><span class="v">${firmForArchitect(meta.arch).firm}</span></div>
-                <div class="row"><span class="k">POC</span><span class="v">${meta.poc}</span></div>
+                <div class="row"><span class="k">POC</span><span class="v"><span class="person-lnk" onclick="closeAbout();openPerson('${meta.poc}')">${meta.poc}</span></span></div>
                 <div class="row"><span class="k">Started</span><span class="v">${new Date(Date.now() - (365-meta.days)*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
                 <div class="row"><span class="k">Handover</span><span class="v">${new Date(Date.now() + meta.days*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
               </div>
@@ -4033,15 +4127,18 @@ function renderWorkspace() {
         <div class="progress-wrap" style="margin:0 0 14px">
           <div class="progress-lbl"><span>${meta.phase} phase · <b>${meta.progress}%</b> complete</span><span><a onclick="openCert()" style="color:var(--brass);cursor:pointer;text-decoration:underline">View certificate</a></span></div>
           <div class="progress"><div class="bar" style="width:${meta.progress}%"></div></div>
-          <div class="progress-phases">
-            ${['Site prep','Foundation','Structure','Interior','Handover'].map((pn, ix) => {
-              const cutoffs = { 'Site prep': 10, 'Foundation': 30, 'Structure': 60, 'Interior': 85, 'Handover': 95 };
-              const done = meta.progress > cutoffs[pn];
-              const active = !done && (pn === meta.phase || (meta.phase === 'Services' && pn === 'Interior'));
-              const cls = done ? 'done' : active ? 'active' : '';
-              const lbl = done ? 'Complete' : active ? 'In progress' : 'Upcoming';
-              return `<div class="phase ${cls}" onclick="openPhase('${pn}','${done ? 'done' : active ? 'active' : 'pending'}')" style="cursor:pointer"><span class="pindex">0${ix+1}</span><div class="pn">${pn}</div><div class="pt">${lbl}</div></div>`;
-            }).join('')}
+          <div class="phase-box">
+            <div class="phase-box-lbl"><span>Phase timeline</span><span class="r">${meta.progress}% overall</span></div>
+            <div class="progress-phases">
+              ${['Site prep','Foundation','Structure','Interior','Handover'].map((pn, ix) => {
+                const cutoffs = { 'Site prep': 10, 'Foundation': 30, 'Structure': 60, 'Interior': 85, 'Handover': 95 };
+                const done = meta.progress > cutoffs[pn];
+                const active = !done && (pn === meta.phase || (meta.phase === 'Services' && pn === 'Interior'));
+                const cls = done ? 'done' : active ? 'active' : '';
+                const lbl = done ? 'Complete' : active ? 'In progress' : 'Upcoming';
+                return `<div class="phase ${cls}" onclick="openPhase('${pn}','${done ? 'done' : active ? 'active' : 'pending'}')" style="cursor:pointer"><span class="pindex">0${ix+1}</span><div class="pn">${pn}</div><div class="pt">${lbl}</div></div>`;
+              }).join('')}
+            </div>
           </div>
         </div>
       </div>
