@@ -656,6 +656,17 @@ a{color:inherit;text-decoration:none}
 .proj-head .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;margin-bottom:6px}
 .proj-head .ey{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
 .proj-head h1{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.015em;margin:0;line-height:1;position:relative}
+.proj-head .managed{display:inline-flex;align-items:center;gap:10px;margin:12px 0 0;padding:8px 12px 8px 8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:12px;backdrop-filter:blur(6px);position:relative;font-size:13px}
+[data-theme=dark] .proj-head .managed{background:rgba(20,23,27,.18);border-color:rgba(20,23,27,.28)}
+.proj-head .managed .av{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.28);color:#FBF6E7;display:inline-flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:13px;font-weight:400;flex-shrink:0;letter-spacing:-.01em}
+[data-theme=dark] .proj-head .managed .av{background:rgba(20,23,27,.28);color:var(--ground)}
+.proj-head .managed .txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.proj-head .managed .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.proj-head .managed .arch{font-weight:600;font-size:13px;letter-spacing:-.005em}
+.proj-head .managed .arch em{font-style:normal;opacity:.75;font-weight:400;margin:0 4px}
+.proj-head .managed .firm{font-family:var(--serif);font-style:italic;font-size:13.5px;letter-spacing:-.005em}
+.proj-head .managed .verified{font-family:var(--mono);font-size:9px;padding:2px 6px;background:rgba(255,255,255,.24);border-radius:8px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+[data-theme=dark] .proj-head .managed .verified{background:rgba(20,23,27,.28)}
 .proj-head .sub{opacity:.85;margin:8px 0 0;position:relative;max-width:60ch;font-size:14px;line-height:1.5}
 .proj-head .code-pill{font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:5px 10px;background:rgba(255,255,255,.18);border-radius:16px;backdrop-filter:blur(4px);white-space:nowrap;align-self:flex-start;flex-shrink:0}
 .proj-body{padding:22px 28px 24px;background:var(--surface)}
@@ -1894,6 +1905,27 @@ const PROJECTS = [
   { id: "spdl101", name: "Project X",        code: "SPDL101", unread: 0, hero: "modern",      city: "Kochi",      area: "Fort Kochi",     x: 158, y: 430, lat: "9.966° N",  lng: "76.240° E", client: 'Confidential',       architect: 'Nishant Yadav', poc: 'Nishant Yadav', progress: 34, status: 'active',       lastActive: '2 weeks ago', pinned: false, users: ['nishant.yadav'] },
   { id: "spdl11",  name: "HM house",         code: "SPDL11",  unread: 0, hero: "residential", city: "Goa",        area: "Assagao",        x: 82,  y: 320, lat: "15.610° N", lng: "73.746° E", client: 'H&M Family',         architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 100, status: 'completed',    lastActive: '3 months ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
 ];
+/* Look up the firm/studio for an architect name (falls back to a friendly default) */
+function firmForArchitect(archName) {
+  if (!archName) return { firm: 'Independent Practice', prefix: 'Ar.', founded: '', city: '' };
+  const clean = archName.replace(/^Ar\.\s*/, '');
+  // Try the ARCHITECTS directory first
+  if (typeof ARCHITECTS !== 'undefined') {
+    const match = ARCHITECTS.find(a => a.name.replace(/^Ar\.\s*/, '').toLowerCase() === clean.toLowerCase());
+    if (match) return { firm: match.firm, prefix: 'Ar.', founded: 'Est. ' + (2026 - match.yrs), city: match.loc, yrs: match.yrs, avg: match.avg };
+  }
+  // Manual fallback for names not in directory
+  const map = {
+    'Nishant Yadav':  { firm: 'Sundara Studio',      founded: 'Est. 2014', city: 'Mumbai',    yrs: 12, avg: 4.9 },
+    'Aditya Rao':     { firm: 'Rao Structural',       founded: 'Est. 2011', city: 'Bangalore', yrs: 15, avg: 4.7 },
+    'Sundeep Vasan':  { firm: 'Sundeep Studio',       founded: 'Est. 2017', city: 'Kochi',     yrs: 9,  avg: 4.7 },
+    'Meera Nair':     { firm: 'Nair & Associates',    founded: 'Est. 2012', city: 'Chennai',   yrs: 14, avg: 4.9 },
+    'Priya Menon':    { firm: 'Casa Vera',            founded: 'Est. 2016', city: 'Bangalore', yrs: 10, avg: 4.9 },
+    'Neha Iyer':      { firm: 'Sundara Studio',       founded: 'Est. 2014', city: 'Mumbai',    yrs: 8,  avg: 4.8 },
+  };
+  return { prefix: 'Ar.', ...(map[clean] || { firm: 'Independent Practice', founded: '', city: '' }) };
+}
+
 /* Auto-generated project code helper — checks all existing codes for uniqueness */
 function nextProjectCode() {
   let n = 100 + Math.floor(Math.random() * 900);
@@ -3365,6 +3397,18 @@ function renderCustomerExplore() {
               <div>
                 <div class="ey">Your project · Live status</div>
                 <h1>${p.name} Residence</h1>
+                ${(() => {
+                  const firm = firmForArchitect(meta.arch);
+                  const initials2 = meta.arch.split(' ').map(w => w[0]).slice(0,2).join('');
+                  return `<div class="managed" title="Managed by ${firm.firm}">
+                    <div class="av">${initials2}</div>
+                    <div class="txt">
+                      <div class="lbl">Managed by</div>
+                      <div><span class="arch">${firm.prefix} ${meta.arch}</span><em>·</em><span class="firm">${firm.firm}</span></div>
+                    </div>
+                    <span class="verified">✓ Verified</span>
+                  </div>`;
+                })()}
               </div>
               <span class="code-pill">${p.code} · ${meta.phase.toUpperCase()}</span>
             </div>
@@ -3406,7 +3450,7 @@ function renderCustomerExplore() {
           <div class="team-row">
             <div class="team-card">
               <div class="av">${initials(meta.arch)}</div>
-              <div class="info"><div class="role">Lead architect</div><div class="nm">${meta.arch}</div><div class="em">architect@sundara.studio</div></div>
+              <div class="info"><div class="role">Lead architect · ${firmForArchitect(meta.arch).firm}</div><div class="nm">Ar. ${meta.arch}</div><div class="em">${meta.arch.toLowerCase().replace(/\s+/g,'.')}@${firmForArchitect(meta.arch).firm.toLowerCase().replace(/[^a-z]/g,'')}.studio</div></div>
               <div class="cta"><button class="icon-btn" onclick="openWA('${meta.arch}','Hi ${meta.arch}, quick question about the site.','')" title="WhatsApp"><svg width="16" height="16" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg></button><button class="icon-btn" onclick="toast('Opening chat with ${meta.arch}')">${iconSVG('chat')}</button></div>
             </div>
             <div class="team-card">
@@ -3975,7 +4019,8 @@ function renderWorkspace() {
               <div class="about-pop" data-open="false">
                 <div class="hd">Project team</div>
                 <div class="row"><span class="k">Client</span><span class="v">${meta.client}</span></div>
-                <div class="row"><span class="k">Architect</span><span class="v">${meta.arch}</span></div>
+                <div class="row"><span class="k">Architect</span><span class="v">Ar. ${meta.arch}</span></div>
+                <div class="row"><span class="k">Studio</span><span class="v">${firmForArchitect(meta.arch).firm}</span></div>
                 <div class="row"><span class="k">POC</span><span class="v">${meta.poc}</span></div>
                 <div class="row"><span class="k">Started</span><span class="v">${new Date(Date.now() - (365-meta.days)*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
                 <div class="row"><span class="k">Handover</span><span class="v">${new Date(Date.now() + meta.days*86400000).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
