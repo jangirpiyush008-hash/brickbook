@@ -1328,6 +1328,34 @@ a{color:inherit;text-decoration:none}
 .geo-card b{color:var(--ink);font-weight:500;font-family:var(--sans)}
 .geo-card .co{font-family:var(--mono);font-size:10px;color:var(--faint);margin-left:4px}
 
+/* Recent-changes FAB (mirror on left) */
+.changes-fab{position:fixed;bottom:24px;left:24px;background:var(--navy);color:#FBF6E7;padding:11px 16px;border-radius:24px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -6px rgba(20,23,27,.35),0 2px 4px rgba(20,23,27,.15);z-index:55;cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid transparent}
+[data-theme=dark] .changes-fab{color:var(--ground)}
+.changes-fab:hover{transform:translateY(-2px);box-shadow:0 14px 30px -6px rgba(20,23,27,.45),0 4px 8px rgba(20,23,27,.2)}
+.changes-fab .dot{width:8px;height:8px;background:var(--brass);border-radius:50%;box-shadow:0 0 0 3px rgba(168,122,68,.25);animation:pulseDot 1.6s infinite}
+.changes-fab .cnt{font-family:var(--mono);font-size:11px;padding:2px 7px;background:rgba(255,255,255,.18);border-radius:10px;letter-spacing:.03em;font-weight:600}
+[data-theme=dark] .changes-fab .cnt{background:rgba(20,23,27,.25)}
+@media(max-width:768px){.changes-fab{bottom:88px;left:16px;padding:9px 14px;font-size:12.5px}.changes-fab span:not(.cnt):not(.dot){display:none}}
+
+/* Recent-changes drawer content */
+.chg-list{display:flex;flex-direction:column;gap:0;margin:0}
+.chg-item{display:grid;grid-template-columns:32px 1fr auto;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hairline);align-items:center;cursor:pointer;transition:background .12s}
+.chg-item:last-child{border-bottom:none}
+.chg-item:hover{background:var(--ground)}
+.chg-item .icon{width:32px;height:32px;background:var(--brass-tint);color:var(--brass);border-radius:6px;display:inline-flex;align-items:center;justify-content:center}
+.chg-item.terra .icon{background:rgba(184,90,62,.15);color:var(--terra)}
+.chg-item.navy .icon{background:var(--navy-tint);color:var(--navy)}
+[data-theme=dark] .chg-item.navy .icon{color:var(--navy-2)}
+.chg-item.sage .icon{background:rgba(107,135,103,.15);color:var(--sage)}
+.chg-item .main{min-width:0}
+.chg-item .main .l1{font-size:13.5px;color:var(--ink)}
+.chg-item .main .l1 b{font-weight:600}
+.chg-item .main .l1 .tag{font-family:var(--mono);font-size:10.5px;color:var(--brass);background:var(--brass-tint);padding:1px 6px;border-radius:3px;margin:0 2px}
+.chg-item .main .l2{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.03em}
+.chg-item .rev{font-family:var(--mono);font-size:10.5px;padding:3px 8px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;color:var(--muted);white-space:nowrap;letter-spacing:.05em}
+.chg-item .rev.new{background:var(--brass);color:#FBF6E7;border-color:var(--brass)}
+[data-theme=dark] .chg-item .rev.new{color:var(--ground)}
+
 /* Help & Support FAB */
 .help-fab{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--ground);padding:12px 18px;border-radius:28px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:8px;box-shadow:0 10px 24px -6px rgba(20,23,27,.35),0 2px 4px rgba(20,23,27,.15);z-index:55;cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid transparent}
 .help-fab:hover{transform:translateY(-2px);box-shadow:0 14px 30px -6px rgba(20,23,27,.45),0 4px 8px rgba(20,23,27,.2)}
@@ -3620,15 +3648,31 @@ function renderCustomerExplore() {
         </div>
 
         <div class="explore-section">
-          <h2>Photo gallery — Interior phase</h2>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <h2 style="margin:0">Photo gallery</h2>
+            <div style="display:flex;gap:4px;padding:3px;background:var(--surface);border:1px solid var(--hairline);border-radius:8px" id="custFloorTabs">
+              ${FLOORS.filter(f => (SPACES_BY_FLOOR[f.id] || []).length).map(f => `<button class="fst ${f.id === 'first' ? 'actv' : ''}" data-fid="${f.id}" style="padding:5px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;color:var(--muted);background:transparent;border:none;font-weight:600;cursor:pointer">${f.short}</button>`).join('')}
+            </div>
+          </div>
           <div class="spaces-grid" id="custSpaces"></div>
         </div>
       </div>
     </div>
   `;
-  const spaces = SPACES_BY_FLOOR.first || [];
-  $('#custSpaces').innerHTML = spaces.slice(0,6).map((n, i) => spaceCardHTML(n, i, 'first', true)).join('');
-  attachSpaceHandlers($('#custSpaces'));
+  let custFloor = 'first';
+  const renderCustGallery = () => {
+    const sp = SPACES_BY_FLOOR[custFloor] || [];
+    $('#custSpaces').innerHTML = sp.map((n, i) => spaceCardHTML(n, i, custFloor, true)).join('');
+    attachSpaceHandlers($('#custSpaces'));
+  };
+  renderCustGallery();
+  $$('#custFloorTabs .fst').forEach(b => b.addEventListener('click', () => {
+    custFloor = b.dataset.fid;
+    $$('#custFloorTabs .fst').forEach(x => x.classList.toggle('actv', x === b));
+    $$('#custFloorTabs .fst').forEach(x => { x.style.color = x.classList.contains('actv') ? 'var(--brass)' : 'var(--muted)'; x.style.background = x.classList.contains('actv') ? 'var(--brass-tint)' : 'transparent'; });
+    renderCustGallery();
+  }));
+  $$('#custFloorTabs .fst').forEach(x => { x.style.color = x.classList.contains('actv') ? 'var(--brass)' : 'var(--muted)'; x.style.background = x.classList.contains('actv') ? 'var(--brass-tint)' : 'transparent'; });
 }
 function spaceCardHTML(name, i, floorId, isCust) {
   const key = `${floorId}:${name}`;
@@ -3886,6 +3930,59 @@ function submitPostJob() {
 window.openPostJob = openPostJob; window.submitPostJob = submitPostJob;
 
 /* ============ Help & Support ============ */
+/* ============ Recent changes drawer ============ */
+function openChanges() {
+  $('#modalName').textContent = 'Recent changes';
+  $('#modalCode').textContent = 'ALL PLANS';
+  const modal = $('#modal'); modal.classList.remove('person-modal');
+  const body = $('#modal .modal-body'); body.style.background = 'var(--surface)';
+  const changes = [
+    { who: 'Aditya Rao',    proj: 'Kamlesh Residence',  code: 'SPDL45', item: 'Working plan',     tag: 'Kamlesh · Ground',  rev: 'REV C', new: true,  t: '12 min ago',  kind: 'brass' },
+    { who: 'Neha Iyer',     proj: 'Kaustubh Residence', code: 'SPDL01', item: 'RCP',              tag: 'Kaustubh · First',  rev: 'REV C', new: true,  t: '38 min ago',  kind: 'brass' },
+    { who: 'Priya Menon',   proj: 'Ajay Villa',         code: 'SPDL54', item: 'Column layout',    tag: 'Ajay · Structure',  rev: 'REV B', new: true,  t: '2 hours ago', kind: 'navy'  },
+    { who: 'Jake Mendes',   proj: 'Kaustubh Residence', code: 'SPDL01', item: 'Shuttering',       tag: 'Kaustubh · Ground', rev: 'REV C', new: true,  t: 'Today 09:44', kind: 'sage'  },
+    { who: 'Sarah Karim',   proj: 'Rajiv Estate',       code: 'SPDL84', item: 'Elevation front',  tag: 'Rajiv · G+2',       rev: 'REV A', new: true,  t: 'Yesterday',   kind: 'brass' },
+    { who: 'Nishant Yadav', proj: 'United Strangers',   code: 'SPDL44', item: 'AC layout',        tag: 'US · First',        rev: 'REV B', new: true,  t: 'Yesterday',   kind: 'navy'  },
+    { who: 'Aditya Rao',    proj: 'Vikas Residence',    code: 'SPDL31', item: 'Foundation plan',  tag: 'Vikas · Basement',  rev: 'REV B', new: false, t: '2 days ago',  kind: 'brass' },
+    { who: 'Neha Iyer',     proj: 'Kaustubh Residence', code: 'SPDL01', item: 'Furniture layout', tag: 'Kaustubh · Interior', rev: 'REV A', new: false, t: '3 days ago', kind: 'brass' },
+    { who: 'Priya Menon',   proj: 'Mannat Villa',       code: 'SPDL24', item: 'Slab detail',      tag: 'Mannat · First',    rev: 'REV C', new: false, t: '4 days ago',  kind: 'navy'  },
+    { who: 'Sundeep Vasan', proj: 'Aron Farmhouse',     code: 'SPDL94', item: 'Landscape plan',   tag: 'Aron · Site',       rev: 'REV A', new: false, t: '5 days ago',  kind: 'sage'  },
+  ];
+  body.innerHTML = `
+    <div style="padding:0 0 8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px 12px;border-bottom:1px solid var(--hairline)">
+        <div>
+          <div style="font-size:13px;color:var(--muted)">Across <b style="color:var(--ink)">${PROJECTS.length} active projects</b> in your studio</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--brass);letter-spacing:.06em;margin-top:2px">${changes.filter(c=>c.new).length} new since your last visit</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="chip navy">All plans</button>
+          <button class="chip">This week</button>
+          <button class="chip">Only mine</button>
+        </div>
+      </div>
+      <div class="chg-list">
+        ${changes.map(c => `
+          <div class="chg-item ${c.kind}" onclick="closeModal();toast('Opening ${c.item} in ${c.proj}')">
+            <div class="icon">${iconSVG('file').replace('width="16"','width="15"').replace('height="16"','height="15"')}</div>
+            <div class="main">
+              <div class="l1"><b>${c.who}</b> updated <b>${c.item}</b> in <span class="tag">${c.tag}</span></div>
+              <div class="l2">${c.proj} · ${c.code} · ${c.t}</div>
+            </div>
+            <div class="rev ${c.new ? 'new' : ''}">${c.rev}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="padding:12px 20px 16px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--muted)">Showing 10 of 148 changes</span>
+        <button class="btn btn-ghost btn-sm">View full changelog →</button>
+      </div>
+    </div>
+  `;
+  $('#modal').dataset.open = 'true';
+}
+window.openChanges = openChanges;
+
 function openHelp() {
   $('#modalName').textContent = 'Help & Support';
   $('#modalCode').textContent = 'HELP';
@@ -4090,6 +4187,7 @@ function renderApp() {
         <section class="workspace" id="workspace"></section>
       </div>
 
+      <button class="changes-fab" onclick="openChanges()" title="Recent changes across all plans"><span class="dot"></span><span>Recent changes</span><span class="cnt">6 new</span></button>
       <button class="help-fab" onclick="openHelp()" title="Help & support"><span class="ic">?</span><span>Help &amp; Support</span></button>
 
       <nav class="mobile-tabs" aria-label="App tabs">
@@ -4361,10 +4459,6 @@ function renderGallery(c) {
         <button class="btn btn-sm" style="background:#25D366;color:#fff;height:32px" onclick="openWA('${project().name}','New site photo — Structural framing tops out on the east block.','east_block_golden_hour.jpg')"><svg width="13" height="13" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send</button>
         <button class="icon-btn">${iconSVG('search')}</button>
       </div></div>
-    </div>
-    <div class="section-head2">
-      <h2>Spaces on floor · ${f.short}</h2>
-      <div class="section-head2-meta"><span>${spaces.length} spaces</span><span>·</span><span>Sorted by: last updated</span></div>
     </div>
     <div class="spaces-grid" id="galSpaces">
       ${spaces.map((n, i) => spaceCardHTML(n, i, state.floorId, false)).join('')}
