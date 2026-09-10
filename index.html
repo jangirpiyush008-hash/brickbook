@@ -424,21 +424,25 @@ a{color:inherit;text-decoration:none}
 
 /* Workspace = single viewport, no outer scroll. Content scrolls internally within ws-main. */
 .workspace-main{overflow:hidden;display:flex;flex-direction:column;height:100%}
-.ws-shell{display:grid;grid-template-columns:1fr 210px;gap:16px;padding:0 32px 20px;flex:1;min-height:0}
+.ws-shell{display:grid;grid-template-columns:1fr 200px;gap:16px;padding:0 32px 20px;flex:1;min-height:0}
 .ws-shell .ws-main{min-width:0;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--hairline-2) transparent}
 .ws-shell .ws-main::-webkit-scrollbar{width:8px}
 .ws-shell .ws-main::-webkit-scrollbar-thumb{background:var(--hairline-2);border-radius:4px}
-.module-rail{display:flex;flex-direction:column;gap:6px;padding:12px;background:var(--surface);border:1px solid var(--hairline);border-radius:12px;box-shadow:var(--shadow-sm);align-self:start;position:sticky;top:0}
-.module-rail .rail-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:2px 6px 8px;border-bottom:1px solid var(--hairline);margin-bottom:2px;font-weight:600}
+/* Module rail: 4 separate stand-alone buttons, no wrapping container */
+.module-rail{display:flex;flex-direction:column;gap:10px;align-self:start;position:sticky;top:0}
+.module-rail .rail-lbl{display:none}
 /* Legacy horizontal module-tabs — hidden, we use the right rail now */
 .module-tabs{display:none}
-.mt-btn{padding:12px 14px;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;border-radius:8px;transition:all .15s;letter-spacing:-.005em;width:100%;text-align:left;justify-content:flex-start}
-.mt-btn svg{width:17px;height:17px;flex-shrink:0}
-.mt-btn:hover{color:var(--ink);background:var(--ground);border-color:var(--hairline)}
-.mt-btn[data-active=true]{color:#FBF6E7;background:var(--brass);border-color:var(--brass);box-shadow:0 4px 12px -4px rgba(168,122,68,.4)}
-[data-theme=dark] .mt-btn[data-active=true]{color:var(--ground)}
+/* Each of the 4 module buttons is its own standalone card */
+.mt-btn{padding:16px 18px;font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;transition:all .15s ease;letter-spacing:-.005em;width:100%;text-align:left;justify-content:flex-start;box-shadow:var(--shadow-sm);cursor:pointer}
+.mt-btn svg{width:18px;height:18px;flex-shrink:0;color:var(--muted)}
+.mt-btn:hover{background:var(--surface-2);border-color:var(--hairline-2);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.mt-btn:hover svg{color:var(--brass)}
+.mt-btn[data-active=true]{color:#FBF6E7;background:var(--brass);border-color:var(--brass);box-shadow:0 6px 16px -4px rgba(168,122,68,.5)}
+.mt-btn[data-active=true] svg{color:#FBF6E7}
+[data-theme=dark] .mt-btn[data-active=true],[data-theme=dark] .mt-btn[data-active=true] svg{color:var(--ground)}
 .mt-btn[data-active=true]:hover{background:var(--brass-2);border-color:var(--brass-2)}
-.mt-btn .count{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:2px 8px;background:var(--ground);border-radius:10px;line-height:1.4;font-weight:600;min-width:26px;text-align:center;margin-left:auto}
+.mt-btn .count{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:2px 8px;background:var(--ground);border-radius:10px;line-height:1.4;font-weight:600;min-width:28px;text-align:center;margin-left:auto}
 .mt-btn:hover .count{background:var(--surface)}
 .mt-btn[data-active=true] .count{background:rgba(255,255,255,.22);color:#FBF6E7}
 [data-theme=dark] .mt-btn[data-active=true] .count{background:rgba(0,0,0,.22);color:var(--ground)}
@@ -800,15 +804,23 @@ a{color:inherit;text-decoration:none}
 /* Explore project grid */
 .explore-section{margin-bottom:32px}
 .explore-section h2{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 16px}
-.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.exp-card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s;display:flex;flex-direction:column}
-.exp-card:hover{border-color:var(--hairline-2);transform:translateY(-2px)}
-.exp-card .media{aspect-ratio:16/9;background:var(--surface-2);position:relative;overflow:hidden;border-bottom:1px solid var(--hairline)}
-.exp-card .media svg{width:100%;height:100%;display:block}
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.exp-card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s;display:flex;flex-direction:column}
+.exp-card:hover{border-color:var(--hairline-2);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.exp-card .media{aspect-ratio:16/10;background:var(--surface-2);position:relative;overflow:hidden}
+.exp-card .media svg,.exp-card .media img{width:100%;height:100%;display:block;object-fit:cover}
 .exp-card .media .prog{position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(0,0,0,.3)}
 .exp-card .media .prog .b{height:100%;background:var(--brass)}
 .exp-card .media .badge{position:absolute;top:10px;left:10px;background:rgba(20,23,27,.8);color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:3px 6px;border-radius:3px;text-transform:uppercase;backdrop-filter:blur(4px)}
-.exp-card .body{padding:16px;flex:1;display:flex;flex-direction:column;gap:8px}
+/* Thumbnail strip under hero */
+.exp-thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:4px;background:var(--surface)}
+.exp-thumbs .th{aspect-ratio:1;background:var(--surface-2);border-radius:4px;overflow:hidden;position:relative;cursor:pointer;transition:transform .15s,filter .15s}
+.exp-thumbs .th:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.exp-thumbs .th img,.exp-thumbs .th svg{width:100%;height:100%;object-fit:cover;display:block}
+.exp-thumbs .th.more{background:var(--ink);color:var(--ground);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.02em}
+.exp-thumbs .th.more:hover{background:var(--brass);color:#FBF6E7}
+[data-theme=dark] .exp-thumbs .th.more{color:var(--ground)}
+.exp-card .body{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--hairline)}
 .exp-card .h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .exp-card .nm{font-weight:600;font-size:14.5px;letter-spacing:-.005em}
 .exp-card .cd{font-family:var(--mono);font-size:10.5px;color:var(--brass)}
@@ -3403,12 +3415,18 @@ function renderExplore() {
   const projData = PROJECTS.slice(0, 6).map(p => ({ id: p.id, name: p.name + ' Residence', code: p.code, progress: p.progress, phase: p.status === 'completed' ? 'Handover' : p.progress > 80 ? 'Interior' : p.progress > 40 ? 'Structure' : 'Foundation', arch: p.architect, poc: p.poc, client: p.client }));
   const gridHTML = projData.map(p => {
     const proj = PROJECTS.find(x => x.id === p.id);
+    const hero = proj?.hero || 'residential';
+    const totalPhotos = 12 + (p.id.length * 3);   // fake but stable per project
+    const thumbSeeds = ['Bedroom','Kitchen','Living','Bathroom'];
+    const thumbsHTML = thumbSeeds.map((s, i) => `<div class="th">${spaceMedia(s, i)}</div>`).join('')
+      + `<div class="th more">+ ${totalPhotos - thumbSeeds.length}</div>`;
     return `
       <div class="exp-card" onclick="openProject('${p.id}')">
-        <div class="media">${spaceMedia(proj?.hero || 'residential', 0)}
+        <div class="media">${spaceMedia(hero, 0)}
           <span class="badge">${p.code}</span>
           <div class="prog"><div class="b" style="width:${p.progress}%"></div></div>
         </div>
+        <div class="exp-thumbs">${thumbsHTML}</div>
         <div class="body">
           <div class="h">
             <div>
