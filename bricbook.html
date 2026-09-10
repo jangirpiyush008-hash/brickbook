@@ -422,18 +422,41 @@ a{color:inherit;text-decoration:none}
 .about-pop .row .k{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;align-self:center}
 .about-pop .row .v{font-weight:500;color:var(--ink)}
 
-.module-tabs{display:flex;align-items:stretch;gap:10px;padding:18px 32px 20px;background:var(--surface);border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);flex-wrap:wrap;box-shadow:inset 0 -3px 0 var(--brass-tint)}
-.mt-btn{padding:14px 22px;font-size:15px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--hairline);border-radius:10px;transition:all .15s;letter-spacing:-.005em;box-shadow:var(--shadow-sm)}
-.mt-btn svg{width:18px;height:18px;flex-shrink:0}
-.mt-btn:hover{color:var(--ink);background:var(--surface-2);border-color:var(--hairline-2);transform:translateY(-1px);box-shadow:var(--shadow-md)}
-.mt-btn[data-active=true]{color:#FBF6E7;background:var(--brass);border-color:var(--brass);box-shadow:0 4px 12px -4px rgba(168,122,68,.45)}
+/* Workspace = single viewport, no outer scroll. Content scrolls internally within ws-main. */
+.workspace-main{overflow:hidden;display:flex;flex-direction:column;height:100%}
+.ws-shell{display:grid;grid-template-columns:1fr 210px;gap:16px;padding:0 32px 20px;flex:1;min-height:0}
+.ws-shell .ws-main{min-width:0;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--hairline-2) transparent}
+.ws-shell .ws-main::-webkit-scrollbar{width:8px}
+.ws-shell .ws-main::-webkit-scrollbar-thumb{background:var(--hairline-2);border-radius:4px}
+.module-rail{display:flex;flex-direction:column;gap:6px;padding:12px;background:var(--surface);border:1px solid var(--hairline);border-radius:12px;box-shadow:var(--shadow-sm);align-self:start;position:sticky;top:0}
+.module-rail .rail-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:2px 6px 8px;border-bottom:1px solid var(--hairline);margin-bottom:2px;font-weight:600}
+/* Legacy horizontal module-tabs — hidden, we use the right rail now */
+.module-tabs{display:none}
+.mt-btn{padding:12px 14px;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;border-radius:8px;transition:all .15s;letter-spacing:-.005em;width:100%;text-align:left;justify-content:flex-start}
+.mt-btn svg{width:17px;height:17px;flex-shrink:0}
+.mt-btn:hover{color:var(--ink);background:var(--ground);border-color:var(--hairline)}
+.mt-btn[data-active=true]{color:#FBF6E7;background:var(--brass);border-color:var(--brass);box-shadow:0 4px 12px -4px rgba(168,122,68,.4)}
 [data-theme=dark] .mt-btn[data-active=true]{color:var(--ground)}
-.mt-btn[data-active=true]:hover{background:var(--brass-2);border-color:var(--brass-2);color:#FBF6E7}
-[data-theme=dark] .mt-btn[data-active=true]:hover{color:var(--ground)}
-.mt-btn .count{font-family:var(--mono);font-size:12px;color:var(--muted);padding:2px 8px;background:var(--ground);border-radius:10px;line-height:1.4;font-weight:600;min-width:26px;text-align:center}
+.mt-btn[data-active=true]:hover{background:var(--brass-2);border-color:var(--brass-2)}
+.mt-btn .count{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:2px 8px;background:var(--ground);border-radius:10px;line-height:1.4;font-weight:600;min-width:26px;text-align:center;margin-left:auto}
 .mt-btn:hover .count{background:var(--surface)}
 .mt-btn[data-active=true] .count{background:rgba(255,255,255,.22);color:#FBF6E7}
 [data-theme=dark] .mt-btn[data-active=true] .count{background:rgba(0,0,0,.22);color:var(--ground)}
+
+/* Notice bar (above the gallery hero) */
+.ws-notice{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--hairline);border-radius:8px;margin-bottom:14px}
+.ws-notice svg{color:var(--brass);flex-shrink:0}
+.ws-notice input{flex:1;border:none;background:transparent;outline:none;font-size:13.5px;color:var(--ink);font-weight:500;min-width:0}
+.ws-notice input::placeholder{color:var(--faint)}
+.ws-notice .save-hint{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.03em;flex-shrink:0}
+
+@media(max-width:900px){
+  .ws-shell{grid-template-columns:1fr;padding:0 20px 20px;gap:12px}
+  .module-rail{position:static;flex-direction:row;overflow-x:auto;padding:6px;gap:4px;order:-1}
+  .module-rail .rail-lbl{display:none}
+  .mt-btn{flex-shrink:0;padding:8px 12px;font-size:12.5px;width:auto}
+  .mt-btn .count{margin-left:4px}
+}
 .ws-content{padding:24px 32px 60px}
 
 /* Inline floor strip (used inside Files + Gallery, replaces right sidebar) */
@@ -4247,13 +4270,18 @@ function renderWorkspace() {
           </div>
         </div>
       </div>
-      <div class="module-tabs">
-        <button class="mt-btn" data-mod="gallery">${iconSVG('gallery').replace('width="16"','width="14"').replace('height="16"','height="14"')} Gallery <span class="count">${counts.gallery}</span></button>
-        <button class="mt-btn" data-mod="files">${iconSVG('file').replace('width="16"','width="14"').replace('height="16"','height="14"')} Files <span class="count">${counts.files}</span></button>
-        <button class="mt-btn" data-mod="chat">${iconSVG('chat').replace('width="16"','width="14"').replace('height="16"','height="14"')} Chat <span class="count">${counts.chat}</span></button>
-        <button class="mt-btn" data-mod="folders">${iconSVG('folder').replace('width="16"','width="14"').replace('height="16"','height="14"')} Folders <span class="count">${counts.folders}</span></button>
+      <div class="ws-shell">
+        <div class="ws-main">
+          <div class="ws-content" id="wsContent"></div>
+        </div>
+        <nav class="module-rail" aria-label="Project modules">
+          <div class="rail-lbl">Sections</div>
+          <button class="mt-btn" data-mod="gallery">${iconSVG('gallery').replace('width="16"','width="14"').replace('height="16"','height="14"')} Gallery <span class="count">${counts.gallery}</span></button>
+          <button class="mt-btn" data-mod="files">${iconSVG('file').replace('width="16"','width="14"').replace('height="16"','height="14"')} Files <span class="count">${counts.files}</span></button>
+          <button class="mt-btn" data-mod="chat">${iconSVG('chat').replace('width="16"','width="14"').replace('height="16"','height="14"')} Chat <span class="count">${counts.chat}</span></button>
+          <button class="mt-btn" data-mod="folders">${iconSVG('folder').replace('width="16"','width="14"').replace('height="16"','height="14"')} Folders <span class="count">${counts.folders}</span></button>
+        </nav>
       </div>
-      <div class="ws-content" id="wsContent"></div>
     </div>
   `;
   $$('.mt-btn', ws).forEach(b => {
@@ -4301,6 +4329,11 @@ function renderGallery(c) {
   const spaces = SPACES_BY_FLOOR[state.floorId] || [];
   const f = floor();
   c.innerHTML = `
+    <div class="ws-notice">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <input value="Concrete curing on east wing — recheck ambient temp before next pour" placeholder="Add a note about today's site work…">
+      <span class="save-hint">Autosaved · 12s ago</span>
+    </div>
     <div class="hero-card">
       <div class="hero-media">${heroSVG()}<div class="hero-overlay">
         <span class="hero-tag2">${iconSVG('gallery').replace('width="16"','width="10"').replace('height="16"','height="10"')} Live · Golden hour, 6:14 PM</span>
@@ -4310,23 +4343,16 @@ function renderGallery(c) {
         <button class="btn btn-sm" style="background:#25D366;color:#fff;height:32px" onclick="openWA('${project().name}','New site photo — Structural framing tops out on the east block.','east_block_golden_hour.jpg')"><svg width="13" height="13" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send</button>
         <button class="icon-btn">${iconSVG('search')}</button>
       </div></div>
-      <div class="caption-field">
-        <span>${iconSVG('gallery').replace('stroke="currentColor"', 'stroke="var(--muted)"')}</span>
-        <input value="Concrete curing on east wing — recheck ambient temp before next pour">
-        <span class="save-hint">Autosaved · 12s ago</span>
-      </div>
     </div>
     <div class="section-head2">
-      <h2>Spaces on this floor</h2>
-      <div class="section-head2-meta"><span class="code">${f.short}</span><span>${spaces.length} spaces</span><span>·</span><span>Sorted by: last updated</span></div>
+      <h2>Spaces on floor · ${f.short}</h2>
+      <div class="section-head2-meta"><span>${spaces.length} spaces</span><span>·</span><span>Sorted by: last updated</span></div>
     </div>
-    ${floorStrip()}
     <div class="spaces-grid" id="galSpaces">
       ${spaces.map((n, i) => spaceCardHTML(n, i, state.floorId, false)).join('')}
     </div>
   `;
   attachSpaceHandlers($('#galSpaces'));
-  attachFloorStripHandlers(c);
 }
 
 function renderFiles(c) {
