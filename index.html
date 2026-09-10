@@ -446,6 +446,12 @@ a{color:inherit;text-decoration:none}
 .mt-btn:hover .count{background:var(--surface)}
 .mt-btn[data-active=true] .count{background:rgba(255,255,255,.22);color:#FBF6E7}
 [data-theme=dark] .mt-btn[data-active=true] .count{background:rgba(0,0,0,.22);color:var(--ground)}
+/* Recent changes gets a subtle separator + brass NEW badge */
+.mt-btn.changes{margin-top:6px;border-top:1px dashed var(--hairline-2);border-radius:10px}
+.mt-btn.changes:not(:hover):not([data-active=true]){padding-top:20px}
+.mt-btn.changes .count.new{background:var(--brass);color:#FBF6E7;padding:2px 8px;font-size:10px;letter-spacing:.04em;font-weight:600}
+[data-theme=dark] .mt-btn.changes .count.new{color:var(--ground)}
+.mt-btn.changes svg{color:var(--brass)}
 
 /* Notice bar (above the gallery hero) */
 .ws-notice{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--hairline);border-radius:8px;margin-bottom:14px}
@@ -4187,7 +4193,6 @@ function renderApp() {
         <section class="workspace" id="workspace"></section>
       </div>
 
-      <button class="changes-fab" onclick="openChanges()" title="Recent changes across all plans"><span class="dot"></span><span>Recent changes</span><span class="cnt">6 new</span></button>
       <button class="help-fab" onclick="openHelp()" title="Help & support"><span class="ic">?</span><span>Help &amp; Support</span></button>
 
       <nav class="mobile-tabs" aria-label="App tabs">
@@ -4396,6 +4401,7 @@ function renderWorkspace() {
           <button class="mt-btn" data-mod="files">${iconSVG('file').replace('width="16"','width="14"').replace('height="16"','height="14"')} Files <span class="count">${counts.files}</span></button>
           <button class="mt-btn" data-mod="chat">${iconSVG('chat').replace('width="16"','width="14"').replace('height="16"','height="14"')} Chat <span class="count">${counts.chat}</span></button>
           <button class="mt-btn" data-mod="folders">${iconSVG('folder').replace('width="16"','width="14"').replace('height="16"','height="14"')} Folders <span class="count">${counts.folders}</span></button>
+          <button class="mt-btn changes" onclick="openChanges()" title="Recent changes across all plans in this project"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="10"/></svg> Recent changes <span class="count new">6 new</span></button>
         </nav>
       </div>
     </div>
