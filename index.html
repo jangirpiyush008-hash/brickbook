@@ -1,34 +1,36 @@
 <title>BricBook — The site plan for construction collaboration</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F1EAD5">
+<meta name="theme-color" content="#F5F1EA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{
-  --ground:#F1EAD5;--surface:#FBF6E7;--surface-2:#EDE4CC;--ink:#14171B;--ink-2:#3B3F45;
-  --muted:#6B675C;--faint:#9A9587;--hairline:#DDD2B7;--hairline-2:#CBBF9F;
-  --navy:#1C3556;--navy-2:#2E4E77;--navy-tint:#E3E9EF;
-  --brass:#A87A44;--brass-2:#C9964B;--brass-tint:#F0E3C4;
-  --terra:#B85A3E;--sage:#6B8767;--amber:#C68C4E;
-  --focus:#2E4E77;--radius:6px;--radius-lg:10px;--radius-xl:18px;
+  /* Light: warm ivory ground, peach accent, navy-purple structure, periwinkle secondary */
+  --ground:#F5F1EA;--surface:#FFFCF5;--surface-2:#EEE9DE;--ink:#1F2440;--ink-2:#3E4568;
+  --muted:#7A7E96;--faint:#A5A5C8;--hairline:#E3DED0;--hairline-2:#D0CAB8;
+  --navy:#232842;--navy-2:#3B4270;--navy-tint:#E8E9F3;
+  --brass:#E89966;--brass-2:#F4A65B;--brass-tint:#FDE9D5;
+  --terra:#C97F4E;--sage:#7A9C7E;--amber:#F4A65B;
+  --focus:#3B4270;--radius:6px;--radius-lg:10px;--radius-xl:18px;
   --nav-h:64px;--rail-w:288px;--floors-w:84px;
-  --shadow-sm:0 1px 0 rgba(20,23,27,.04);
-  --shadow-md:0 6px 20px -8px rgba(20,23,27,.14),0 1px 2px rgba(20,23,27,.05);
-  --shadow-lg:0 24px 60px -20px rgba(20,23,27,.28),0 4px 12px rgba(20,23,27,.08);
+  --shadow-sm:0 1px 0 rgba(31,36,64,.04);
+  --shadow-md:0 6px 20px -8px rgba(31,36,64,.14),0 1px 2px rgba(31,36,64,.05);
+  --shadow-lg:0 24px 60px -20px rgba(31,36,64,.28),0 4px 12px rgba(31,36,64,.08);
   --serif:ui-serif,'Instrument Serif','Cormorant Garamond','New York',Georgia,'Times New Roman',serif;
   --sans:'IBM Plex Sans',ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Consolas,monospace;
 }
 [data-theme=dark]{
-  --ground:#0C0E12;--surface:#14181F;--surface-2:#1D222B;--ink:#ECE4D2;--ink-2:#D0C8B6;
-  --muted:#999488;--faint:#6B6862;--hairline:#262A31;--hairline-2:#333842;
-  --navy:#4C7BB0;--navy-2:#6890C4;--navy-tint:#172230;
-  --brass:#C9A56A;--brass-2:#DBBB84;--brass-tint:#2C2417;
-  --terra:#D97759;--sage:#8FA88B;--amber:#DDA872;
-  --focus:#6890C4;
-  --shadow-sm:0 1px 0 rgba(0,0,0,.4);
-  --shadow-md:0 6px 20px -8px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.3);
-  --shadow-lg:0 24px 60px -20px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.4);
+  /* Dark: warm navy (not pure black), cream text, peach accent, periwinkle secondary */
+  --ground:#232842;--surface:#2A2F4C;--surface-2:#353B5E;--ink:#F5F1EA;--ink-2:#D8D5CC;
+  --muted:#A5A5C8;--faint:#7E82A0;--hairline:#3B426A;--hairline-2:#4A5280;
+  --navy:#A5A5C8;--navy-2:#B8B8D8;--navy-tint:#353B5E;
+  --brass:#F4A65B;--brass-2:#F8B876;--brass-tint:rgba(244,166,91,.15);
+  --terra:#E89966;--sage:#9BB89F;--amber:#F4A65B;
+  --focus:#B8B8D8;
+  --shadow-sm:0 1px 0 rgba(15,18,32,.35);
+  --shadow-md:0 6px 20px -8px rgba(15,18,32,.45),0 1px 2px rgba(15,18,32,.25);
+  --shadow-lg:0 24px 60px -20px rgba(15,18,32,.55),0 4px 12px rgba(15,18,32,.35);
 }
 *{box-sizing:border-box}
 html{font-family:var(--sans);color-scheme:light dark;-webkit-text-size-adjust:100%;text-size-adjust:100%}
