@@ -2121,7 +2121,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/login', '/signup', '/signup/client', '/signup/architect', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
+const ROUTES = ['/', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2151,6 +2151,7 @@ const ROUTE_META = {
   '/signup':         { title:'Get started — BricBook',                                           desc:'Choose whether you’re here to hire an architect or list your practice.' },
   '/signup/client':  { title:'Hire an architect — BricBook',                                    desc:'Post a brief and get matched to verified architects in your city.' },
   '/signup/architect':{ title:'List your practice — BricBook',                                  desc:'Join India’s directory of verified architects and studios.' },
+  '/welcome':        { title:'Welcome — BricBook',                                               desc:'Choose how you want to use BricBook.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -2166,6 +2167,7 @@ function applyRouteMeta(r){
   if(!meta){
     if(r.startsWith('/architect/')) meta = { title:'Architect profile — BricBook', desc:'Verified architect on BricBook.' };
     else if(r.startsWith('/app/project/')) meta = { title:'Project — BricBook', desc:'Site plan, drawings, chat and gallery.' };
+    else if(r.startsWith('/client/invite/')) meta = { title:'Client invitation — BricBook', desc:'Activate your BricBook client account.' };
     else meta = ROUTE_META['/'];
   }
   try{
@@ -2639,7 +2641,7 @@ function renderLanding() {
           </div>
           <div class="cta">
             <button class="icon-btn" onclick="toggleTheme()" id="themeBtnLn">${iconSVG('sun')}</button>
-            <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Studio sign-in</button>
+            <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
             <button class="btn btn-navy btn-sm" onclick="nav('/signup/architect')">List your practice</button>
           </div>
         </div>
@@ -3374,21 +3376,20 @@ function renderLogin() {
           <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
-          <span class="eyebrow">For architecture practices</span>
-          <h1>Studio <em>sign-in</em>.</h1>
-          <p class="sub">This dashboard is for architects and studios. Clients don't sign up here — your architect adds you to a project and shares access from their side.</p>
+          <h1>Sign in to <em>BricBook</em>.</h1>
+          <p class="sub">One entrance for everyone. Continue with Google and we'll take you to your firm, project, or admin dashboard — whichever your account belongs to.</p>
           <div class="oauth">
-            <button class="btn" onclick="googleAuth('professional')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+            <button class="btn" onclick="googleAuth('auto')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
           </div>
           <div class="divider">or with email</div>
           <form onsubmit="return signIn(event)">
-            <div class="field"><label>Work email</label><input type="email" id="liEmail" placeholder="you@studio.com" required autocomplete="email"></div>
+            <div class="field"><label>Email</label><input type="email" id="liEmail" placeholder="you@example.com" required autocomplete="email"></div>
             <div class="field"><label>Password <a href="/forgot">Forgot?</a></label><input type="password" id="liPwd" placeholder="••••••••" required autocomplete="current-password"></div>
             <div class="check"><input type="checkbox" id="liRem" checked><label for="liRem">Keep me signed in for 30 days</label></div>
-            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in as studio ${iconSVG('arr')}</button>
+            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in ${iconSVG('arr')}</button>
           </form>
           <div class="auth-footer">
-            <span>New studio? <a href="/signup/architect">List your practice</a></span>
+            <span>New firm? <a href="/signup/architect">List your practice</a></span>
             <a href="/admin">BricBook admin →</a>
           </div>
         </div>
@@ -3397,6 +3398,152 @@ function renderLogin() {
     </div>
   `;
 }
+
+/* /welcome — shown once for brand-new Google users with no profile row yet */
+function renderWelcome() {
+  const root = $('#root');
+  root.innerHTML = `
+    <div class="auth">
+      <div class="auth-side">
+        <div class="auth-header">
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="#" onclick="signOut();return false">${iconSVG('arrL')} Sign out</a>
+        </div>
+        <div class="auth-body">
+          <span class="eyebrow">One more step</span>
+          <h1>Welcome to <em>BricBook</em>.</h1>
+          <p class="sub">Your Google account is verified but we don't know which side of BricBook you belong to yet. Which one fits?</p>
+          <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px">
+            <button class="btn btn-navy btn-block btn-lg" onclick="registerAsFirm()" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35">
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">I run an architecture practice</span><span style="opacity:.7;font-size:12.5px;font-weight:400">Create a studio account · add clients · manage projects</span></span>
+              <span style="opacity:.7">${iconSVG('arr')}</span>
+            </button>
+            <div style="background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px">
+              <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">I have an invitation link</div>
+              <form onsubmit="return openInvite(event)" style="display:flex;gap:8px;align-items:center">
+                <input id="inviteTokenInput" placeholder="Paste your invite link or token" style="flex:1;height:38px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:6px;padding:0 12px;color:var(--ink);font-size:13px" required>
+                <button class="btn btn-brass btn-sm" type="submit">Open</button>
+              </form>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:8px">Clients get invited by their architect. If you don't have a link, contact your architect.</div>
+            </div>
+            <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px">Not sure? <a href="#" onclick="signOut();return false" style="color:var(--brass)">Sign out</a> and come back later.</div>
+          </div>
+        </div>
+      </div>
+      ${authVisual('default')}
+    </div>
+  `;
+}
+async function registerAsFirm(){
+  const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
+  const name = prompt('What’s your firm name?');
+  if(!name || !name.trim()) return;
+  const { data, error } = await sb.rpc('register_as_architect_firm', { firm_name: name.trim(), city_v: 'Mumbai' });
+  if(error){ toast('Registration failed: ' + error.message); return; }
+  toast('Studio created — welcome!');
+  try{ sessionStorage.removeItem('bb_new_user'); }catch(e){}
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session){
+    const person = await hydrateFromSession(session);
+    if(person) loginFlow(person, 'Welcome, ' + person.name);
+  }
+}
+window.registerAsFirm = registerAsFirm;
+
+function openInvite(e){
+  e.preventDefault();
+  const raw = ($('#inviteTokenInput')?.value || '').trim();
+  if(!raw) return false;
+  /* Accept full URL or bare token */
+  let token = raw;
+  const m = raw.match(/\/client\/invite\/([a-f0-9-]{8,})/i);
+  if(m) token = m[1];
+  nav('/client/invite/' + encodeURIComponent(token));
+  return false;
+}
+window.openInvite = openInvite;
+
+/* /client/invite/:token — invitation landing page */
+async function renderClientInvite(token){
+  const root = $('#root');
+  root.innerHTML = `
+    <div class="auth">
+      <div class="auth-side">
+        <div class="auth-header">
+          <a class="brand" href="/">${brandMark(14)}</a>
+        </div>
+        <div class="auth-body">
+          <span class="eyebrow">Client invitation</span>
+          <h1 id="ciTitle">Verifying <em>invitation…</em></h1>
+          <p class="sub" id="ciSub">One moment while we look up your invitation.</p>
+          <div id="ciBody" style="margin-top:20px"></div>
+        </div>
+      </div>
+      ${authVisual('customer')}
+    </div>
+  `;
+  const sb = sbClient();
+  if(!sb){ $('#ciBody').innerHTML = `<div style="color:var(--terra);padding:14px 16px;background:var(--surface-2);border-radius:6px">Authentication service unavailable. Try again in a moment.</div>`; return; }
+  const { data, error } = await sb.rpc('get_invitation_by_token', { inv_token: token });
+  const inv = Array.isArray(data) ? data[0] : data;
+  if(error || !inv){
+    $('#ciTitle').innerHTML = `Invitation <em>not found</em>.`;
+    $('#ciSub').textContent = 'This link is invalid or has been revoked.';
+    $('#ciBody').innerHTML = `<div style="color:var(--terra);padding:14px 16px;background:var(--surface-2);border-radius:6px">If you were expecting this to work, ask your architect to resend the invitation.</div>`;
+    return;
+  }
+  if(inv.status !== 'pending'){
+    $('#ciTitle').innerHTML = `Invitation <em>${inv.status}</em>.`;
+    $('#ciSub').textContent = 'This invitation is no longer active.';
+    $('#ciBody').innerHTML = `<a href="/login" class="btn btn-navy btn-block btn-lg">Go to sign in</a>`;
+    return;
+  }
+  if(new Date(inv.expires_at) < new Date()){
+    $('#ciTitle').innerHTML = `Invitation <em>expired</em>.`;
+    $('#ciSub').textContent = 'Ask your architect to resend the invitation.';
+    return;
+  }
+  $('#ciTitle').innerHTML = `You’re invited by <em>${escapeHTML(inv.studio_name || 'a studio')}</em>.`;
+  $('#ciSub').textContent = `${inv.project_name ? 'Project: ' + inv.project_name + ' · ' : ''}Sign in with Google using ${inv.email} to activate your account.`;
+  $('#ciBody').innerHTML = `
+    <div style="background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:14px 16px;margin-bottom:16px;font-family:var(--mono);font-size:12px;color:var(--ink-2)">
+      <div style="opacity:.6;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px">Invited email</div>
+      <div>${escapeHTML(inv.email)}</div>
+    </div>
+    <button class="btn btn-navy btn-block btn-lg" onclick="acceptInvite('${token}')">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+    <div style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.55">
+      Your Google email must match <b>${escapeHTML(inv.email)}</b>. If you sign in with a different account you'll get an error — that's the security check keeping your project private.
+    </div>
+  `;
+}
+function escapeHTML(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function acceptInvite(token){
+  const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
+  /* Stash the token so bootstrapAuth picks it up after OAuth callback */
+  try{ localStorage.setItem('bb_pending_invite', token); }catch(e){}
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session){
+    /* Already signed in — accept directly */
+    const { error } = await sb.rpc('accept_client_invitation', { inv_token: token });
+    try{ localStorage.removeItem('bb_pending_invite'); }catch(e){}
+    if(error){ toast('Invitation error: ' + error.message); return; }
+    toast('Welcome to BricBook!');
+    const person = await hydrateFromSession(session);
+    if(person) loginFlow(person, 'Welcome, ' + person.name);
+    return;
+  }
+  /* Not signed in — kick off Google OAuth; bootstrap will call the RPC on return */
+  const { error } = await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{ redirectTo: window.location.origin + '/client/invite/' + encodeURIComponent(token), queryParams:{ prompt:'select_account' } }
+  });
+  if(error){ toast('Google sign-in failed: ' + error.message); }
+}
+window.acceptInvite = acceptInvite;
 
 function renderSignup() {
   const root = $('#root');
@@ -5035,39 +5182,73 @@ async function hydrateFromSession(session){
   return person;
 }
 
-/* Client login is not allowed — architects invite clients from inside the app.
-   If a signed-in profile has role 'client' AND is not coming through an invitation,
-   sign them out and show a friendly error. */
-async function enforceStudioOnlyLogin(session){
+/* Unified auth: Google sign-in creates a session, backend tells us the role, we route.
+   - Existing profile (client / studio_owner / studio_member / ops_admin / super_admin) -> dashboard
+   - No profile yet (fresh Google user) -> /welcome chooser (register firm OR paste invite link)
+   - Pending client invite token in localStorage -> auto-accept it */
+async function routeUserByRole(session){
   const sb = sbClient(); if(!sb || !session) return false;
-  const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
-  const role = profile?.role || 'client';
-  const studioRoles = ['studio_owner','studio_member','ops_admin','super_admin'];
-  if(studioRoles.includes(role)) return false; /* allowed */
-  /* Reject client role coming through the public login path */
+
+  /* If there's a pending invitation token (client tapped an invite link), try to accept it first */
+  let pendingToken = null;
+  try{ pendingToken = localStorage.getItem('bb_pending_invite'); }catch(e){}
+  if(pendingToken){
+    try{
+      const { data, error } = await sb.rpc('accept_client_invitation', { inv_token: pendingToken });
+      if(error){
+        toast('Invitation error: ' + error.message);
+      } else {
+        toast('Client account activated — welcome!');
+      }
+    }catch(e){ toast('Could not accept invitation'); }
+    try{ localStorage.removeItem('bb_pending_invite'); }catch(e){}
+  }
+
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+
+  if(!profile){
+    /* Brand new Google user with no profile row yet. */
+    /* Trigger will create a default profile with role='client' on the next tick,
+       but for a first-time OAuth landing we want the chooser. Stash a flag and route. */
+    try{ sessionStorage.setItem('bb_new_user', '1'); }catch(e){}
+    nav('/welcome');
+    return true;
+  }
+
+  /* Route based on role */
+  const role = profile.role;
+  if(role === 'super_admin' || role === 'ops_admin'){
+    /* Admins can use the app or go to /admin/. Keep them in the app; admin panel is a separate URL. */
+    return false;
+  }
+  if(role === 'studio_owner' || role === 'studio_member'){
+    return false; /* hydrateFromSession will send to firm dashboard */
+  }
+  if(role === 'client'){
+    /* Client with an active profile — allowed, route to client dashboard */
+    return false;
+  }
+  /* Unknown role: safest bet is to sign them out */
   await sb.auth.signOut();
-  try{ sessionStorage.removeItem('bb_audience'); }catch(e){}
   AUTH.clear();
-  toast('This account isn’t authorised for the studio dashboard. Ask your architect to add you to their project.');
+  toast('Your account role isn’t recognised. Contact BricBook support.');
   nav('/login');
   return true;
 }
 
-/* Bootstrap: if we have a Supabase session on page load or after OAuth callback, sign in */
+/* Bootstrap: if we have a Supabase session on page load or after OAuth callback, route */
 (async function bootstrapAuth(){
   const sb = sbClient(); if(!sb) return;
   sb.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session){
-      if(await enforceStudioOnlyLogin(session)) return;
+      if(await routeUserByRole(session)) return;
       const person = await hydrateFromSession(session);
       if(person && !AUTH.get()){ loginFlow(person, 'Signed in as ' + person.name); }
     }
-    if(event === 'SIGNED_OUT'){ /* handled by signOut() UI */ }
   });
-  /* On first paint, check for existing session (survives refresh) */
   const { data:{ session } } = await sb.auth.getSession();
   if(session && !AUTH.get()){
-    if(await enforceStudioOnlyLogin(session)) return;
+    if(await routeUserByRole(session)) return;
     const person = await hydrateFromSession(session);
     if(person){ loginFlow(person, 'Welcome back, ' + person.name); }
   }
@@ -5566,10 +5747,12 @@ function route() {
   if (r === '/signup')            { return nav('/signup/architect'); } /* clients cannot self-signup */
   if (r === '/signup/client')     { state.signupStep = 1; state.signupKind = 'client';    return renderSignup(); }
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
+  if (r === '/welcome') return renderWelcome();
   if (r === '/forgot') return renderForgot();
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();
   if (r.startsWith('/architect/')) return renderArchitectProfile(r.slice('/architect/'.length));
+  if (r.startsWith('/client/invite/')) return renderClientInvite(r.slice('/client/invite/'.length));
   if (r.startsWith('/app')) return renderApp();
   renderLanding();
 }

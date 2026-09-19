@@ -18,10 +18,10 @@ const MIME = {
 /* SPA route table — known client-side routes get 200 on fallback; anything else gets 404 */
 const SPA_ROUTES = new Set([
   '/', '/login', '/signup', '/signup/client', '/signup/architect',
-  '/forgot', '/reset',
+  '/welcome', '/forgot', '/reset',
   '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'
 ]);
-const SPA_ROUTE_PREFIXES = ['/app/', '/architect/'];
+const SPA_ROUTE_PREFIXES = ['/app/', '/architect/', '/client/invite/'];
 function isKnownSpaRoute(pathname){
   if(SPA_ROUTES.has(pathname)) return true;
   return SPA_ROUTE_PREFIXES.some(p => pathname.startsWith(p));

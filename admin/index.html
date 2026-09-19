@@ -123,7 +123,7 @@ const $ = s => document.querySelector(s);
 function toast(msg, kind){ const t=$('#toast'); t.textContent=msg; t.style.borderColor = kind==='err' ? 'var(--danger)' : 'var(--hairline)'; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
 
 /* ========= State ========= */
-const state = { user:null, profile:null, view:'overview', data:{ users:[], studios:[], projects:[], jobs:[] }, counts:{} };
+const state = { user:null, profile:null, view:'overview', data:{ users:[], studios:[], projects:[], jobs:[], invitations:[] }, counts:{} };
 
 /* ========= Render: sign-in ========= */
 function renderSignin(msg){
@@ -183,6 +183,7 @@ function renderApp(){
         <div class="nav-item" data-view="studios" ${state.view==='studios'?'aria-current="true"':''}>Studios <span class="count" id="cnt-studios">–</span></div>
         <div class="nav-item" data-view="projects" ${state.view==='projects'?'aria-current="true"':''}>Projects <span class="count" id="cnt-projects">–</span></div>
         <div class="nav-item" data-view="jobs" ${state.view==='jobs'?'aria-current="true"':''}>Job briefs <span class="count" id="cnt-jobs">–</span></div>
+        <div class="nav-item" data-view="invitations" ${state.view==='invitations'?'aria-current="true"':''}>Invitations <span class="count" id="cnt-invitations">–</span></div>
         <div class="foot">
           <button class="btn btn-ghost btn-sm" onclick="signOut()" style="width:100%;justify-content:center">Sign out</button>
           <a class="btn btn-ghost btn-sm" href="/" style="width:100%;justify-content:center;margin-top:6px">← Main site</a>
@@ -203,6 +204,7 @@ function renderPane(){
   if(v === 'studios') return renderStudios(pane);
   if(v === 'projects') return renderProjects(pane);
   if(v === 'jobs') return renderJobs(pane);
+  if(v === 'invitations') return renderInvitations(pane);
   if(v && v.startsWith('user:')) return renderUserDetail(pane, v.slice(5));
   if(v && v.startsWith('project:')) return renderProjectDetail(pane, v.slice(8));
 }
@@ -570,16 +572,19 @@ function renderJobs(pane){
 /* ========= Data load ========= */
 async function loadAll(){
   try{
-    const [{ data: users }, { data: studios }, { data: projects }, { data: jobs }] = await Promise.all([
+    const [{ data: users }, { data: studios }, { data: projects }, { data: jobs }, invRes] = await Promise.all([
       sb.from('profiles').select('*').order('created_at', { ascending: false }),
       sb.from('studios').select('*').order('created_at', { ascending: false }),
       sb.from('projects').select('*').order('created_at', { ascending: false }),
-      sb.from('job_briefs').select('*').order('created_at', { ascending: false })
+      sb.from('job_briefs').select('*').order('created_at', { ascending: false }),
+      /* admin_invitations view may not exist on older schemas — swallow the error gracefully */
+      sb.from('admin_invitations').select('*').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] }))
     ]);
     state.data.users = users || [];
     state.data.studios = studios || [];
     state.data.projects = projects || [];
     state.data.jobs = jobs || [];
+    state.data.invitations = (invRes && invRes.data) || [];
     const now = Date.now();
     const w = 7*24*60*60*1000;
     state.counts = {
@@ -590,13 +595,121 @@ async function loadAll(){
       projects: state.data.projects.length,
       projects_this_week: state.data.projects.filter(p => (now - new Date(p.created_at).getTime()) < w).length,
       jobs: state.data.jobs.filter(j => j.status === 'open' || !j.status).length,
+      invitations: state.data.invitations.length,
+      pending_invitations: state.data.invitations.filter(i => i.status === 'pending').length,
     };
     const c = state.counts;
     const set = (id, n) => { const el = document.getElementById(id); if(el) el.textContent = n; };
-    set('cnt-users', c.users); set('cnt-studios', c.studios); set('cnt-projects', c.projects); set('cnt-jobs', c.jobs);
+    set('cnt-users', c.users); set('cnt-studios', c.studios); set('cnt-projects', c.projects); set('cnt-jobs', c.jobs); set('cnt-invitations', c.invitations);
     renderPane();
   }catch(e){ toast('Load failed: ' + e.message, 'err'); }
 }
+
+function renderInvitations(pane){
+  const invs = state.data.invitations;
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Invitations</h2><p>Client + team invitations across every firm · ${state.counts.pending_invitations || 0} pending / ${invs.length} total</p></div>
+      <div class="actions"><button class="btn btn-primary" onclick="openInvitePanel()">+ New invitation</button></div>
+    </div>
+    <div id="invitePanel"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Email</th><th>Firm</th><th>Project</th><th>Status</th><th>Expires</th><th>Link</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody>
+          ${invs.map(i => `
+            <tr>
+              <td><div>${escape(i.full_name || '—')}</div><div class="mono">${escape(i.email)}</div></td>
+              <td>${escape(i.studio_name || '—')}</td>
+              <td>${escape(i.project_name || '—')}</td>
+              <td><span class="chip">${i.status}</span></td>
+              <td class="mono">${fmtDate(i.expires_at)}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="copyInvite('${i.token}')">Copy link</button></td>
+              <td style="text-align:right">
+                ${i.status === 'pending' ? `<button class="btn btn-danger btn-sm" onclick="revokeInvite('${i.id}')">Revoke</button>` : ''}
+              </td>
+            </tr>
+          `).join('') || '<tr><td colspan="7" class="empty"><h3>No invitations yet</h3><p>Click "+ New invitation" to invite a client</p></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openInvitePanel(){
+  const p = document.getElementById('invitePanel');
+  if(!p) return;
+  const studios = state.data.studios;
+  p.innerHTML = `
+    <div style="background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:20px 22px;margin-bottom:20px">
+      <h3 style="font-family:var(--serif);font-weight:400;font-size:18px;margin:0 0 12px">Invite a client</h3>
+      <form onsubmit="return createInvite(event)" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:12px">
+        <div class="field"><label>Client email *</label><input type="email" id="invEmail" required placeholder="client@example.com"></div>
+        <div class="field"><label>Client name</label><input id="invName" placeholder="Kaustubh Sharma"></div>
+        <div class="field"><label>Client phone</label><input id="invPhone" placeholder="+91 98xxx xxxxx"></div>
+        <div class="field"><label>Firm *</label>
+          <select id="invStudio" required>
+            <option value="">Choose…</option>
+            ${studios.map(s => `<option value="${s.id}">${escape(s.name || s.slug || s.id.slice(0,8))}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1"><label>Project (optional)</label>
+          <select id="invProject">
+            <option value="">No specific project</option>
+            ${state.data.projects.map(pr => `<option value="${pr.id}">${escape((pr.name || '—') + ' (' + (pr.code || pr.id.slice(0,6)) + ')')}</option>`).join('')}
+          </select>
+        </div>
+        <div style="grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="closeInvitePanel()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Generate invitation</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+window.openInvitePanel = openInvitePanel;
+function closeInvitePanel(){ const p = document.getElementById('invitePanel'); if(p) p.innerHTML = ''; }
+window.closeInvitePanel = closeInvitePanel;
+
+async function createInvite(e){
+  e.preventDefault();
+  const email = document.getElementById('invEmail').value.trim().toLowerCase();
+  const name = document.getElementById('invName').value.trim() || null;
+  const phone = document.getElementById('invPhone').value.trim() || null;
+  const studio = document.getElementById('invStudio').value;
+  const project = document.getElementById('invProject').value || null;
+  const { data, error } = await sb.rpc('create_client_invitation', {
+    client_email: email,
+    client_name: name,
+    client_phone: phone,
+    target_studio_id: studio,
+    target_project_id: project,
+    member_role: 'client'
+  });
+  if(error){ toast('Failed: ' + error.message, 'err'); return false; }
+  const row = Array.isArray(data) ? data[0] : data;
+  const link = window.location.origin + '/client/invite/' + row.token;
+  try{ await navigator.clipboard.writeText(link); }catch(e){}
+  toast('Invitation created — link copied to clipboard');
+  closeInvitePanel();
+  loadAll();
+  return false;
+}
+window.createInvite = createInvite;
+
+async function revokeInvite(id){
+  if(!confirm('Revoke this invitation? It will no longer be accepted.')) return;
+  const { error } = await sb.rpc('revoke_invitation', { inv_id: id });
+  if(error){ toast('Failed: ' + error.message, 'err'); return; }
+  toast('Invitation revoked'); loadAll();
+}
+window.revokeInvite = revokeInvite;
+
+function copyInvite(token){
+  const link = window.location.origin + '/client/invite/' + token;
+  navigator.clipboard.writeText(link).then(() => toast('Invite link copied'));
+}
+window.copyInvite = copyInvite;
 
 /* ========= Actions ========= */
 async function setRole(id, role){
