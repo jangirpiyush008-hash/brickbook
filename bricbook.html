@@ -5354,7 +5354,7 @@ document.addEventListener('click', (ev) => {
   if(!href || href.startsWith('http') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
   if(href.startsWith('#')) return; /* let hash anchor scroll behaviour work */
   /* Static folder pages should navigate normally (privacy, terms, admin) */
-  if(href === '/privacy' || href === '/terms' || href.startsWith('/privacy/') || href.startsWith('/terms/') || href.startsWith('/admin/')) return;
+  if(href === '/privacy' || href === '/terms' || href === '/admin' || href.startsWith('/privacy/') || href.startsWith('/terms/') || href.startsWith('/admin/')) return;
   /* Only intercept same-origin path-style hrefs */
   if(!href.startsWith('/')) return;
   ev.preventDefault();

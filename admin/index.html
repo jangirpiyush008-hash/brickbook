@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BricBook Admin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0C0E12">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="BricBook operations dashboard — internal only.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#0C0E12; --panel:#14181F; --panel-2:#1B2028; --hairline:#262A31; --hairline-2:#333844;
+  --ink:#ECE4D2; --ink-2:#C9C3B2; --muted:#999488; --faint:#6B6659;
+  --accent:#E89966; --accent-2:#F4A65B; --danger:#E56E5E; --ok:#7A9C7E;
+  --serif:ui-serif,'Instrument Serif','Cormorant Garamond',Georgia,serif;
+  --sans:'IBM Plex Sans',ui-sans-serif,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none} a:hover{color:var(--accent-2)}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:0;background:transparent;padding:0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:6px;font-weight:500;transition:all .15s;height:36px}
+.btn-primary{background:var(--accent);color:#0C0E12} .btn-primary:hover{background:var(--accent-2)}
+.btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--hairline)} .btn-ghost:hover{background:var(--panel-2);color:var(--ink)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)} .btn-danger:hover{background:var(--danger);color:#fff}
+.btn-sm{height:28px;padding:4px 10px;font-size:12px;border-radius:4px}
+
+/* Sign in */
+.signin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.signin-card{width:100%;max-width:400px;background:var(--panel);border:1px solid var(--hairline);border-radius:10px;padding:36px 32px}
+.brand{display:inline-flex;align-items:baseline;gap:2px;font-family:var(--serif);font-size:24px;color:var(--ink);letter-spacing:.02em;margin-bottom:6px}
+.brand .inf{color:var(--accent);margin:0 3px;font-size:24px}
+.badge{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--danger);background:rgba(229,110,94,.1);border:1px solid rgba(229,110,94,.3);padding:3px 8px;border-radius:3px;margin-bottom:20px}
+h1{font-family:var(--serif);font-size:32px;font-weight:400;margin:6px 0 10px;letter-spacing:-.015em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 24px;line-height:1.55}
+.field{margin-bottom:14px} .field label{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input,.field select{width:100%;height:38px;background:#0C0E12;border:1px solid var(--hairline);border-radius:5px;padding:0 12px;color:var(--ink);outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.err{background:rgba(229,110,94,.08);border:1px solid rgba(229,110,94,.3);color:#F4A990;padding:10px 12px;border-radius:5px;font-size:12px;margin-bottom:14px}
+
+/* App layout */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.side{background:#080A0E;border-right:1px solid var(--hairline);padding:20px 16px;display:flex;flex-direction:column;gap:4px}
+.side .who{padding:0 8px 20px;border-bottom:1px solid var(--hairline);margin-bottom:12px}
+.side .who .n{font-weight:600;color:var(--ink);font-size:13px}
+.side .who .r{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.side .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:5px;color:var(--ink-2);font-size:13px;cursor:pointer;transition:all .12s}
+.side .nav-item:hover{background:var(--panel);color:var(--ink)}
+.side .nav-item[aria-current="true"]{background:var(--panel);color:var(--ink);border-left:2px solid var(--accent);padding-left:10px}
+.side .nav-item .count{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--hairline);padding:2px 6px;border-radius:3px}
+.side .foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--hairline)}
+
+.main{padding:24px 32px 60px;overflow-x:auto}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--hairline);flex-wrap:wrap;gap:12px}
+.page-head h2{font-family:var(--serif);font-size:28px;font-weight:400;margin:0;letter-spacing:-.01em}
+.page-head p{color:var(--muted);font-size:12.5px;margin:6px 0 0}
+.page-head .actions{display:flex;gap:8px}
+
+/* Cards / stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat{background:var(--panel);border:1px solid var(--hairline);border-radius:8px;padding:16px 18px}
+.stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--serif);font-size:28px;color:var(--ink);margin-top:6px;line-height:1}
+.stat .d{color:var(--accent);font-size:11px;margin-top:6px}
+
+/* Tables */
+.table-wrap{background:var(--panel);border:1px solid var(--hairline);border-radius:8px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:12px 14px;border-bottom:1px solid var(--hairline);background:#0C0E12;position:sticky;top:0}
+td{padding:12px 14px;border-bottom:1px solid var(--hairline);color:var(--ink-2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:var(--panel-2);color:var(--ink)}
+td .mono{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.chip{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10.5px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--hairline);color:var(--ink-2)}
+.chip.super_admin{background:rgba(232,153,102,.15);color:var(--accent);border:1px solid rgba(232,153,102,.3)}
+.chip.ops_admin{background:rgba(122,156,126,.15);color:var(--ok);border:1px solid rgba(122,156,126,.3)}
+.chip.studio_owner,.chip.studio_member{background:rgba(165,165,200,.12);color:#A5A5C8;border:1px solid rgba(165,165,200,.25)}
+.chip.client{background:transparent;color:var(--muted);border:1px solid var(--hairline)}
+.chip.verified{background:rgba(122,156,126,.15);color:var(--ok);border:1px solid rgba(122,156,126,.3)}
+.chip.unverified{background:transparent;color:var(--muted);border:1px solid var(--hairline)}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty h3{font-family:var(--serif);font-size:20px;color:var(--ink-2);font-weight:400;margin:0 0 6px}
+.empty p{margin:0;font-size:12.5px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--hairline);color:var(--ink);padding:10px 18px;border-radius:6px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transition:opacity .2s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+
+/* Search */
+.search{position:relative}
+.search input{background:var(--panel);border:1px solid var(--hairline);border-radius:5px;padding:8px 12px 8px 32px;height:36px;color:var(--ink);width:280px;outline:none}
+.search input:focus{border-color:var(--accent)}
+.search::before{content:"";position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;background:no-repeat center/contain url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999488' stroke-width='2'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>")}
+
+@media (max-width:720px){
+  .app{grid-template-columns:1fr}
+  .side{flex-direction:row;overflow-x:auto;padding:12px}
+  .side .who{display:none} .side .foot{display:none}
+  .side .nav-item{white-space:nowrap;flex-shrink:0}
+  .main{padding:16px 16px 60px}
+  .search input{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ========= Supabase ========= */
+const SB_URL = 'https://bdqfhrecctaqhrlwqwtz.supabase.co';
+const SB_KEY = 'sb_publishable_3UNKcfqNXU-uMQhNJGd-9g_lfO1idFK';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+  auth:{ persistSession:true, autoRefreshToken:true, storage:window.localStorage }
+});
+
+const $ = s => document.querySelector(s);
+function toast(msg, kind){ const t=$('#toast'); t.textContent=msg; t.style.borderColor = kind==='err' ? 'var(--danger)' : 'var(--hairline)'; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
+
+/* ========= State ========= */
+const state = { user:null, profile:null, view:'overview', data:{ users:[], studios:[], projects:[], jobs:[] }, counts:{} };
+
+/* ========= Render: sign-in ========= */
+function renderSignin(msg){
+  $('#root').innerHTML = `
+    <div class="signin">
+      <div class="signin-card">
+        <div class="brand">BRICB<span class="inf">∞</span>K</div>
+        <div class="badge">Ops · Restricted</div>
+        <h1>Sign <em style="color:var(--accent)">in</em>.</h1>
+        <p class="sub">This portal is restricted to BricBook ops team members. Every action is logged.</p>
+        ${msg ? `<div class="err">${msg}</div>` : ''}
+        <form onsubmit="return doSignin(event)">
+          <div class="field"><label>Email</label><input type="email" id="siEmail" required autocomplete="email" placeholder="admin@yourdomain.com"></div>
+          <div class="field"><label>Password</label><input type="password" id="siPwd" required autocomplete="current-password" placeholder="••••••••"></div>
+          <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;height:42px">Sign in</button>
+        </form>
+        <div style="text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:26px">Only super_admin · ops_admin roles allowed</div>
+      </div>
+    </div>
+  `;
+}
+async function doSignin(e){
+  e.preventDefault();
+  const em = $('#siEmail').value.trim().toLowerCase();
+  const pw = $('#siPwd').value;
+  const { data, error } = await sb.auth.signInWithPassword({ email:em, password:pw });
+  if(error){ renderSignin('Invalid credentials.'); return false; }
+  await checkAndBoot(data.session);
+  return false;
+}
+async function checkAndBoot(session){
+  if(!session){ renderSignin(); return; }
+  const { data: profile, error } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  if(error || !profile){ await sb.auth.signOut(); renderSignin('Profile not found. Contact an admin.'); return; }
+  if(profile.role !== 'super_admin' && profile.role !== 'ops_admin'){
+    await sb.auth.signOut();
+    renderSignin('This account does not have admin access. Ask a super_admin to grant you ops_admin.');
+    return;
+  }
+  state.user = session.user; state.profile = profile;
+  renderApp();
+  loadAll();
+}
+
+/* ========= Render: app shell ========= */
+function renderApp(){
+  const p = state.profile;
+  $('#root').innerHTML = `
+    <div class="app">
+      <aside class="side">
+        <div class="who">
+          <div class="n">${escape(p.full_name || p.email)}</div>
+          <div class="r">${p.role.replace('_',' ')}</div>
+        </div>
+        <div class="nav-item" data-view="overview" ${state.view==='overview'?'aria-current="true"':''}>Overview</div>
+        <div class="nav-item" data-view="users" ${state.view==='users'?'aria-current="true"':''}>Users <span class="count" id="cnt-users">–</span></div>
+        <div class="nav-item" data-view="studios" ${state.view==='studios'?'aria-current="true"':''}>Studios <span class="count" id="cnt-studios">–</span></div>
+        <div class="nav-item" data-view="projects" ${state.view==='projects'?'aria-current="true"':''}>Projects <span class="count" id="cnt-projects">–</span></div>
+        <div class="nav-item" data-view="jobs" ${state.view==='jobs'?'aria-current="true"':''}>Job briefs <span class="count" id="cnt-jobs">–</span></div>
+        <div class="foot">
+          <button class="btn btn-ghost btn-sm" onclick="signOut()" style="width:100%;justify-content:center">Sign out</button>
+          <a class="btn btn-ghost btn-sm" href="/" style="width:100%;justify-content:center;margin-top:6px">← Main site</a>
+        </div>
+      </aside>
+      <main class="main" id="pane"></main>
+    </div>
+  `;
+  document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => { state.view = n.dataset.view; renderApp(); }));
+  renderPane();
+}
+
+function renderPane(){
+  const v = state.view;
+  const pane = $('#pane');
+  if(v === 'overview') return renderOverview(pane);
+  if(v === 'users') return renderUsers(pane);
+  if(v === 'studios') return renderStudios(pane);
+  if(v === 'projects') return renderProjects(pane);
+  if(v === 'jobs') return renderJobs(pane);
+  if(v && v.startsWith('user:')) return renderUserDetail(pane, v.slice(5));
+  if(v && v.startsWith('project:')) return renderProjectDetail(pane, v.slice(8));
+}
+
+function renderOverview(pane){
+  const c = state.counts;
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Overview</h2><p>Platform snapshot · ${new Date().toLocaleString('en-IN',{dateStyle:'long', timeStyle:'short'})}</p></div>
+      <div class="actions"><button class="btn btn-ghost btn-sm" onclick="loadAll()">Refresh</button></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Total users</div><div class="v">${c.users ?? '–'}</div><div class="d">${c.new_users_7d ?? 0} in last 7 days</div></div>
+      <div class="stat"><div class="k">Studios</div><div class="v">${c.studios ?? '–'}</div><div class="d">${c.verified_studios ?? 0} verified</div></div>
+      <div class="stat"><div class="k">Active projects</div><div class="v">${c.projects ?? '–'}</div><div class="d">${c.projects_this_week ?? 0} created this week</div></div>
+      <div class="stat"><div class="k">Open job briefs</div><div class="v">${c.jobs ?? '–'}</div><div class="d">from clients</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Latest signups</th><th>Role</th><th>Signed up</th></tr></thead>
+        <tbody>
+          ${(state.data.users || []).slice(0,10).map(u => `
+            <tr>
+              <td><div>${escape(u.full_name || '—')}</div><div class="mono">${escape(u.email || '')}</div></td>
+              <td><span class="chip ${u.role}">${u.role.replace('_',' ')}</span></td>
+              <td class="mono">${fmtDate(u.created_at)}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="3" class="empty"><h3>No signups yet</h3><p>Users will appear here as they sign up on bricbook.com</p></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderUsers(pane){
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Users</h2><p>All registered profiles · ${state.data.users.length} total · click a row to inspect</p></div>
+      <div class="actions"><div class="search"><input placeholder="Search email or name…" oninput="filterTable(this, 'usersTable')"></div></div>
+    </div>
+    <div class="table-wrap">
+      <table id="usersTable">
+        <thead><tr><th>User</th><th>Role</th><th>City</th><th>Signed up</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody>
+          ${state.data.users.map(u => `
+            <tr data-search="${escape((u.email||'') + ' ' + (u.full_name||'') + ' ' + (u.username||''))}" style="cursor:pointer" onclick="if(!event.target.closest('select,button')) openUser('${u.id}')">
+              <td><div>${escape(u.full_name || '—')}</div><div class="mono">${escape(u.email || '')}</div></td>
+              <td>
+                <select onchange="setRole('${u.id}', this.value)" onclick="event.stopPropagation()" style="background:#0C0E12;border:1px solid var(--hairline);border-radius:4px;color:var(--ink);padding:4px 8px;font-size:12px">
+                  ${['client','studio_member','studio_owner','ops_admin','super_admin'].map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r.replace('_',' ')}</option>`).join('')}
+                </select>
+              </td>
+              <td>${escape(u.city || '—')}</td>
+              <td class="mono">${fmtDate(u.created_at)}</td>
+              <td style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();copyEmail('${escape(u.email||'')}')">Copy email</button></td>
+            </tr>
+          `).join('') || '<tr><td colspan="5" class="empty"><h3>No users yet</h3></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function renderUserDetail(pane, id){
+  const u = state.data.users.find(x => x.id === id);
+  if(!u){ pane.innerHTML = '<div class="empty"><h3>User not found</h3></div>'; return; }
+  pane.innerHTML = `
+    <div class="page-head">
+      <div>
+        <button class="btn btn-ghost btn-sm" onclick="state.view='users';renderPane()" style="margin-bottom:8px">← All users</button>
+        <h2>${escape(u.full_name || u.email)}</h2>
+        <p><span class="mono">${escape(u.email || '')}</span> · <span class="chip ${u.role}">${u.role.replace('_',' ')}</span> · signed up ${fmtDate(u.created_at)}</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Projects</div><div class="v" id="cnt-uProj">–</div></div>
+      <div class="stat"><div class="k">Photos uploaded</div><div class="v" id="cnt-uPhotos">–</div></div>
+      <div class="stat"><div class="k">Drawings uploaded</div><div class="v" id="cnt-uDraw">–</div></div>
+      <div class="stat"><div class="k">Chat messages</div><div class="v" id="cnt-uChat">–</div></div>
+    </div>
+    <div id="uProjects" style="margin-bottom:24px"></div>
+    <div id="uFiles"></div>
+  `;
+  try{
+    const [{ data: memberships }, { data: photos }, { data: drawings }, { data: chat }, { data: activity }] = await Promise.all([
+      sb.from('project_members').select('project_id, role, added_at, projects(id, name, code, city, status, progress, phase)').eq('user_id', id),
+      sb.from('photos').select('id, project_id, storage_path, caption, taken_at, projects(name, code)').eq('uploaded_by', id).order('taken_at', { ascending: false }).limit(50),
+      sb.from('drawings').select('id, project_id, name, code, category, revision, storage_path, updated_at, projects(name, code)').eq('uploaded_by', id).order('updated_at', { ascending: false }).limit(50),
+      sb.from('chat_messages').select('id, project_id, body, created_at, projects(name)').eq('author_id', id).order('created_at', { ascending: false }).limit(30),
+      sb.from('activity').select('id, kind, target_type, target_id, created_at, data, projects(name)').eq('actor_id', id).order('created_at', { ascending: false }).limit(30)
+    ]);
+    document.getElementById('cnt-uProj').textContent = (memberships||[]).length;
+    document.getElementById('cnt-uPhotos').textContent = (photos||[]).length;
+    document.getElementById('cnt-uDraw').textContent = (drawings||[]).length;
+    document.getElementById('cnt-uChat').textContent = (chat||[]).length;
+
+    document.getElementById('uProjects').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Projects</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Project</th><th>Role</th><th>City</th><th>Status</th><th>Progress</th><th>Joined</th></tr></thead>
+          <tbody>
+            ${(memberships||[]).map(m => `
+              <tr style="cursor:pointer" onclick="openProject('${m.projects?.id || m.project_id}')">
+                <td><div>${escape(m.projects?.name || '—')}</div><div class="mono">${escape(m.projects?.code || '')}</div></td>
+                <td><span class="chip">${m.role}</span></td>
+                <td>${escape(m.projects?.city || '—')}</td>
+                <td><span class="chip">${m.projects?.status || '—'}</span></td>
+                <td>${m.projects?.progress ?? 0}%</td>
+                <td class="mono">${fmtDate(m.added_at)}</td>
+              </tr>
+            `).join('') || '<tr><td colspan="6" class="empty"><p>Not a member of any project yet.</p></td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    document.getElementById('uFiles').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Uploads</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>Type</th><th>Project</th><th>Storage path</th><th>Uploaded</th></tr></thead>
+          <tbody>
+            ${
+              [
+                ...(drawings||[]).map(d => ({...d, _kind:'drawing', _label: d.name + (d.revision?' · rev '+d.revision:''), _cat: d.category, _at: d.updated_at})),
+                ...(photos||[]).map(p => ({...p, _kind:'photo', _label: p.caption || 'Photo', _cat:'photo', _at: p.taken_at}))
+              ].sort((a,b) => new Date(b._at) - new Date(a._at)).map(f => `
+                <tr>
+                  <td>${escape(f._label)}</td>
+                  <td><span class="chip">${f._kind}</span> ${escape(f._cat || '')}</td>
+                  <td>${escape(f.projects?.name || f.project_id)}</td>
+                  <td class="mono" title="${escape(f.storage_path)}">${escape((f.storage_path||'').split('/').slice(-2).join('/'))}</td>
+                  <td class="mono">${fmtDate(f._at)}</td>
+                </tr>
+              `).join('') || '<tr><td colspan="5" class="empty"><p>No uploads yet.</p></td></tr>'
+            }
+          </tbody>
+        </table>
+      </div>
+    `;
+  }catch(e){ toast('Load failed: ' + e.message, 'err'); }
+}
+window.openUser = function(id){ state.view = 'user:' + id; renderPane(); };
+
+function renderStudios(pane){
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Studios</h2><p>Architecture practices listed on BricBook · ${state.data.studios.length} total</p></div>
+      <div class="actions"><div class="search"><input placeholder="Search studio…" oninput="filterTable(this, 'studiosTable')"></div></div>
+    </div>
+    <div class="table-wrap">
+      <table id="studiosTable">
+        <thead><tr><th>Studio</th><th>City</th><th>Verified</th><th>Created</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody>
+          ${state.data.studios.map(s => `
+            <tr data-search="${escape((s.name||'') + ' ' + (s.slug||'') + ' ' + (s.city||''))}">
+              <td><div>${escape(s.name || '—')}</div><div class="mono">${escape(s.slug || '')}</div></td>
+              <td>${escape(s.city || '—')}</td>
+              <td><span class="chip ${s.verified?'verified':'unverified'}">${s.verified?'verified':'pending'}</span></td>
+              <td class="mono">${fmtDate(s.created_at)}</td>
+              <td style="text-align:right">
+                <button class="btn btn-ghost btn-sm" onclick="toggleVerified('${s.id}', ${!s.verified})">${s.verified?'Unverify':'Verify'}</button>
+              </td>
+            </tr>
+          `).join('') || '<tr><td colspan="5" class="empty"><h3>No studios yet</h3><p>They’ll appear here once architects create their profile</p></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderProjects(pane){
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Projects</h2><p>All active projects across every studio · ${state.data.projects.length} total · click a row to drill in</p></div>
+      <div class="actions"><div class="search"><input placeholder="Search project name or city…" oninput="filterTable(this, 'projectsTable')"></div></div>
+    </div>
+    <div class="table-wrap">
+      <table id="projectsTable">
+        <thead><tr><th>Project</th><th>City</th><th>Status</th><th>Progress</th><th>Created</th></tr></thead>
+        <tbody>
+          ${state.data.projects.map(p => `
+            <tr data-search="${escape((p.name||'') + ' ' + (p.code||'') + ' ' + (p.city||''))}" style="cursor:pointer" onclick="openProject('${p.id}')">
+              <td><div>${escape(p.name || '—')}</div><div class="mono">${escape(p.code || '')}</div></td>
+              <td>${escape(p.city || '—')}</td>
+              <td><span class="chip">${p.status || 'active'}</span></td>
+              <td>${p.progress ?? 0}%</td>
+              <td class="mono">${fmtDate(p.created_at)}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="5" class="empty"><h3>No projects yet</h3></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function renderProjectDetail(pane, id){
+  const p = state.data.projects.find(x => x.id === id);
+  if(!p){
+    /* fetch if not in cache */
+    const { data } = await sb.from('projects').select('*').eq('id', id).maybeSingle();
+    if(!data){ pane.innerHTML = '<div class="empty"><h3>Project not found</h3></div>'; return; }
+    state.data.projects.push(data);
+    return renderProjectDetail(pane, id);
+  }
+  pane.innerHTML = `
+    <div class="page-head">
+      <div>
+        <button class="btn btn-ghost btn-sm" onclick="state.view='projects';renderPane()" style="margin-bottom:8px">← All projects</button>
+        <h2>${escape(p.name)}</h2>
+        <p><span class="mono">${escape(p.code || '')}</span> · ${escape(p.city || '—')} ${p.area ? '· ' + escape(p.area) : ''} · <span class="chip">${p.status || 'active'}</span> · <span class="chip">${p.phase || '—'}</span> · progress ${p.progress ?? 0}%</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Members</div><div class="v" id="pStat-mem">–</div></div>
+      <div class="stat"><div class="k">Spaces</div><div class="v" id="pStat-sp">–</div></div>
+      <div class="stat"><div class="k">Photos</div><div class="v" id="pStat-ph">–</div></div>
+      <div class="stat"><div class="k">Drawings</div><div class="v" id="pStat-dr">–</div></div>
+    </div>
+    <div id="pMembers" style="margin-bottom:24px"></div>
+    <div id="pDrawings" style="margin-bottom:24px"></div>
+    <div id="pPhotos" style="margin-bottom:24px"></div>
+    <div id="pChat" style="margin-bottom:24px"></div>
+    <div id="pActivity"></div>
+  `;
+  try{
+    const [{ data: members }, { data: spaces }, { data: folders }, { data: drawings }, { data: photos }, { data: chat }, { data: activity }] = await Promise.all([
+      sb.from('project_members').select('role, added_at, profiles(id, full_name, email, role, avatar_url)').eq('project_id', id),
+      sb.from('spaces').select('*').eq('project_id', id),
+      sb.from('folders').select('*').eq('project_id', id),
+      sb.from('drawings').select('id, name, code, category, revision, storage_path, folder_id, uploaded_by, updated_at, profiles!drawings_uploaded_by_fkey(full_name)').eq('project_id', id).order('updated_at', { ascending: false }),
+      sb.from('photos').select('id, storage_path, caption, taken_at, uploaded_by, space_id, floor, spaces(name, floor), profiles!photos_uploaded_by_fkey(full_name)').eq('project_id', id).order('taken_at', { ascending: false }).limit(120),
+      sb.from('chat_messages').select('id, body, created_at, author_id, profiles(full_name, avatar_url)').eq('project_id', id).order('created_at', { ascending: false }).limit(30),
+      sb.from('activity').select('*').eq('project_id', id).order('created_at', { ascending: false }).limit(30)
+    ]);
+
+    document.getElementById('pStat-mem').textContent = (members||[]).length;
+    document.getElementById('pStat-sp').textContent = (spaces||[]).length;
+    document.getElementById('pStat-ph').textContent = (photos||[]).length;
+    document.getElementById('pStat-dr').textContent = (drawings||[]).length;
+
+    /* Members */
+    document.getElementById('pMembers').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Members</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Project role</th><th>Platform role</th><th>Joined</th></tr></thead>
+          <tbody>
+            ${(members||[]).map(m => `
+              <tr style="cursor:pointer" onclick="openUser('${m.profiles?.id}')">
+                <td><div>${escape(m.profiles?.full_name || '—')}</div><div class="mono">${escape(m.profiles?.email || '')}</div></td>
+                <td><span class="chip">${m.role}</span></td>
+                <td><span class="chip ${m.profiles?.role || 'client'}">${(m.profiles?.role || '—').replace('_',' ')}</span></td>
+                <td class="mono">${fmtDate(m.added_at)}</td>
+              </tr>
+            `).join('') || '<tr><td colspan="4" class="empty"><p>No members yet.</p></td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    /* Drawings grouped by folder / category */
+    const folderMap = Object.fromEntries((folders||[]).map(f => [f.id, f]));
+    const drByFolder = {};
+    (drawings||[]).forEach(d => {
+      const key = d.folder_id || ('_cat_' + (d.category || 'Uncategorised'));
+      (drByFolder[key] = drByFolder[key] || []).push(d);
+    });
+    document.getElementById('pDrawings').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Drawings by folder</h3>
+      ${Object.keys(drByFolder).length ? Object.entries(drByFolder).map(([k, arr]) => {
+        const title = folderMap[k] ? (folderMap[k].category + ' → ' + folderMap[k].name) : k.replace('_cat_','');
+        return `
+          <div class="table-wrap" style="margin-bottom:12px">
+            <table>
+              <thead><tr><th colspan="4" style="background:var(--panel-2);color:var(--ink);text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px;font-weight:600;padding:10px 14px">${escape(title)} · ${arr.length}</th></tr>
+              <tr><th>Drawing</th><th>Revision</th><th>Uploaded by</th><th>Updated</th></tr></thead>
+              <tbody>
+                ${arr.map(d => `<tr><td>${escape(d.name)} ${d.code ? '<span class="mono">'+escape(d.code)+'</span>' : ''}</td><td>${escape(d.revision || '—')}</td><td>${escape(d.profiles?.full_name || d.uploaded_by || '—')}</td><td class="mono">${fmtDate(d.updated_at)}</td></tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }).join('') : '<div class="table-wrap"><div class="empty"><p>No drawings uploaded yet.</p></div></div>'}
+    `;
+
+    /* Photos grouped by floor/space */
+    const phByGroup = {};
+    (photos||[]).forEach(ph => {
+      const key = (ph.spaces?.floor || ph.floor || 'Unassigned') + ' · ' + (ph.spaces?.name || 'General');
+      (phByGroup[key] = phByGroup[key] || []).push(ph);
+    });
+    document.getElementById('pPhotos').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Photos by space</h3>
+      ${Object.keys(phByGroup).length ? Object.entries(phByGroup).map(([k, arr]) => `
+        <div class="table-wrap" style="margin-bottom:12px">
+          <table>
+            <thead><tr><th colspan="4" style="background:var(--panel-2);color:var(--ink);text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px;font-weight:600;padding:10px 14px">${escape(k)} · ${arr.length}</th></tr>
+            <tr><th>Caption</th><th>Uploaded by</th><th>Taken</th><th class="mono">Path</th></tr></thead>
+            <tbody>
+              ${arr.slice(0,20).map(ph => `<tr><td>${escape(ph.caption || '—')}</td><td>${escape(ph.profiles?.full_name || '—')}</td><td class="mono">${fmtDate(ph.taken_at)}</td><td class="mono" title="${escape(ph.storage_path||'')}">${escape((ph.storage_path||'').split('/').slice(-2).join('/'))}</td></tr>`).join('')}
+              ${arr.length > 20 ? `<tr><td colspan="4" class="mono" style="color:var(--muted)">… and ${arr.length - 20} more</td></tr>` : ''}
+            </tbody>
+          </table>
+        </div>
+      `).join('') : '<div class="table-wrap"><div class="empty"><p>No photos yet.</p></div></div>'}
+    `;
+
+    /* Chat */
+    document.getElementById('pChat').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Recent chat</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>From</th><th>Message</th><th>Sent</th></tr></thead>
+          <tbody>
+            ${(chat||[]).map(c => `<tr><td>${escape(c.profiles?.full_name || '—')}</td><td>${escape((c.body||'').slice(0,180))}</td><td class="mono">${fmtDate(c.created_at)}</td></tr>`).join('') || '<tr><td colspan="3" class="empty"><p>No messages yet.</p></td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    /* Activity */
+    document.getElementById('pActivity').innerHTML = `
+      <h3 style="font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 12px">Activity log</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kind</th><th>Target</th><th>When</th></tr></thead>
+          <tbody>
+            ${(activity||[]).map(a => `<tr><td><span class="chip">${escape(a.kind)}</span></td><td>${escape((a.target_type || '') + (a.target_id ? ' → ' + a.target_id : ''))}</td><td class="mono">${fmtDate(a.created_at)}</td></tr>`).join('') || '<tr><td colspan="3" class="empty"><p>No activity yet.</p></td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }catch(e){ toast('Load failed: ' + e.message, 'err'); }
+}
+window.openProject = function(id){ state.view = 'project:' + id; renderPane(); };
+
+function renderJobs(pane){
+  pane.innerHTML = `
+    <div class="page-head">
+      <div><h2>Job briefs</h2><p>Open client project briefs · ${state.data.jobs.length} total</p></div>
+      <div class="actions"><div class="search"><input placeholder="Search brief…" oninput="filterTable(this, 'jobsTable')"></div></div>
+    </div>
+    <div class="table-wrap">
+      <table id="jobsTable">
+        <thead><tr><th>Title</th><th>Type</th><th>City</th><th>Budget</th><th>Status</th><th>Posted</th></tr></thead>
+        <tbody>
+          ${state.data.jobs.map(j => `
+            <tr data-search="${escape((j.title||'') + ' ' + (j.type||'') + ' ' + (j.city||''))}">
+              <td>${escape(j.title || '—')}</td>
+              <td>${escape(j.type || '—')}</td>
+              <td>${escape(j.city || '—')}</td>
+              <td>${escape(j.budget || '—')}</td>
+              <td><span class="chip">${j.status || 'open'}</span></td>
+              <td class="mono">${fmtDate(j.created_at)}</td>
+            </tr>
+          `).join('') || '<tr><td colspan="6" class="empty"><h3>No job briefs yet</h3></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ========= Data load ========= */
+async function loadAll(){
+  try{
+    const [{ data: users }, { data: studios }, { data: projects }, { data: jobs }] = await Promise.all([
+      sb.from('profiles').select('*').order('created_at', { ascending: false }),
+      sb.from('studios').select('*').order('created_at', { ascending: false }),
+      sb.from('projects').select('*').order('created_at', { ascending: false }),
+      sb.from('job_briefs').select('*').order('created_at', { ascending: false })
+    ]);
+    state.data.users = users || [];
+    state.data.studios = studios || [];
+    state.data.projects = projects || [];
+    state.data.jobs = jobs || [];
+    const now = Date.now();
+    const w = 7*24*60*60*1000;
+    state.counts = {
+      users: state.data.users.length,
+      new_users_7d: state.data.users.filter(u => (now - new Date(u.created_at).getTime()) < w).length,
+      studios: state.data.studios.length,
+      verified_studios: state.data.studios.filter(s => s.verified).length,
+      projects: state.data.projects.length,
+      projects_this_week: state.data.projects.filter(p => (now - new Date(p.created_at).getTime()) < w).length,
+      jobs: state.data.jobs.filter(j => j.status === 'open' || !j.status).length,
+    };
+    const c = state.counts;
+    const set = (id, n) => { const el = document.getElementById(id); if(el) el.textContent = n; };
+    set('cnt-users', c.users); set('cnt-studios', c.studios); set('cnt-projects', c.projects); set('cnt-jobs', c.jobs);
+    renderPane();
+  }catch(e){ toast('Load failed: ' + e.message, 'err'); }
+}
+
+/* ========= Actions ========= */
+async function setRole(id, role){
+  const { error } = await sb.from('profiles').update({ role }).eq('id', id);
+  if(error){ toast('Update failed: ' + error.message, 'err'); return; }
+  toast('Role updated'); loadAll();
+}
+window.setRole = setRole;
+
+async function toggleVerified(id, next){
+  const { error } = await sb.from('studios').update({ verified: next }).eq('id', id);
+  if(error){ toast('Update failed: ' + error.message, 'err'); return; }
+  toast(next ? 'Studio verified' : 'Studio unverified'); loadAll();
+}
+window.toggleVerified = toggleVerified;
+
+async function signOut(){ await sb.auth.signOut(); state.user = null; state.profile = null; renderSignin(); }
+window.signOut = signOut;
+
+function copyEmail(em){ navigator.clipboard.writeText(em).then(() => toast('Email copied')); }
+window.copyEmail = copyEmail;
+
+function filterTable(input, tableId){
+  const q = input.value.toLowerCase();
+  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+    const s = (row.dataset.search || '').toLowerCase();
+    row.style.display = (!q || s.includes(q)) ? '' : 'none';
+  });
+}
+window.filterTable = filterTable;
+
+/* ========= Utils ========= */
+function escape(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(iso){ if(!iso) return '—'; try{ return new Date(iso).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }catch(e){ return iso.slice(0,10); } }
+
+/* ========= Boot ========= */
+(async () => {
+  const { data:{ session } } = await sb.auth.getSession();
+  await checkAndBoot(session);
+  sb.auth.onAuthStateChange((_ev, s) => { if(!s){ renderSignin(); } });
+})();
+</script>
+
+</body>
+</html>
