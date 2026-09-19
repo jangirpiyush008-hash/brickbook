@@ -1,6 +1,8 @@
 <title>BricBook — The site plan for construction collaboration</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F5F1EA">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -324,7 +326,42 @@ a{color:inherit;text-decoration:none}
   .visibility-picker{grid-template-columns:1fr}
 }
 
-/* ============ List Your Practice (marketing landing) ============ */
+/* ============ List Your Practice (architect signup) ============ */
+.lyp-signup{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:var(--ground)}
+.lyp-signup-side{background:var(--brass-tint);color:var(--ink);padding:32px 40px;display:flex;flex-direction:column;overflow-y:auto}
+.lyp-signup-head{display:flex;justify-content:space-between;align-items:center}
+.lyp-signup-head .auth-back{color:var(--muted);font-size:13px;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.lyp-signup-head .auth-back:hover{color:var(--ink)}
+.lyp-signup-body{margin:auto 0;max-width:440px;width:100%;padding:40px 0}
+.lyp-signup-body .eyebrow{color:var(--brass);font-weight:600}
+.lyp-signup-body h1{font-family:var(--serif);font-size:44px;font-weight:400;letter-spacing:-.025em;line-height:1.05;margin:12px 0 14px;color:var(--ink)}
+.lyp-signup-body h1 em{color:var(--brass);font-style:italic}
+.lyp-signup-sub{color:var(--ink-2);font-size:15px;line-height:1.55;margin:0}
+.lyp-signup-form{display:flex;flex-direction:column;gap:12px}
+
+.lyp-signup-info{background:var(--navy);color:#F5EFD9;padding:40px 48px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.lyp-info-blueprint{position:absolute;inset:0;color:#F5EFD9;opacity:.09;pointer-events:none;z-index:0}
+.lyp-info-blueprint svg{position:absolute!important;right:-15%!important;top:0!important;width:130%!important;height:100%!important}
+.lyp-info-head{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center}
+.lyp-info-badge{background:rgba(232,153,102,.15);color:var(--brass-2);border:1px solid rgba(232,153,102,.3);padding:5px 12px;border-radius:4px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+.lyp-info-body{position:relative;z-index:1;margin:auto 0;padding:40px 0;max-width:520px}
+.lyp-info-body h2{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;line-height:1.1;color:#F5F1EA;margin:0 0 14px}
+.lyp-info-body h2 em{color:var(--brass-2);font-style:italic}
+.lyp-info-sub{color:rgba(245,241,234,.75);font-size:14.5px;line-height:1.55;margin:0 0 32px}
+.lyp-info-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
+.lyp-info-list li{display:flex;gap:14px;align-items:flex-start;color:rgba(245,241,234,.9)}
+.lyp-info-list li svg{color:var(--brass-2);flex-shrink:0;margin-top:2px}
+.lyp-info-list li b{display:block;font-weight:600;font-size:14px;margin-bottom:2px;color:#F5F1EA}
+.lyp-info-list li span{display:block;color:rgba(245,241,234,.65);font-size:12.5px;line-height:1.5}
+.lyp-info-foot{position:relative;z-index:1;padding-top:20px;border-top:1px solid rgba(245,241,234,.12);font-size:11px;color:rgba(245,241,234,.6);letter-spacing:.12em}
+
+@media (max-width:900px){
+  .lyp-signup{grid-template-columns:1fr}
+  .lyp-signup-info{display:none}
+  .lyp-signup-side{padding:24px 20px}
+}
+
+/* ============ List Your Practice (marketing landing - LEGACY, unused) ============ */
 .lyp{background:var(--ground)}
 .lyp-hero{padding:80px 24px 60px;position:relative;overflow:hidden}
 .lyp-hero-inner{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center}
@@ -435,6 +472,13 @@ a{color:inherit;text-decoration:none}
 
 .ln-nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(12px);background:color-mix(in oklab,var(--ground) 82%,transparent);
   border-bottom:1px solid transparent;transition:border-color .2s}
+/* Stronger, more prominent version of the top nav */
+.ln-nav.ln-nav-strong{background:var(--ground);border-bottom:1px solid var(--hairline);box-shadow:var(--shadow-sm)}
+.ln-nav.ln-nav-strong .ln-nav-inner{padding-top:16px;padding-bottom:16px}
+.ln-nav.ln-nav-strong .links a{color:var(--ink);font-weight:600;font-size:14px;letter-spacing:.01em;transition:color .12s}
+.ln-nav.ln-nav-strong .links a:hover{color:var(--brass)}
+.ln-nav.ln-nav-strong .brand{transform:scale(1.05);transform-origin:left center}
+.ln-nav.ln-nav-strong .cta .btn{font-weight:600}
 .ln-nav.scrolled{border-bottom-color:var(--hairline)}
 .ln-nav-inner{max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:24px}
 .ln-nav .links{display:flex;gap:2px;margin-left:24px}
@@ -613,7 +657,10 @@ a{color:inherit;text-decoration:none}
    12-14s  transition (plan fades out)
    14-22s  PHASE 2: house elevation builds up (foundation, walls rise, roof descends, door, windows, chimney, sun, tree)
    22-24s  transition (house fades, loop) */
-.auth-visual svg.blueprint{position:absolute;right:-10%;top:8%;width:140%;height:84%;opacity:.28;pointer-events:none;overflow:visible}
+.auth-visual svg.blueprint{position:absolute;right:-10%;top:8%;width:140%;height:84%;opacity:.16;pointer-events:none;overflow:visible;filter:blur(.4px)}
+.auth-visual .center{position:relative;z-index:2}
+.auth-visual .quote,.auth-visual .cite{position:relative;z-index:2;text-shadow:0 2px 30px rgba(15,18,32,.8),0 1px 4px rgba(15,18,32,.6)}
+.auth-visual::after{content:"";position:absolute;left:0;right:0;top:20%;bottom:20%;background:radial-gradient(ellipse at center,rgba(15,18,32,.55) 0%,rgba(15,18,32,0) 70%);pointer-events:none;z-index:1}
 .auth-visual svg.blueprint *{vector-effect:non-scaling-stroke}
 
 /* Phase containers: cross-fade */
@@ -2765,7 +2812,10 @@ function iconSVG(name) {
   return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[name] || ''}</svg>`;
 }
 function brandMark(size = 15) {
-  return `<span class="brand-mark">BRICB<span class="infty"><svg width="${size + 1}" height="${size - 1}" viewBox="0 0 32 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 8 C 8 3, 14 3, 16 8 S 24 13, 24 8 S 18 3, 16 8 S 8 13, 8 8 Z"/></svg></span>K</span>`;
+  const s = Math.round(size * 1.35);
+  const infW = Math.round(s * 1.15);
+  const infH = Math.round(s * 0.65);
+  return `<span class="brand-mark" style="display:inline-flex;align-items:center;gap:0;font-family:'Inter Tight','SF Pro Display',ui-sans-serif,system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:-.03em;font-size:${s}px;line-height:1;color:var(--ink);text-transform:none">BRIC<span style="display:inline-flex;align-items:center;color:var(--brass);margin:0 1px"><svg width="${infW}" height="${infH}" viewBox="0 0 46 22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 11 C6 3, 17 3, 23 11 C29 19, 40 19, 40 11 C40 3, 29 3, 23 11 C17 19, 6 19, 6 11 Z"/></svg></span>K</span>`;
 }
 function projectThumbSVG(seed) {
   const v = {
@@ -2979,15 +3029,13 @@ function renderLanding() {
   const root = $('#root');
   root.innerHTML = `
     <div class="landing">
-      <nav class="ln-nav" id="lnNav">
+      <nav class="ln-nav ln-nav-strong" id="lnNav">
         <div class="ln-nav-inner">
-          <a class="brand" href="/">${brandMark(15)}</a>
+          <a class="brand" href="/">${brandMark(18)}</a>
           <div class="links">
             <a href="/" data-scroll="directory">Directory</a>
-            <a href="/" data-scroll="how">How it works</a>
-            <a href="/" data-scroll="pricing">Pricing</a>
-            <a href="/" data-scroll="studio">Reviews</a>
-            <a href="/signup/architect">For architects</a>
+            <a href="/" data-scroll="about">About</a>
+            <a href="/list-your-practice">For architects</a>
           </div>
           <div class="cta">
             <button class="icon-btn" onclick="toggleTheme()" id="themeBtnLn">${iconSVG('sun')}</button>
@@ -3003,8 +3051,8 @@ function renderLanding() {
         <div class="wrap">
           <div class="issue"><span>Issue 01</span><span>Summer 2026</span><span>Mumbai · Bangalore · Chennai · Delhi · Kochi</span></div>
           <div class="lede">
-            <h1>The atlas of the <em>Indian home,</em> drawn by its architects.</h1>
-            <p class="sub">A quiet directory of the twelve thousand practices building this country's houses — with the drawings, portfolios, and reviews to prove it.</p>
+            <h1>Every architect. Every drawing.<br><em>One shared canvas.</em></h1>
+            <p class="sub">BricBook is India's directory of architecture practices — and the shared workspace where they and their clients keep every site photo, drawing, and decision, from first sketch to signed handover.</p>
           </div>
           <div class="foot">
             <div class="credit">Photographed at <b>Kaustubh Residence</b>, Bandra West · Ar. Nishant Yadav, Sundara Studio</div>
@@ -3095,23 +3143,25 @@ function renderLanding() {
         <div class="ed-grid" id="edFeat"></div>
       </section>
 
-      <div class="ed-feature">
-        <div class="lbl">§ 2 · This Month</div>
+      <div class="ed-feature" id="about">
+        <div class="lbl">§ 2 · About BricBook</div>
         <div class="ed-feature-body">
           <div class="ed-feature-img">
-            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&auto=format&fit=crop&q=85" alt="" onerror="this.remove()">
-            <div class="plate"><span>The Bandra Residence</span><span>SPDL 01</span></div>
+            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1400&auto=format&fit=crop&q=85" alt="" onerror="this.remove()">
+            <div class="plate"><span>Built for architects</span><span>By an architect</span></div>
           </div>
           <div class="body">
-            <div class="kicker">The Interview</div>
-            <h3>"A home is the <em>slowest thing</em> you'll ever build."</h3>
-            <p>Nishant Yadav opens the door of the Kaustubh Residence with his shoes off. The floor is Kota — not marble, not vitrified. "Marble would have been cheaper," he says, half-smiling. It's been fourteen months on a footprint of 2,400 square feet, and the family is moving in on Thursday.</p>
-            <p class="pq">"Our clients don't want a house. They want a place they can grow old in. The two are not the same building."</p>
-            <p>Sundara Studio has built eighty-four such places across Maharashtra since 2014. What sets them apart isn't a signature — it's a refusal to have one. Every project takes its cues from the site, the family, and the state of the sun that afternoon.</p>
+            <div class="kicker">Why BricBook exists</div>
+            <h3>Every architect should be <em>findable</em>. Every project should have <em>one shared canvas</em>.</h3>
+            <p>BricBook is two products in one. First, a directory of India’s architecture practices — every firm with a permanent BricBook ID, a public profile page, and a portfolio of work. Second, a shared workspace where architects and their clients keep every photo, drawing, chat and decision in one place, from first sketch to signed handover.</p>
+            <p class="pq">"We’re building the tool I wished I had running my own practice — and giving it to every architect and every client in India."</p>
             <div class="cred">
               <div class="av">NY</div>
-              <div class="info"><div class="nm">Ar. Nishant Yadav</div><div class="loc">Sundara Studio · Mumbai · Est. 2014</div></div>
-              <a class="rd" onclick="nav('/architect/nishant-yadav')" style="cursor:pointer">Read the full interview →</a>
+              <div class="info">
+                <div class="nm">Ar. Nishant Yadav</div>
+                <div class="loc">Founder · BricBook · Mumbai</div>
+              </div>
+              <a class="rd" href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener" style="cursor:pointer">Connect on LinkedIn ↗</a>
             </div>
           </div>
         </div>
@@ -3353,11 +3403,11 @@ function renderLanding() {
           <div><h4>Product</h4><ul><li><a href="/">Gallery</a></li><li><a href="/">Files</a></li><li><a href="/">Chat</a></li><li><a href="/">Folders</a></li><li><a href="/">Pricing</a></li></ul></div>
           <div><h4>Studio</h4><ul><li><a href="/">About</a></li><li><a href="/">Careers</a></li><li><a href="/">Press</a></li><li><a href="mailto:sdefiners@gmail.com">Contact</a></li></ul></div>
           <div><h4>Resources</h4><ul><li><a href="/">Docs</a></li><li><a href="/">Changelog</a></li><li><a href="/">Case studies</a></li><li><a href="/">Help center</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="mailto:sdefiners@gmail.com">Security</a></li><li><a href="/admin">Admin login</a></li></ul></div>
+          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="mailto:sdefiners@gmail.com">Security</a></li></ul></div>
         </div>
         <div class="footer-bot">
-          <span class="mono">© 2025 BRICB∞K STUDIO · MUMBAI · ARC-2025.07</span>
-          <span class="mono">v2.0 · Redesigned by Piyush</span>
+          <span class="mono">© 2026 BRICBOOK STUDIO · MUMBAI</span>
+          <span class="mono">India’s directory of architects</span>
         </div>
       </footer>
     </div>
@@ -3395,12 +3445,7 @@ window._dirFilter = { q:'', tag:'' };
 async function hydrateLandingDirectory(){
   const sb = sbClient();
   const feat = $('#edFeat'); const all = $('#edAll'); const masonry = $('#edMasonry');
-  const empty = `<div class="dir-empty">
-    <div class="lbl mono">§ Directory</div>
-    <p class="serif">No published practices yet.</p>
-    <p>The first architects will appear here as they publish their profiles. <a href="/list-your-practice">Are you an architect? List your practice.</a></p>
-  </div>`;
-  if(!sb){ if(feat) feat.innerHTML = empty; return; }
+  if(!sb){ if(feat) feat.innerHTML = ''; return; }
   const { data, error } = await sb
     .from('studios')
     .select('id, bric_id, slug, name, tagline, city, state, cover_url, logo_url, services, specialties, verified, founded_year, years_experience, practice_type, bio')
@@ -3426,32 +3471,43 @@ async function hydrateLandingDirectory(){
     wrap.className = 'dir-search-wrap';
     wrap.innerHTML = `
       <div class="dir-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="dirSearch" placeholder="Search by name, city, or speciality…" oninput="window._dirFilter.q=this.value;filterDirectory()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="dirSearch" placeholder="Try: modern architect in Bandra for a 3BHK…" oninput="window._dirFilter.q=this.value;filterDirectory()">
         <span class="dir-count mono"><b id="dirCount">${studios.length}</b> practice${studios.length===1?'':'s'}</span>
       </div>
-      <div class="dir-chips">
-        <button class="qtag actv" onclick="dirTagClick(this,'')">All</button>
+      ${uniqueCities(studios).length ? `<div class="dir-chips">
+        <button class="qtag actv" onclick="dirTagClick(this,'')">All cities</button>
         ${uniqueCities(studios).slice(0, 8).map(c => `<button class="qtag" onclick="dirTagClick(this,'${escapeAttr(c)}')">${escapeHTML(c)}</button>`).join('')}
-      </div>
+      </div>` : ''}
     `;
     feat.parentElement.insertBefore(wrap, feat);
   }
 
   filterDirectory();
 
-  /* Update the counters on section heads */
+  /* Update the counters + copy on section heads */
   const registryMeta = document.querySelectorAll('.ed-reg-head .meta');
   registryMeta.forEach(m => {
-    m.innerHTML = `<b>${studios.length}</b>publish${studios.length===1?'es':'ed'} · India-wide`;
+    m.innerHTML = `<b>${studios.length}</b>publish${studios.length===1?'ed':'ed'} · India-wide`;
   });
   const h2s = document.querySelectorAll('#directory h2');
   if(h2s.length){
     if(studios.length === 0){
-      h2s[0].innerHTML = 'The directory is <em>just getting started</em>.';
+      h2s[0].innerHTML = 'Find your <em>architect</em>.';
     } else {
       h2s[0].innerHTML = studios.length + ' architect' + (studios.length===1?'':'s') + ', <em>ready to hear from you.</em>';
     }
+  }
+
+  /* Hide sections that would render empty */
+  const featuredEmpty = studios.filter(s => s.verified).length === 0;
+  const restEmpty = studios.filter(s => !s.verified).length === 0;
+  const registrySection = all && all.closest('.ed-registry');
+  if(registrySection){
+    registrySection.style.display = restEmpty ? 'none' : '';
+    /* Also hide the "Load next 12" button when empty */
+    const loadMore = registrySection.querySelector('button');
+    if(loadMore) loadMore.style.display = restEmpty ? 'none' : '';
   }
 
   /* Recent-work masonry: pick published studios with a cover image */
@@ -3496,16 +3552,15 @@ function filterDirectory(){
   const feat = $('#edFeat'); const rest = $('#edAll');
   const featured = filtered.filter(s => s.verified);
   const others = filtered.filter(s => !s.verified);
-  const empty = `<div class="dir-empty"><p class="serif">No practices match that.</p><p>Try a different city or clear your search.</p></div>`;
   if(feat){
     feat.innerHTML = featured.length
       ? featured.map((s, i) => studioDirCardHTML(s, i, featured.length)).join('')
-      : (filtered.length ? '' : empty);
+      : '';
   }
   if(rest){
     rest.innerHTML = others.length
       ? others.map((s, i) => studioDirCardHTML(s, i, others.length)).join('')
-      : (filtered.length ? '' : '');
+      : '';
   }
   const count = document.getElementById('dirCount');
   if(count) count.textContent = filtered.length;
@@ -3731,7 +3786,7 @@ function renderArchitectProfile(slug) {
           <div><h4>Directory</h4><ul><li><a href="/">All architects</a></li><li><a href="/">Interior only</a></li><li><a href="/">Landscape</a></li><li><a href="/">Heritage</a></li></ul></div>
           <div><h4>For architects</h4><ul><li><a href="/signup">List your practice</a></li><li><a href="/login">Sign in</a></li><li><a href="/">Pricing</a></li></ul></div>
           <div><h4>For clients</h4><ul><li><a href="/signup">Create account</a></li><li><a href="/">How it works</a></li><li><a href="/">Verification</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/admin">Admin login</a></li></ul></div>
+          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li></ul></div>
         </div>
         <div class="footer-bot"><span class="mono">© 2026 BRICB∞K STUDIO · MUMBAI</span><span class="mono">v6 · Directory</span></div>
       </footer>
@@ -3891,8 +3946,7 @@ function renderLogin() {
             <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in ${iconSVG('arr')}</button>
           </form>
           <div class="auth-footer">
-            <span>New firm? <a href="/signup/architect">List your practice</a></span>
-            <a href="/admin">BricBook admin →</a>
+            <span>New firm? <a href="/list-your-practice">List your practice</a></span>
           </div>
         </div>
       </div>
@@ -3905,234 +3959,103 @@ function renderLogin() {
 function renderListYourPractice() {
   const root = $('#root');
   root.innerHTML = `
-    <div class="landing lyp">
-      <nav class="ln-nav">
-        <div class="ln-nav-inner">
+    <div class="lyp-signup">
+      <aside class="lyp-signup-side">
+        <div class="lyp-signup-head">
           <a class="brand" href="/">${brandMark(15)}</a>
-          <div class="links">
-            <a href="/">Directory</a>
-            <a href="#lyp-what">Features</a>
-            <a href="#lyp-how">How it works</a>
-            <a href="#lyp-sample">Sample profile</a>
+          <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
+        </div>
+        <div class="lyp-signup-body">
+          <span class="eyebrow">For architects & studios</span>
+          <h1 class="serif">List your <em>practice</em>.</h1>
+          <p class="lyp-signup-sub">Create your BricBook architect profile in two minutes. Free during beta. No card. Your profile stays yours.</p>
+          <div class="oauth" style="margin-top:24px">
+            <button class="btn btn-navy btn-block btn-lg" onclick="googleAuth('architect')" style="justify-content:center"><svg width="16" height="16" viewBox="0 0 48 48" style="background:#fff;border-radius:50%;padding:2px;box-sizing:content-box"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>&nbsp; Sign up with Google — fastest</button>
           </div>
-          <div class="cta">
-            <button class="icon-btn" onclick="toggleTheme()">${iconSVG('sun')}</button>
-            <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
-            <button class="btn btn-navy btn-sm" onclick="nav('/signup/architect')">Create practice profile</button>
+          <div class="divider">or with email</div>
+          <form onsubmit="return lypDirectSignup(event)" class="lyp-signup-form">
+            <div class="field-row">
+              <div class="field"><label>First name</label><input id="lypFirst" required placeholder="Piyush" autocomplete="given-name"></div>
+              <div class="field"><label>Last name</label><input id="lypLast" required placeholder="Jangir" autocomplete="family-name"></div>
+            </div>
+            <div class="field"><label>Firm name *</label><input id="lypFirm" required placeholder="Studio Kalpa"></div>
+            <div class="field"><label>Work email *</label><input type="email" id="lypEmail" required placeholder="you@yourstudio.com" autocomplete="email"></div>
+            <div class="field"><label>Password *</label><input type="password" id="lypPwd" required minlength="8" placeholder="At least 8 characters" autocomplete="new-password"></div>
+            <div class="field"><label>City</label>
+              <select id="lypCity"><option value="Mumbai" selected>Mumbai</option><option>Bangalore</option><option>Delhi NCR</option><option>Chennai</option><option>Pune</option><option>Kochi</option><option>Hyderabad</option><option>Other</option></select>
+            </div>
+            <div class="check"><input type="checkbox" id="lypTerms" required checked><label for="lypTerms">I agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a></label></div>
+            <button class="btn btn-brass btn-block btn-lg" type="submit">Create my practice ${iconSVG('arr')}</button>
+          </form>
+          <div class="auth-footer">
+            <span>Already listed? <a href="/login">Sign in</a></span>
           </div>
         </div>
-      </nav>
+      </aside>
 
-      <section class="lyp-hero">
-        <div class="lyp-hero-inner">
-          <div class="lyp-hero-copy">
-            <span class="eyebrow">For architects · studios · designers</span>
-            <h1 class="serif">List your <em>practice</em> once.<br>Send it <em>everywhere</em>.</h1>
-            <p class="lyp-sub">Build a professional architecture profile in an evening. Get a permanent BricBook ID, a shareable public URL, a PDF portfolio, LinkedIn share, WhatsApp share and a QR code — all from one place.</p>
-            <div class="lyp-cta">
-              <button class="btn btn-navy btn-lg" onclick="nav('/signup/architect')">Create your practice profile ${iconSVG('arr')}</button>
-              <button class="btn btn-ghost btn-lg" onclick="nav('/login')">Already listed? Sign in</button>
-            </div>
-            <div class="lyp-trust">
-              <span class="dot">●</span>
-              <span>Free during beta · No card required · Your profile stays yours</span>
-            </div>
-          </div>
-          <div class="lyp-hero-visual">
-            <div class="lyp-mock" aria-hidden="true">
-              <div class="lyp-mock-frame">
-                <div class="lyp-mock-nav">
-                  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-                  <span class="lyp-mock-url mono">bricbook.com/practice/your-firm</span>
-                </div>
-                <div class="lyp-mock-hero">
-                  <div class="lyp-mock-cover">
-                    ${authVisualBlueprintOnly()}
-                  </div>
-                  <div class="lyp-mock-title">
-                    <div class="lyp-mock-name serif">STUDIO KALPA</div>
-                    <div class="lyp-mock-meta mono">MUMBAI · EST 2016 · BRIC-000042</div>
-                    <div class="lyp-mock-tags">
-                      <span class="lyp-mock-tag">Residential</span>
-                      <span class="lyp-mock-tag">Interior</span>
-                      <span class="lyp-mock-tag">Sustainable</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="lyp-mock-grid">
-                  <div class="lyp-mock-tile"></div>
-                  <div class="lyp-mock-tile"></div>
-                  <div class="lyp-mock-tile"></div>
-                  <div class="lyp-mock-tile"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <aside class="lyp-signup-info">
+        <div class="lyp-info-head">
+          <span class="brand" style="color:#F5EFD9">${brandMark(14)}</span>
+          <span class="mono lyp-info-badge">Free during beta</span>
         </div>
-      </section>
-
-      <section class="lyp-band">
-        <div class="lyp-band-inner">
-          <div class="lyp-band-item"><em class="serif">One profile.</em> Update once, everywhere at once.</div>
-          <div class="lyp-band-item"><em class="serif">Your URL, forever.</em> A permanent bricbook.com/practice/… link.</div>
-          <div class="lyp-band-item"><em class="serif">Client-ready.</em> LinkedIn, WhatsApp, PDF, QR — one click each.</div>
+        <div class="lyp-info-body">
+          <h2 class="serif">Everything an architect needs to be <em>found</em>.</h2>
+          <p class="lyp-info-sub">Build your profile once. Send it everywhere. Track how it performs.</p>
+          <ul class="lyp-info-list">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Public profile URL</b><span>bricbook.com/practice/your-firm — forever</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Permanent BricBook ID</b><span>Immutable identifier like BRIC-000042</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Unlimited portfolio projects</b><span>Cover, gallery, video, description, tags</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>PDF portfolio export</b><span>One-click, ready to email or print</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>LinkedIn + WhatsApp share</b><span>Deep links pre-composed with your details</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>QR code</b><span>For cards, exhibitions, signboards</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Analytics</b><span>Views, contact clicks, PDF downloads</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Client workspace</b><span>Shared photos, drawings, chat per project</span></div></li>
+          </ul>
         </div>
-      </section>
-
-      <section id="lyp-what" class="lyp-features">
-        <div class="lyp-section-head">
-          <span class="eyebrow">What you get</span>
-          <h2 class="serif">Everything an architect needs to <em>be found</em>.</h2>
+        <div class="lyp-info-foot">
+          <span class="mono">Trusted by architects across India</span>
         </div>
-        <div class="lyp-feat-grid">
-          ${lypFeatureCard('Portfolio', 'Unlimited projects. Photos, videos, drawings, floor plans. Set a cover, feature your best work, order by year.', 'gallery')}
-          ${lypFeatureCard('Public profile', 'A premium page at bricbook.com/practice/your-firm. Hero, featured projects, services, awards, team, contact — in your firm’s voice.', 'globe')}
-          ${lypFeatureCard('Unique BricBook ID', 'Every practice gets a permanent, immutable ID like BRIC-000123. Print it on cards, put it on Instagram, add it to your email signature.', 'shield')}
-          ${lypFeatureCard('Auto PDF portfolio', 'One click generates a professional PDF you can email to clients. Matches your profile exactly — no manual formatting.', 'file')}
-          ${lypFeatureCard('LinkedIn + WhatsApp share', 'Pre-composed share cards for LinkedIn and WhatsApp. Copy the URL, drop it anywhere.', 'send')}
-          ${lypFeatureCard('QR code', 'Point business cards, exhibition booths, or a signboard at your live BricBook profile.', 'qr')}
-          ${lypFeatureCard('Team access', 'Add teammates as Admin, Editor, or Viewer. Firm owner controls what each can change.', 'users')}
-          ${lypFeatureCard('Analytics', 'See who visits your profile, which projects get views, and which contact buttons get clicks.', 'chart')}
-          ${lypFeatureCard('Verified badge', 'Once your practice is verified by BricBook, a subtle checkmark appears next to your name.', 'check')}
-        </div>
-      </section>
-
-      <section id="lyp-how" class="lyp-steps">
-        <div class="lyp-section-head">
-          <span class="eyebrow">How it works</span>
-          <h2 class="serif">Three steps to a <em>published practice</em>.</h2>
-        </div>
-        <ol class="lyp-steps-grid">
-          <li>
-            <span class="lyp-step-num mono">01</span>
-            <div>
-              <h3 class="serif">Sign in with Google</h3>
-              <p>One click. No password, no verification email. Your Google account creates your BricBook practice account.</p>
-            </div>
-          </li>
-          <li>
-            <span class="lyp-step-num mono">02</span>
-            <div>
-              <h3 class="serif">Complete your profile</h3>
-              <p>Guided setup wizard. Practice info, services, projects (drag &amp; drop images), awards, team, contact. Save as you go.</p>
-            </div>
-          </li>
-          <li>
-            <span class="lyp-step-num mono">03</span>
-            <div>
-              <h3 class="serif">Publish &amp; share</h3>
-              <p>Toggle public. Copy the link. Post to LinkedIn. Send to a client via WhatsApp. Export the PDF. Done.</p>
-            </div>
-          </li>
-        </ol>
-      </section>
-
-      <section id="lyp-sample" class="lyp-sample">
-        <div class="lyp-section-head" style="align-items:center;text-align:center">
-          <span class="eyebrow">Sample profile</span>
-          <h2 class="serif">This is what visitors see.</h2>
-          <p class="lyp-sub" style="max-width:640px;margin:12px auto 0">A premium, editorial page — not a directory listing. Built for architects, so it feels like an architect made it.</p>
-        </div>
-        <div class="lyp-sample-preview">
-          <div class="lyp-sample-nav">
-            <span class="mono">bricbook.com/practice/studio-kalpa</span>
-            <span class="lyp-sample-badges"><span class="lyp-mock-tag" style="background:rgba(122,156,126,.15);color:var(--sage);border-color:rgba(122,156,126,.3)">✓ Verified</span></span>
-          </div>
-          <div class="lyp-sample-hero">
-            <div class="lyp-sample-hero-bg">${authVisualBlueprintOnly()}</div>
-            <div class="lyp-sample-hero-content">
-              <div class="mono" style="opacity:.7;font-size:11px;letter-spacing:.16em">BRIC-000042 · MUMBAI · EST 2016</div>
-              <h3 class="serif" style="font-size:56px;line-height:1;margin:16px 0 12px;letter-spacing:-.02em">Studio Kalpa</h3>
-              <p style="font-size:16px;max-width:520px;opacity:.85;margin:0 0 20px">An interdisciplinary practice designing calm, material-first homes across coastal India. Residential, hospitality, adaptive re-use.</p>
-              <div class="lyp-sample-hero-cta">
-                <button class="btn btn-brass btn-sm">Contact</button>
-                <button class="btn btn-ghost btn-sm" style="color:#F5EFD9;border-color:rgba(245,239,217,.3)">Website</button>
-                <button class="btn btn-ghost btn-sm" style="color:#F5EFD9;border-color:rgba(245,239,217,.3)">LinkedIn</button>
-              </div>
-            </div>
-          </div>
-          <div class="lyp-sample-sections">
-            <div class="lyp-sample-sec">
-              <span class="mono" style="font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase">Featured projects</span>
-              <div class="lyp-sample-projects">
-                <div class="lyp-sample-proj"><div class="lyp-sample-thumb"></div><div class="lyp-sample-name">Coconut House</div><div class="mono lyp-sample-city">Alibaug · 2024</div></div>
-                <div class="lyp-sample-proj"><div class="lyp-sample-thumb"></div><div class="lyp-sample-name">Kaustubh Residence</div><div class="mono lyp-sample-city">Bandra · 2023</div></div>
-                <div class="lyp-sample-proj"><div class="lyp-sample-thumb"></div><div class="lyp-sample-name">Villa Kirana</div><div class="mono lyp-sample-city">Goa · 2023</div></div>
-              </div>
-            </div>
-            <div class="lyp-sample-sec">
-              <span class="mono" style="font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase">Services</span>
-              <div class="lyp-mock-tags" style="margin-top:10px">
-                <span class="lyp-mock-tag">Residential architecture</span>
-                <span class="lyp-mock-tag">Interior design</span>
-                <span class="lyp-mock-tag">Hospitality</span>
-                <span class="lyp-mock-tag">Sustainable design</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="lyp-cta-bottom">
-        <div class="lyp-cta-bottom-inner">
-          <h2 class="serif">Ready to <em>list your practice</em>?</h2>
-          <p>Three minutes to sign up. Ten to publish. And your practice on the internet, forever.</p>
-          <div class="lyp-cta">
-            <button class="btn btn-navy btn-lg" onclick="nav('/signup/architect')">Create your practice profile ${iconSVG('arr')}</button>
-            <button class="btn btn-ghost btn-lg" onclick="nav('/login')">I already have an account</button>
-          </div>
-        </div>
-      </section>
-
-      <footer class="footer">
-        <div class="footer-inner">
-          <div><div class="brand">${brandMark(15)}</div><p class="about">India’s directory of building professionals — plus the shared canvas they and their clients build together.</p></div>
-          <div><h4>Directory</h4><ul><li><a href="/">All architects</a></li><li><a href="/">By city</a></li><li><a href="/">By speciality</a></li></ul></div>
-          <div><h4>For architects</h4><ul><li><a href="/list-your-practice">List your practice</a></li><li><a href="/signup/architect">Sign up</a></li><li><a href="/login">Sign in</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/admin">Admin</a></li></ul></div>
-        </div>
-        <div class="footer-bot"><span class="mono">© 2026 BRICB∞K STUDIO · MUMBAI</span><span class="mono">List your practice</span></div>
-      </footer>
+        <div class="lyp-info-blueprint">${authVisualBlueprintOnly()}</div>
+      </aside>
     </div>
   `;
   window.scrollTo(0, 0);
-  /* Smooth-scroll for in-page anchor links */
-  document.querySelectorAll('.lyp a[href^="#"]').forEach(a => a.addEventListener('click', e => {
-    e.preventDefault();
-    const el = document.querySelector(a.getAttribute('href'));
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }));
 }
+
+async function lypDirectSignup(e){
+  e.preventDefault();
+  const first = ($('#lypFirst')?.value || '').trim();
+  const last  = ($('#lypLast')?.value || '').trim();
+  const firm  = ($('#lypFirm')?.value || '').trim();
+  const email = ($('#lypEmail')?.value || '').trim().toLowerCase();
+  const pwd   = ($('#lypPwd')?.value || '');
+  const city  = ($('#lypCity')?.value || 'Mumbai');
+  if(!email || !pwd || !firm){ toast('Fill in firm, email and password'); return false; }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const name = (first + ' ' + last).trim() || email.split('@')[0];
+  const username = name.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'') || email.split('@')[0];
+  const { data, error } = await sb.auth.signUp({
+    email, password: pwd,
+    options:{ data:{ full_name: name, username, signup_role: 'studio_owner', firm_name: firm, city, utm: getUTM() } }
+  });
+  if(error){ toast('Sign up failed: ' + error.message); return false; }
+  if(!data.session){ toast('Confirm your email to finish signup'); nav('/login'); return false; }
+  /* Immediately register the firm so it's provisioned before they land in the dashboard */
+  try{ await sb.rpc('register_as_architect_firm', { firm_name: firm, city_v: city }); }catch(err){}
+  toast('Practice created — complete your profile next');
+  nav('/app/practice/setup');
+  return false;
+}
+window.lypDirectSignup = lypDirectSignup;
+
+
 
 /* Small helper: strip the quote/label chrome from authVisual and return just the animated SVG */
 function authVisualBlueprintOnly(){
   const raw = authVisual('default');
   const svgMatch = raw.match(/<svg class="blueprint"[\s\S]*?<\/svg>/);
   return svgMatch ? `<div class="lyp-bp-wrap">${svgMatch[0]}</div>` : '';
-}
-
-function lypFeatureCard(title, body, icon){
-  const icons = {
-    gallery: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
-    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/>',
-    shield: '<path d="M12 3 5 6v6a9 9 0 0 0 7 9 9 9 0 0 0 7-9V6l-7-3z"/><path d="m9 12 2 2 4-4"/>',
-    file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
-    send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
-    qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4M17 21h4M21 14v7"/>',
-    users: '<circle cx="9" cy="8" r="4"/><path d="M17 11a4 4 0 0 0 0-6M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2M22 21v-2a5 5 0 0 0-4-4.9"/>',
-    chart: '<path d="M3 3v18h18M7 15v2M12 10v7M17 5v12"/>',
-    check: '<path d="M20 6 9 17l-5-5"/>'
-  };
-  const p = icons[icon] || icons.check;
-  return `
-    <div class="lyp-feat">
-      <div class="lyp-feat-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>
-      </div>
-      <div class="lyp-feat-title serif">${title}</div>
-      <p class="lyp-feat-body">${body}</p>
-    </div>
-  `;
 }
 
 /* /welcome — shown once for brand-new Google users with no profile row yet */
