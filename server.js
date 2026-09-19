@@ -15,8 +15,47 @@ const MIME = {
   '.xml':'application/xml; charset=utf-8', '.webmanifest':'application/manifest+json'
 };
 
+/* SPA route table — known client-side routes get 200 on fallback; anything else gets 404 */
+const SPA_ROUTES = new Set([
+  '/', '/login', '/signup', '/signup/client', '/signup/architect',
+  '/forgot', '/reset',
+  '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'
+]);
+const SPA_ROUTE_PREFIXES = ['/app/', '/architect/'];
+function isKnownSpaRoute(pathname){
+  if(SPA_ROUTES.has(pathname)) return true;
+  return SPA_ROUTE_PREFIXES.some(p => pathname.startsWith(p));
+}
+
+/* Security headers applied to every response */
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+};
+
+/* CSP is intentionally not over-restrictive because we load Supabase JS from jsdelivr */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: https: blob:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self' https://accounts.google.com"
+].join('; ');
+
+function baseHeaders(){
+  return { ...SECURITY_HEADERS, 'Content-Security-Policy': CSP };
+}
+
 function send(res, code, headers, body){
-  res.writeHead(code, headers);
+  const merged = { ...baseHeaders(), ...headers };
+  res.writeHead(code, merged);
   if(body && body.pipe) body.pipe(res); else res.end(body);
 }
 function fileHeaders(ext, stat){
@@ -28,24 +67,25 @@ function fileHeaders(ext, stat){
   return {
     'Content-Type': ct,
     'Content-Length': stat.size,
-    'Cache-Control': cache,
-    'X-Content-Type-Options': 'nosniff'
+    'Cache-Control': cache
   };
 }
 
-function serveFile(req, res, filePath){
+function serveFile(req, res, filePath, code){
   fs.stat(filePath, (err, stat) => {
-    if(err || !stat.isFile()) return spaFallback(req, res);
+    if(err || !stat.isFile()) return spaFallback(req, res, req.url.split('?')[0]);
     const ext = path.extname(filePath).toLowerCase();
-    send(res, 200, fileHeaders(ext, stat), fs.createReadStream(filePath));
+    send(res, code || 200, fileHeaders(ext, stat), fs.createReadStream(filePath));
   });
 }
-function spaFallback(req, res){
-  /* Any unknown path falls back to index.html so the SPA router can pick it up */
+function spaFallback(req, res, pathname){
+  /* Known SPA route → 200 with the app shell */
+  /* Unknown path → 404 status with the same shell (still lets SPA render a friendly error) */
+  const code = isKnownSpaRoute(pathname) ? 200 : 404;
   const idx = path.join(ROOT, 'index.html');
   fs.stat(idx, (err, stat) => {
-    if(err) return send(res, 404, {'Content-Type':'text/plain'}, 'Not found');
-    send(res, 200, fileHeaders('.html', stat), fs.createReadStream(idx));
+    if(err) return send(res, 404, {'Content-Type':'text/plain; charset=utf-8'}, 'Not found');
+    send(res, code, fileHeaders('.html', stat), fs.createReadStream(idx));
   });
 }
 function safeJoin(root, urlPath){
@@ -64,7 +104,6 @@ http.createServer((req, res) => {
       return send(res, 302, {'Location': '/admin/'}, '');
     }
     if(!urlPath.startsWith('/admin')){
-      /* Any non-admin path on the admin host redirects into /admin/ */
       return send(res, 302, {'Location': '/admin' + urlPath}, '');
     }
   }
@@ -75,7 +114,7 @@ http.createServer((req, res) => {
   }
 
   const filePath = safeJoin(ROOT, urlPath);
-  if(!filePath){ return send(res, 400, {'Content-Type':'text/plain'}, 'Bad path'); }
+  if(!filePath){ return send(res, 400, {'Content-Type':'text/plain; charset=utf-8'}, 'Bad path'); }
 
   fs.stat(filePath, (err, stat) => {
     if(!err && stat.isFile()){
@@ -85,12 +124,12 @@ http.createServer((req, res) => {
     if(!err && stat.isDirectory()){
       /* Serve <dir>/index.html if it exists */
       const idx = path.join(filePath, 'index.html');
-      return serveFile(req, res, idx);
+      return serveFile(req, res, idx, 200);
     }
-    /* Unknown path: SPA fallback for anything except obvious asset extensions */
+    /* Unknown path: 404 for obvious asset extensions; SPA fallback otherwise */
     const ext = path.extname(urlPath).toLowerCase();
-    if(ext && !MIME[ext]){ return send(res, 404, {'Content-Type':'text/plain'}, 'Not found'); }
-    if(ext && ext !== '.html'){ return send(res, 404, {'Content-Type':'text/plain'}, 'Not found'); }
-    return spaFallback(req, res);
+    if(ext && !MIME[ext]){ return send(res, 404, {'Content-Type':'text/plain; charset=utf-8'}, 'Not found'); }
+    if(ext && ext !== '.html'){ return send(res, 404, {'Content-Type':'text/plain; charset=utf-8'}, 'Not found'); }
+    return spaFallback(req, res, urlPath);
   });
 }).listen(PORT, () => console.log('BricBook server on :' + PORT));

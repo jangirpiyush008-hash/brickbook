@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /app/
+Disallow: /reset
+Disallow: /forgot
+
+Sitemap: https://bricbook.com/sitemap.xml

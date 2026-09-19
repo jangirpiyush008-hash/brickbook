@@ -2,39 +2,56 @@
 
 The site plan for construction collaboration — and India's directory of architects.
 
-**Live demo:** open `index.html` in any browser, or serve the folder and visit the root.
+**Production:** [bricbook.com](https://bricbook.com)
+**Ops panel:** [admin.bricbook.com](https://admin.bricbook.com) (restricted)
 
 ## What's inside
 
-A single-file prototype (`index.html` / `bricbook.html`) that ships:
-
-- **Architect marketplace landing** — 12 verified architects, detailed search bar (project type / city / budget / start-by / built-up area), refine chips, popular tags, individual architect profile pages with portfolio + reviews + booking sidebar.
-- **Dual dashboards** — Studio (architects) and Customer (clients) with a login toggle. Each sees only what they should. Unique per-project Customer IDs.
-- **Four project modules** — Gallery, Files, Chat, Folders. Every module scoped to floor + space.
-- **Full gallery lightbox** with a drawing toolbar — pencil / rectangle / square / circle / arrow, six colors, three sizes. Every mark becomes a linked comment. Undo, clear, keyboard shortcuts.
-- **WhatsApp delivery** everywhere — send photos, drawings, and project updates to clients in one click; each send is logged in the project timeline.
-- **Handover certificate** — printable, signed by Ar. Nishant Yadav, stamped by the studio.
+- **Architect marketplace** — verified architects across India with rich profile pages, briefs, and booking flow.
+- **Client + studio dashboards** — single sign-in, routed to the right surface by role.
+- **Project workspace** — photos, drawings, chat, folders — every module scoped to floor + space.
+- **Handover certificate** — printable, stamped by the studio.
 - **India map view** — every project pinned by city with progress on hover.
-- **Skeleton loader** on sign-in, light + dark themes.
-
-## Demo credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Studio / Architect | `demo@bricbook.com` | `demo1234` |
-| Customer / Client | `client@kaustubh.com` | `client1234` |
-| BricBook admin | `admin@bricbook.com` | `admin1234` |
-
-Google sign-in button is a mock — clicks straight through to the respective dashboard.
-
-## Deploy
-
-Any static host works — Netlify Drop, Vercel, GitHub Pages, Cloudflare Pages.
-
-**GitHub Pages:** Settings → Pages → Source: `main` / `/ (root)` → Save. The site will be live at `https://<user>.github.io/brickbook/` in ~30 seconds.
-
-**Netlify Drop:** drag the whole folder onto https://app.netlify.com/drop — instant URL.
 
 ## Stack
 
-Vanilla HTML/CSS/JS in one file. No build step, no dependencies, no external requests. All SVG illustrations are inline — works offline.
+- **Frontend:** single-file HTML/CSS/JS SPA (`index.html`) — no build step
+- **Server:** tiny Node HTTP server (`server.js`) with SPA fallback + host-based routing for `admin.bricbook.com`
+- **Backend:** Supabase (Postgres + Auth + Storage + Realtime) in Mumbai (`ap-south-1`)
+- **Auth:** Google OAuth + email/password (phone OTP planned)
+- **Deploy:** Railway auto-deploys from `main`
+
+## Auth
+
+- Public users sign in on `/login` — Google or email/password
+- Studios sign up at `/signup/architect`, clients at `/signup/client`
+- Role is stored in `profiles.role` (`client` / `studio_member` / `studio_owner` / `ops_admin` / `super_admin`)
+- Ops admins are provisioned only by SQL — no self-service or Google sign-in on the admin panel
+
+## Run locally
+
+```bash
+node server.js
+# Serves on http://localhost:8080
+```
+
+Legacy: opening `index.html` directly in a browser also renders the SPA, but the folder-indexed pages (`/privacy`, `/terms`, `/admin/`) need the Node server to resolve correctly.
+
+## Files
+
+| Path | Purpose |
+|---|---|
+| `index.html` | Main SPA (marketplace + dashboards + auth) |
+| `server.js` | Static + SPA fallback + host redirect + security headers |
+| `package.json` | Node 18+, `npm start` |
+| `admin/` | Ops-only dashboard, served at `admin.bricbook.com` |
+| `privacy/` | Privacy Policy (DPDPA 2023) |
+| `terms/` | Terms of Service |
+| `robots.txt`, `sitemap.xml` | SEO |
+
+## Security notes
+
+- Publishable Supabase key is safe to expose (row-level security enforces access at the database)
+- Service-role key never lives in the browser or repo — server-side only, if used at all
+- All admin actions run under signed-in user identity; database policies (`is_platform_admin()`) enforce ops-only writes
+- CSP, HSTS, X-Frame-Options, Referrer-Policy set by `server.js`

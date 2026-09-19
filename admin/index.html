@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0C0E12">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="BricBook operations dashboard — internal only.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
   --bg:#0C0E12; --panel:#14181F; --panel-2:#1B2028; --hairline:#262A31; --hairline-2:#333844;
@@ -133,10 +133,10 @@ function renderSignin(msg){
         <div class="brand">BRICB<span class="inf">∞</span>K</div>
         <div class="badge">Ops · Restricted</div>
         <h1>Sign <em style="color:var(--accent)">in</em>.</h1>
-        <p class="sub">This portal is restricted to BricBook ops team members. Every action is logged.</p>
+        <p class="sub">Admin accounts are provisioned from the backend only. There is no signup, no Google sign-in, no self-service password reset from here.</p>
         ${msg ? `<div class="err">${msg}</div>` : ''}
         <form onsubmit="return doSignin(event)">
-          <div class="field"><label>Email</label><input type="email" id="siEmail" required autocomplete="email" placeholder="admin@yourdomain.com"></div>
+          <div class="field"><label>Email</label><input type="email" id="siEmail" required autocomplete="email" placeholder="ops@bricbook.com"></div>
           <div class="field"><label>Password</label><input type="password" id="siPwd" required autocomplete="current-password" placeholder="••••••••"></div>
           <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;height:42px">Sign in</button>
         </form>

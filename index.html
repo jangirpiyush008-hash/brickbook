@@ -3,7 +3,7 @@
 <meta name="theme-color" content="#F5F1EA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 window.SB_URL='https://bdqfhrecctaqhrlwqwtz.supabase.co';
 window.SB_KEY='sb_publishable_3UNKcfqNXU-uMQhNJGd-9g_lfO1idFK';
@@ -292,16 +292,6 @@ a{color:inherit;text-decoration:none}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--hairline)}
 
 /* Demo creds panel */
-.demo-panel{background:var(--brass-tint);border:1px dashed var(--brass);border-radius:var(--radius);padding:12px 14px;margin-bottom:20px;font-size:12px}
-.demo-panel .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.demo-panel .head b{color:var(--brass);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
-.demo-panel .head button{color:var(--brass);font-family:var(--mono);font-size:11px}
-.demo-panel .head button:hover{text-decoration:underline}
-.demo-panel .row{display:grid;grid-template-columns:auto 1fr;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
-.demo-panel .row .k{color:var(--muted)}
-.demo-panel.admin{background:transparent;border-color:var(--terra)}
-.demo-panel.admin .head b{color:var(--terra)}
-.demo-panel.admin .head button{color:var(--terra)}
 
 /* Signup steps */
 .steps{display:flex;gap:6px;margin-bottom:24px}
@@ -1982,7 +1972,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/login', '/signup', '/signup/client', '/signup/architect', '/for-clients', '/for-architects', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
+const ROUTES = ['/', '/login', '/signup', '/signup/client', '/signup/architect', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2012,8 +2002,6 @@ const ROUTE_META = {
   '/signup':         { title:'Get started — BricBook',                                           desc:'Choose whether you’re here to hire an architect or list your practice.' },
   '/signup/client':  { title:'Hire an architect — BricBook',                                    desc:'Post a brief and get matched to verified architects in your city.' },
   '/signup/architect':{ title:'List your practice — BricBook',                                  desc:'Join India’s directory of verified architects and studios.' },
-  '/for-clients':    { title:'For homeowners and clients — BricBook',                            desc:'How to find, hire, and collaborate with an architect on BricBook.' },
-  '/for-architects': { title:'For architects and studios — BricBook',                            desc:'Grow your practice with a verified BricBook profile, briefs, and client workspace.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -2407,7 +2395,8 @@ function photoKey(name) {
 }
 function photoURL(name, i, w = 800, h = 500) {
   const key = photoKey(name);
-  const arr = PHOTO_MAP[key] || PHOTO_MAP.construction;
+  const arr = PHOTO_MAP[key] || PHOTO_MAP.construction || [];
+  if (!arr.length) return '';
   const hash = arr[i % arr.length];
   return `https://images.unsplash.com/photo-${hash}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 }
@@ -3180,8 +3169,6 @@ function renderLogin() {
     </div>
   `;
 }
-function setAudience(a) { state.audience = a; }
-window.setAudience = setAudience;
 
 function renderSignup() {
   const root = $('#root');
@@ -4732,11 +4719,10 @@ function renderSettings() {
 }
 
 /* ============ Actions ============ */
-function fillDemo() { /* no-op kept for legacy handlers */ }
 function loginFlow(user, note) {
   AUTH.set(user);
   toast(note || 'Signed in');
-  renderSkeleton(() => { location.hash = '#/app/explore'; route(); });
+  renderSkeleton(() => { nav('/app/explore'); });
 }
 async function signIn(e) {
   e.preventDefault();
@@ -4873,16 +4859,38 @@ async function suStep(e, n) {
 }
 function skipInvites() { state.signupStep = 1; nav('/app/explore'); }
 window.skipInvites = skipInvites;
-function sendReset(e) { e.preventDefault(); toast('Reset link sent (demo) — redirecting…'); setTimeout(() => nav('/reset'), 900); return false; }
-function doReset(e) {
+async function sendReset(e) {
+  e.preventDefault();
+  const em = ($('#fpEmail')?.value || '').trim().toLowerCase();
+  if(!em){ toast('Enter your email'); return false; }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const { error } = await sb.auth.resetPasswordForEmail(em, { redirectTo: window.location.origin + '/reset' });
+  if(error){ toast('Reset failed: ' + error.message); return false; }
+  toast('Check your inbox for the reset link');
+  return false;
+}
+async function doReset(e) {
   e.preventDefault();
   if ($('#rsPwd').value !== $('#rsConfirm').value) { toast('Passwords don\'t match'); return false; }
-  toast('Password updated — sign in'); setTimeout(() => nav('/login'), 900); return false;
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const { error } = await sb.auth.updateUser({ password: $('#rsPwd').value });
+  if(error){ toast('Update failed: ' + error.message); return false; }
+  toast('Password updated — sign in');
+  setTimeout(() => nav('/login'), 900);
+  return false;
 }
-function changePwd(e) {
+async function changePwd(e) {
   e.preventDefault();
   if ($('#cpNew').value !== $('#cpConf').value) { toast('New passwords don\'t match'); return false; }
-  toast('Password updated'); e.target.reset(); return false;
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const { error } = await sb.auth.updateUser({ password: $('#cpNew').value });
+  if(error){ toast('Update failed: ' + error.message); return false; }
+  toast('Password updated');
+  e.target.reset();
+  return false;
 }
 function saveProfile() { toast('Profile saved'); }
 function saveWA() {
@@ -4892,7 +4900,7 @@ function saveWA() {
 }
 window.saveWA = saveWA;
 window.saveProfile = saveProfile; window.changePwd = changePwd; window.doReset = doReset; window.sendReset = sendReset;
-window.signIn = signIn; window.signInAdmin = signInAdmin; window.suStep = suStep; window.fillDemo = fillDemo;
+window.signIn = signIn; window.signInAdmin = signInAdmin; window.suStep = suStep;
 async function signOut() {
   const sb = sbClient();
   if(sb){ try{ await sb.auth.signOut(); }catch(e){} }
@@ -5321,8 +5329,6 @@ function route() {
   if (r === '/signup')            { state.signupStep = 1; state.signupKind = 'choose';   return renderSignup(); }
   if (r === '/signup/client')     { state.signupStep = 1; state.signupKind = 'client';    return renderSignup(); }
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
-  if (r === '/for-clients')       return renderForClients ? renderForClients() : renderLanding();
-  if (r === '/for-architects')    return renderForArchitects ? renderForArchitects() : renderLanding();
   if (r === '/forgot') return renderForgot();
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();
