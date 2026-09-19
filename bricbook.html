@@ -1967,41 +1967,13 @@ a{color:inherit;text-decoration:none}
 
 <script>
 /* ============ Auth store ============ */
-const DEMO = {
-  professional: { email: 'demo@bricbook.com',   password: 'demo1234',   name: 'Nishant Yadav',   username: 'nishant.yadav',    company: 'Sundara Studio',     role: 'Principal Architect', kind: 'professional' },
-  user:         { email: 'client@kaustubh.com', password: 'client1234', name: 'Kaustubh Sharma', username: 'kaustubh.sharma',  company: 'Kaustubh Residence', role: 'Homeowner',           kind: 'user', projectId: 'spdl01', customerId: 'CUST-SPDL01-K7A2' },
-  admin:        { email: 'admin@bricbook.com',  password: 'admin1234',  name: 'BricBook Ops',    username: 'admin',            company: 'BricBook Platform',  role: 'Administrator',       kind: 'admin' },
-};
+const DEMO = { professional:{}, user:{}, admin:{}, studio:{}, customer:{} };
 DEMO.studio = DEMO.professional; DEMO.customer = DEMO.user;
-const USERS = [
-  { username: 'kaustubh.sharma', name: 'Kaustubh Sharma',  role: 'Owner',            city: 'Mumbai' },
-  { username: 'anita.sharma',    name: 'Anita Sharma',     role: 'Family',           city: 'Mumbai' },
-  { username: 'karan.sharma',    name: 'Karan Sharma',     role: 'Family',           city: 'Bangalore' },
-  { username: 'neha.iyer',       name: 'Neha Iyer',        role: 'Project Manager',  city: 'Mumbai' },
-  { username: 'jake.mendes',     name: 'Jake Mendes',      role: 'Site Engineer',    city: 'Mumbai' },
-  { username: 'priya.menon',     name: 'Priya Menon',      role: 'Structural Eng.',  city: 'Bangalore' },
-  { username: 'mark.rathi',      name: 'Mark Rathi',       role: 'Procurement',      city: 'Mumbai' },
-  { username: 'sarah.karim',     name: 'Sarah Karim',      role: 'Site Supervisor',  city: 'Mumbai' },
-  { username: 'nishant.yadav',   name: 'Nishant Yadav',    role: 'Architect',        city: 'Mumbai' },
-  { username: 'aditya.rao',      name: 'Aditya Rao',       role: 'Structural Eng.',  city: 'Bangalore' },
-];
+const USERS = [];
 const LIKES = {}; const COMMENTS = {}; const ANNOTS = {};
 
 /* ============ Architects directory ============ */
-const ARCHITECTS = [
-  { slug: 'nishant-yadav', name: 'Ar. Nishant Yadav', firm: 'Sundara Studio', loc: 'Mumbai', spec: ['Residential','Contemporary'], yrs: 12, proj: 84, avg: 4.9, rev: 62, fee: '₹150 / sqft', bio: 'Principal architect with a decade of residential work across Maharashtra. Known for contemporary Indian homes that balance vernacular material with modern spatial planning.', cover: 0, verified: true, feat: true, avail: 'Booking Sep 2026', award: 'IIA Young Architect 2022' },
-  { slug: 'neha-iyer', name: 'Ar. Neha Iyer', firm: 'Sundara Studio', loc: 'Mumbai', spec: ['Interior','Luxury'], yrs: 8, proj: 42, avg: 4.8, rev: 38, fee: '₹1.2 K / sqft', bio: 'Interior architect specialising in luxury residential fit-outs, with a portfolio of Bandra and South Mumbai homes.', cover: 4, verified: true, feat: true, avail: 'Available Oct 2026', award: 'Elle Decor · Rising 2023' },
-  { slug: 'aditya-rao', name: 'Ar. Aditya Rao', firm: 'Rao Structural', loc: 'Bangalore', spec: ['Structural','Villas'], yrs: 15, proj: 118, avg: 4.7, rev: 91, fee: '₹95 / sqft', bio: 'Structural engineer turned architect, with special interest in earthquake-resilient villa design across Karnataka.', cover: 6, verified: true, feat: true, avail: 'Booking Nov 2026', award: 'FICCI Structural 2019' },
-  { slug: 'priya-menon', name: 'Ar. Priya Menon', firm: 'Casa Vera', loc: 'Bangalore', spec: ['Sustainable','Passive'], yrs: 10, proj: 56, avg: 4.9, rev: 44, fee: '₹180 / sqft', bio: 'Passive-cooling and low-impact residential design. All projects certified IGBC Gold or above.', cover: 7, verified: true, feat: false, avail: 'Available Sep 2026', award: 'IGBC Green Ambassador' },
-  { slug: 'rohan-kapoor', name: 'Ar. Rohan Kapoor', firm: 'Kapoor Design', loc: 'Delhi NCR', spec: ['Commercial','Office'], yrs: 18, proj: 210, avg: 4.6, rev: 152, fee: '₹210 / sqft', bio: 'Corporate campuses and Grade-A office fit-outs across the NCR. Client list includes three Fortune-500 India HQs.', cover: 2, verified: true, feat: false, avail: 'Booking 2027', award: 'CII Interior of the Year 2020' },
-  { slug: 'sanya-sharma', name: 'Ar. Sanya Sharma', firm: 'Studio Verde', loc: 'Pune', spec: ['Landscape','Terraces'], yrs: 6, proj: 34, avg: 4.9, rev: 28, fee: '₹80 / sqft', bio: 'Landscape and rooftop gardens for high-density residential — turning slab terraces into edible micro-farms.', cover: 6, verified: true, feat: false, avail: 'Available immediately', award: 'Elle Decor · Landscape 2024' },
-  { slug: 'vikram-singh', name: 'Ar. Vikram Singh', firm: 'Iron & Ivory', loc: 'Chandigarh', spec: ['Villas','Farmhouses'], yrs: 20, proj: 168, avg: 4.8, rev: 124, fee: '₹250 / sqft', bio: 'Farmhouse and estate architect for Punjab, Chandigarh, and NCR. Restoration of colonial-era bungalows a specialty.', cover: 0, verified: true, feat: false, avail: 'Booking Dec 2026', award: 'INTACH Heritage 2018' },
-  { slug: 'meera-nair', name: 'Ar. Meera Nair', firm: 'Nair & Associates', loc: 'Chennai', spec: ['Heritage','Temple'], yrs: 14, proj: 76, avg: 4.9, rev: 58, fee: '₹170 / sqft', bio: 'Heritage restoration and traditional South Indian residential work. Trained under B. V. Doshi\'s associates.', cover: 7, verified: true, feat: false, avail: 'Available Oct 2026', award: 'JK Cement Heritage 2021' },
-  { slug: 'karthik-rajan', name: 'Ar. Karthik Rajan', firm: 'Rajan Studio', loc: 'Chennai', spec: ['Interior','Modern'], yrs: 9, proj: 48, avg: 4.7, rev: 36, fee: '₹1.1 K / sqft', bio: 'Contemporary interiors with strong emphasis on custom furniture and craft integration.', cover: 3, verified: true, feat: false, avail: 'Available Sep 2026', award: 'AD100 · Under 30 · 2022' },
-  { slug: 'ananya-bose', name: 'Ar. Ananya Bose', firm: 'The Fifth Wall', loc: 'Mumbai', spec: ['Modern','Cinematic'], yrs: 11, proj: 68, avg: 4.8, rev: 52, fee: '₹200 / sqft', bio: 'Cinematic residential architecture — light, shadow, framed views. Featured in Domus twice.', cover: 4, verified: true, feat: true, avail: 'Booking Nov 2026', award: 'Domus 100 · India 2023' },
-  { slug: 'sundeep-vasan', name: 'Ar. Sundeep Vasan', firm: 'Sundeep Studio', loc: 'Kochi', spec: ['Landscape','Coastal'], yrs: 9, proj: 52, avg: 4.7, rev: 40, fee: '₹120 / sqft', bio: 'Coastal Kerala homes and beach resorts. Deep vernacular practice with modern service standards.', cover: 6, verified: true, feat: false, avail: 'Available Sep 2026', award: 'Kerala Chapter IIA 2020' },
-  { slug: 'divya-krishnan', name: 'Ar. Divya Krishnan', firm: 'Krishnan Architects', loc: 'Hyderabad', spec: ['Residential','Contemporary'], yrs: 16, proj: 132, avg: 4.8, rev: 96, fee: '₹160 / sqft', bio: 'Third-generation architect running the family practice — spans Hyderabad, Bangalore, and Dubai residentials.', cover: 0, verified: true, feat: false, avail: 'Booking Nov 2026', award: 'IIA Baburao Mhatre 2019' },
-];
+const ARCHITECTS = [];
 const architectBySlug = s => ARCHITECTS.find(a => a.slug === s);
 const AUTH = {
   get() { try { return JSON.parse(localStorage.getItem('bb-user') || 'null'); } catch(e) { return null; } },
@@ -2019,28 +1991,10 @@ function nav(r) { location.hash = '#' + r; }
 window.nav = nav;
 
 /* ============ Mock data ============ */
-const PROJECTS = [
-  { id: "spdl01",  name: "Kaustubh",         code: "SPDL01",  unread: 3, hero: "residential", city: "Mumbai",     area: "Bandra West",    x: 90,  y: 268, lat: "19.055° N", lng: "72.827° E", client: 'Kaustubh Sharma',    architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 84, status: 'in-progress', lastActive: '2m ago',   pinned: true,  users: ['kaustubh.sharma','anita.sharma','karan.sharma','neha.iyer','jake.mendes'] },
-  { id: "spdl31",  name: "Vikas",            code: "SPDL31",  unread: 0, hero: "villa",       city: "Pune",       area: "Koregaon Park",  x: 118, y: 292, lat: "18.539° N", lng: "73.895° E", client: 'Vikas Reddy',        architect: 'Nishant Yadav', poc: 'Nishant Yadav', progress: 22, status: 'active',       lastActive: '4h ago',   pinned: false, users: ['nishant.yadav','jake.mendes'] },
-  { id: "spdl54",  name: "Ajay",             code: "SPDL54",  unread: 1, hero: "modern",      city: "Bangalore",  area: "Whitefield",     x: 170, y: 378, lat: "12.970° N", lng: "77.750° E", client: 'Ajay Kumar',         architect: 'Nishant Yadav', poc: 'Priya Menon', progress: 68, status: 'in-progress',  lastActive: 'Today 11:12', pinned: true,  users: ['nishant.yadav','priya.menon','ajay.kumar'] },
-  { id: "spdl45",  name: "Kamlesh",          code: "SPDL45",  unread: 0, hero: "residential", city: "Ahmedabad",  area: "Bodakdev",       x: 108, y: 218, lat: "23.032° N", lng: "72.510° E", client: 'Kamlesh Patel',      architect: 'Aditya Rao',   poc: 'Nishant Yadav', progress: 42, status: 'in-progress',  lastActive: 'Yesterday', pinned: false, users: ['aditya.rao','nishant.yadav'] },
-  { id: "spdl84",  name: "Rajiv",            code: "SPDL84",  unread: 0, hero: "villa",       city: "Delhi NCR",  area: "Gurgaon Sec 43", x: 178, y: 148, lat: "28.457° N", lng: "77.075° E", client: 'Rajiv Malhotra',     architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 55, status: 'active',        lastActive: '2 days ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
-  { id: "spdl94",  name: "Aron farms",       code: "SPDL94",  unread: 0, hero: "farms",       city: "Chandigarh", area: "Sector 8",       x: 172, y: 118, lat: "30.746° N", lng: "76.786° E", client: 'Aron Bansal',        architect: 'Sundeep Vasan', poc: 'Nishant Yadav', progress: 12, status: 'active',      lastActive: '3 days ago', pinned: false, users: ['nishant.yadav'] },
-  { id: "spdl44",  name: "United Strangers", code: "SPDL44",  unread: 2, hero: "modern",      city: "Mumbai",     area: "Lower Parel",    x: 92,  y: 274, lat: "18.994° N", lng: "72.826° E", client: 'US Collective',      architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 91, status: 'in-progress',   lastActive: 'Today 09:44', pinned: false, users: ['nishant.yadav','neha.iyer'] },
-  { id: "spdl24",  name: "Mannat",           code: "SPDL24",  unread: 0, hero: "residential", city: "Hyderabad",  area: "Jubilee Hills",  x: 188, y: 338, lat: "17.428° N", lng: "78.408° E", client: 'Mannat Suri',        architect: 'Nishant Yadav', poc: 'Neha Iyer',  progress: 66, status: 'in-progress',   lastActive: '1 week ago', pinned: false, users: ['nishant.yadav'] },
-  { id: "spdl35",  name: "Aipl",             code: "SPDL35",  unread: 0, hero: "villa",       city: "Chennai",    area: "ECR Road",       x: 228, y: 398, lat: "12.910° N", lng: "80.244° E", client: 'AIPL Estates',       architect: 'Meera Nair',   poc: 'Nishant Yadav', progress: 48, status: 'active',        lastActive: '5 days ago', pinned: false, users: ['nishant.yadav','meera.nair'] },
-  { id: "spdl101", name: "Project X",        code: "SPDL101", unread: 0, hero: "modern",      city: "Kochi",      area: "Fort Kochi",     x: 158, y: 430, lat: "9.966° N",  lng: "76.240° E", client: 'Confidential',       architect: 'Nishant Yadav', poc: 'Nishant Yadav', progress: 34, status: 'active',       lastActive: '2 weeks ago', pinned: false, users: ['nishant.yadav'] },
-  { id: "spdl11",  name: "HM house",         code: "SPDL11",  unread: 0, hero: "residential", city: "Goa",        area: "Assagao",        x: 82,  y: 320, lat: "15.610° N", lng: "73.746° E", client: 'H&M Family',         architect: 'Nishant Yadav', poc: 'Sarah Karim', progress: 100, status: 'completed',    lastActive: '3 months ago', pinned: false, users: ['nishant.yadav','sarah.karim'] },
-];
+const PROJECTS = [];
 /* Look up the firm/studio for an architect name (falls back to a friendly default) */
 /* Person profile popover — pops on click of any linked architect / POC / team member */
-const PEOPLE_EXTRA = {
-  'Neha Iyer':    { role: 'Project Manager · Sundara Studio',    firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 8,  projects: 42, phone: '+91 98 20xx 4411', email: 'neha.iyer@sundarastudio.studio',    joined: 'Aug 2018' },
-  'Priya Menon':  { role: 'Structural Engineer',                  firm: 'Casa Vera',         city: 'Bangalore', yrs: 10, projects: 56, phone: '+91 98 76xx 3390', email: 'priya.menon@casavera.studio',        joined: 'Feb 2016' },
-  'Sarah Karim':  { role: 'Site Supervisor',                      firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 4,  projects: 12, phone: '+91 99 12xx 7788', email: 'sarah.karim@sundarastudio.studio',   joined: 'Jun 2022' },
-  'Jake Mendes':  { role: 'Site Engineer',                        firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 3,  projects: 9,  phone: '+91 99 22xx 6612', email: 'jake.mendes@sundarastudio.studio',   joined: 'Jan 2023' },
-  'Mark Rathi':   { role: 'Procurement Lead',                     firm: 'Sundara Studio',    city: 'Mumbai',    yrs: 10, projects: 62, phone: '+91 98 11xx 4477', email: 'mark.rathi@sundarastudio.studio',    joined: 'May 2016' },
-};
+const PEOPLE_EXTRA = {};
 function openPerson(name) {
   const clean = (name || '').replace(/^Ar\.\s*/, '');
   const arch = (typeof ARCHITECTS !== 'undefined') ? ARCHITECTS.find(a => a.name.replace(/^Ar\.\s*/, '').toLowerCase() === clean.toLowerCase()) : null;
@@ -2191,16 +2145,7 @@ const FOLDERS_BY_CAT = {
     { name: "CCTV Layout", sub: "7 files", date: "17 Jul 2025", count: 7 },
   ],
 };
-const MESSAGES = [
-  { day: "Today · 20 Jul" },
-  { author: "Sarah", role: "Project Manager", initials: "SA", color: "#1C3556", time: "09:12", body: 'Good morning, team! Can we have a quick update on where we stand with the main tasks for the week? Let\'s start with the foundation work. <span class="mention">@Jake</span>, how\'s it going?' },
-  { author: "Jake", role: "Site Engineer", initials: "JA", color: "#A87A44", time: "09:14", body: "Morning, Sarah. Foundation work is 90% complete. We should finish by Thursday, assuming the weather stays clear. One thing though — the last batch of concrete took a bit longer to cure than expected." },
-  { author: "Sarah", role: "Project Manager", initials: "SA", color: "#1C3556", time: "09:15", body: 'Thanks for flagging that. Can you check <span class="file-chip">📄 Shuttering · Ground</span> before you call the supplier?' },
-  { author: "Jake", role: "Site Engineer", initials: "JA", color: "#A87A44", time: "09:17", body: "Will do. I'll call them after this meeting.", reactions: [{ e: "👍", n: 2 }, { e: "🙌", n: 1 }] },
-  { author: "Priya", role: "Structural Eng.", initials: "PR", color: "#6B8767", time: "09:22", body: 'Quick note — if there\'s a mix adjustment, share specs with me. Need to review against <span class="file-chip">📄 Column · Ground</span>.' },
-  { author: "Jake", role: "Site Engineer", initials: "JA", color: "#A87A44", time: "09:23", body: "Of course, Priya. Sending shortly." },
-  { author: "Mark", role: "Procurement", initials: "MA", color: "#B85A3E", time: "09:31", body: "Heads up — steel beams delivery is delayed 3 days. Alternate vendor being lined up." },
-];
+const MESSAGES = [];
 
 /* ============ State ============ */
 const state = {
@@ -2362,29 +2307,7 @@ function heroSVG() {
   </svg>`;
 }
 /* Real photo URLs (Unsplash direct — permanent hashes). Falls back to SVG if blocked. */
-const PHOTO_MAP = {
-  bedroom:      ['1616486338812-3dadae4b4ace', '1560448204-e02f11c3d0e2', '1522708323590-d24dbb6b0267', '1505693416388-ac5ce068fe85'],
-  masterbedroom:['1618221195710-dd6b41faaea6', '1616594039964-ae9021a400a0', '1540518614846-7eded433c457', '1616137466211-f939a420be84'],
-  kitchen:      ['1556909114-f6e7ad7d3136', '1600585154340-be6161a56a0c', '1556909195-4e5b0aa9f39a', '1600607687644-c7171b42498f'],
-  living:       ['1618221195710-dd6b41faaea6', '1560185127-6ed189bf02f4', '1567767292278-a4f21aa2d36e', '1600607687939-ce8a6c25118c'],
-  drawing:      ['1600210491892-03d54c0aaf87', '1600585154526-990dced4db0d', '1567016432779-094069958ea5', '1613977257363-707ba9348227'],
-  dining:       ['1600607687644-c7171b42498f', '1567016432779-094069958ea5', '1615529182904-14819c35db37', '1600585154526-990dced4db0d'],
-  bathroom:     ['1552321554-5fefe8c9ef14', '1552321554-5fefe8c9ef14', '1600566753051-6057a4b0f31c', '1600585154340-be6161a56a0c'],
-  toilet:       ['1552321554-5fefe8c9ef14', '1600566753051-6057a4b0f31c', '1600607687644-aac4c3eac7f4', '1552321554-5fefe8c9ef14'],
-  balcony:      ['1600607687939-ce8a6c25118c', '1592595896616-c37162298647', '1600566753151-384129cf4e3e', '1600585154340-be6161a56a0c'],
-  terrace:      ['1592595896616-c37162298647', '1600607687939-ce8a6c25118c', '1560185127-6ed189bf02f4', '1518005020951-eccb494ad742'],
-  entrance:     ['1600607687644-aac4c3eac7f4', '1600566753151-384129cf4e3e', '1600585154340-be6161a56a0c', '1600607687939-ce8a6c25118c'],
-  mandir:       ['1616486338812-3dadae4b4ace', '1600210491892-03d54c0aaf87', '1615529182904-14819c35db37', '1600585154526-990dced4db0d'],
-  study:        ['1600585154526-990dced4db0d', '1616486338812-3dadae4b4ace', '1567016432779-094069958ea5', '1618221195710-dd6b41faaea6'],
-  parking:      ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1487958449943-2429e8be8625', '1590274853856-f22d5ee3d228'],
-  storage:      ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1590274853856-f22d5ee3d228', '1487958449943-2429e8be8625'],
-  roof:         ['1600566753151-384129cf4e3e', '1600607687644-aac4c3eac7f4', '1487958449943-2429e8be8625', '1518005020951-eccb494ad742'],
-  construction: ['1541976590-713941681591', '1583847268964-b28dc8f51f92', '1590274853856-f22d5ee3d228', '1518005020951-eccb494ad742'],
-  residential:  ['1600585154340-be6161a56a0c', '1600607687644-aac4c3eac7f4', '1600566753051-6057a4b0f31c', '1600607687939-ce8a6c25118c'],
-  villa:        ['1600585154340-be6161a56a0c', '1600607687644-aac4c3eac7f4', '1600566753151-384129cf4e3e', '1580587771525-78b9dba3b914'],
-  modern:       ['1487958449943-2429e8be8625', '1600585154340-be6161a56a0c', '1600607687939-ce8a6c25118c', '1600566753051-6057a4b0f31c'],
-  farms:        ['1518005020951-eccb494ad742', '1449158743715-0a90ebb6d2d8', '1543423942-a1c4fea11d24', '1600585154340-be6161a56a0c'],
-};
+const PHOTO_MAP = {};
 function photoKey(name) {
   const n = (name || '').toLowerCase();
   if (n.includes('master')) return 'masterbedroom';
@@ -3794,16 +3717,7 @@ function openJoin() {
 window.openCreate = openCreate; window.openJoin = openJoin; window.createProject = createProject;
 
 /* ============ Jobs board ============ */
-const JOBS = [
-  { role: '3BHK Residence · Design & Execution',       co: 'Malhotra Family',    loc: 'Gurgaon',   type: 'Full project', rate: '₹1.4 – 1.8 Cr', posted: '2 days ago', tags: ['Residential','2,400 sqft','Start Nov'] },
-  { role: 'Interior only · 4BHK apartment',            co: 'Sharma Residence',   loc: 'Mumbai',    type: 'Interior',     rate: '₹32 L',        posted: 'Yesterday',   tags: ['Interior','1,800 sqft','Furnished'] },
-  { role: 'Farmhouse · Ground-up build',                co: 'Bansal Family',      loc: 'Chandigarh',type: 'Full project', rate: '₹3.5 Cr+',      posted: '3 days ago',  tags: ['Farmhouse','8,000 sqft','Landscape'] },
-  { role: 'Structural consultation · G+5 apartment',   co: 'AIPL Estates',       loc: 'Chennai',   type: 'Consulting',   rate: '₹8 – 12 L',    posted: 'Today',       tags: ['Structural','Consulting','6 months'] },
-  { role: 'Heritage restoration · colonial bungalow',   co: 'Nair Trust',        loc: 'Kochi',     type: 'Restoration',  rate: '₹1.2 Cr',       posted: '5 days ago',  tags: ['Heritage','Restoration','Slow'] },
-  { role: 'Sustainable · IGBC-certified villa',         co: 'Green Living Co.',   loc: 'Bangalore', type: 'Full project', rate: '₹4 – 6 Cr',    posted: '1 week ago',   tags: ['Sustainable','Passive','IGBC Gold'] },
-  { role: 'Sample flat · builder show unit',            co: 'Godrej Properties',  loc: 'Pune',      type: 'Interior',     rate: '₹18 L',         posted: '4 days ago',  tags: ['Show flat','Interior','Fast'] },
-  { role: 'Office · 12,000 sqft fit-out',               co: 'Zomato',             loc: 'Delhi NCR', type: 'Commercial',   rate: '₹2.4 Cr',       posted: 'Today',       tags: ['Commercial','Fit-out','Grade A'] },
-];
+const JOBS = [];
 const APPLIED_JOBS = new Set();
 let JOBS_FILTER = 'all';
 function jobsMatchingFilter() {
@@ -4650,42 +4564,42 @@ function renderSettings() {
 }
 
 /* ============ Actions ============ */
-function fillDemo(kind) {
-  if (kind === 'admin') { $('#adEmail').value = DEMO.admin.email; $('#adPwd').value = DEMO.admin.password; }
-  else if (kind === 'user' || kind === 'customer') { $('#liEmail').value = DEMO.user.email; $('#liPwd').value = DEMO.user.password; }
-  else { $('#liEmail').value = DEMO.professional.email; $('#liPwd').value = DEMO.professional.password; }
-  toast('Demo credentials filled');
-}
+function fillDemo() { /* no-op kept for legacy handlers */ }
 function loginFlow(user, note) {
   AUTH.set(user);
   toast(note || 'Signed in');
   renderSkeleton(() => { location.hash = '#/app/explore'; route(); });
 }
-function signIn(e) {
+async function signIn(e) {
   e.preventDefault();
   const em = $('#liEmail').value.trim().toLowerCase(); const pw = $('#liPwd').value;
-  const aud = state.audience || 'professional';
-  if (em === DEMO.user.email && pw === DEMO.user.password) {
-    loginFlow({ ...DEMO.user });
-  } else if (em === DEMO.professional.email && pw === DEMO.professional.password) {
-    loginFlow({ ...DEMO.professional });
-  } else {
-    const nm = em.split('@')[0].replace(/[.]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const un = em.split('@')[0].replace(/[^a-z0-9.]/g, '.');
-    if (aud === 'user' || aud === 'customer') {
-      loginFlow({ email: em, name: nm, username: un, company: 'Your Residence', role: 'Homeowner', kind: 'user', projectId: 'spdl01', customerId: 'CUST-' + em.split('@')[0].toUpperCase().slice(0,4) + '-' + Math.random().toString(36).slice(2,6).toUpperCase() });
-    } else {
-      loginFlow({ email: em, name: nm, username: un, company: 'Your Studio', role: 'Architect', kind: 'professional' });
-    }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable — check your connection'); return false; }
+  const btn = e.target.querySelector('button[type="submit"]'); if(btn){ btn.disabled = true; btn.dataset._t = btn.textContent; btn.textContent = 'Signing in…'; }
+  try{
+    const { data, error } = await sb.auth.signInWithPassword({ email: em, password: pw });
+    if(error){ toast('Sign-in failed: ' + error.message); return false; }
+    /* onAuthStateChange listener will call loginFlow with the hydrated profile */
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = btn.dataset._t || 'Sign in'; }
   }
   return false;
 }
-function signInAdmin(e) {
+async function signInAdmin(e) {
   e.preventDefault();
   const em = $('#adEmail').value.trim().toLowerCase(); const pw = $('#adPwd').value;
-  if (em === DEMO.admin.email && pw === DEMO.admin.password) {
-    loginFlow({ ...DEMO.admin }, 'Admin session started');
-  } else { toast('Invalid admin credentials'); }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const { data, error } = await sb.auth.signInWithPassword({ email: em, password: pw });
+  if(error){ toast('Invalid admin credentials'); return false; }
+  /* Check the profile.role — must be super_admin or ops_admin */
+  const { data: profile } = await sb.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+  if(!profile || (profile.role !== 'super_admin' && profile.role !== 'ops_admin')){
+    await sb.auth.signOut();
+    toast('This account is not authorised for admin access');
+    return false;
+  }
+  /* onAuthStateChange handles the rest */
   return false;
 }
 /* Supabase client (initialised lazily so a CDN hiccup can't crash the page) */
@@ -4699,12 +4613,7 @@ function sbClient(){
 }
 async function googleAuth(kind){
   const sb = sbClient();
-  if(!sb){
-    /* Fallback to mock so the page never becomes unusable if Supabase CDN is blocked */
-    const u = kind === 'admin' ? DEMO.admin : (kind === 'user' || kind === 'customer') ? DEMO.user : DEMO.professional;
-    loginFlow({ ...u, provider: 'google' }, 'Signed in with Google (offline demo)');
-    return;
-  }
+  if(!sb){ toast('Auth service unavailable — check your connection'); return; }
   /* Remember which audience the user was on so we can route correctly after callback */
   try{ sessionStorage.setItem('bb_audience', kind || 'professional'); }catch(e){}
   toast('Redirecting to Google…');
@@ -4772,21 +4681,29 @@ async function hydrateFromSession(session){
     if(person){ loginFlow(person, 'Welcome back, ' + person.name); }
   }
 })();
-function suStep(e, n) {
+async function suStep(e, n) {
   e.preventDefault();
-  if (n < 3) { state.signupStep = n + 1; renderSignup(); }
-  else {
-    const name = ($('#suFirst')?.value || 'New') + ' ' + ($('#suLast')?.value || 'User');
-    const username = name.toLowerCase().replace(/[^a-z]/g, '.');
-    state.signupStep = 1;
-    loginFlow({ email: 'you@studio.com', name, username, company: 'Your Studio', role: 'Architect', kind: 'professional' }, 'Studio created — welcome!');
-  }
+  if (n < 3) { state.signupStep = n + 1; renderSignup(); return false; }
+  const first = ($('#suFirst')?.value || '').trim();
+  const last  = ($('#suLast')?.value || '').trim();
+  const email = ($('#suEmail')?.value || '').trim().toLowerCase();
+  const pwd   = ($('#suPwd')?.value || '');
+  if(!email || !pwd){ toast('Enter an email and password'); return false; }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const name = (first + ' ' + last).trim() || email.split('@')[0];
+  const username = name.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'') || email.split('@')[0];
+  const { data, error } = await sb.auth.signUp({
+    email, password: pwd,
+    options:{ data:{ full_name: name, username, signup_role: 'studio_owner' } }
+  });
+  if(error){ toast('Sign up failed: ' + error.message); return false; }
+  state.signupStep = 1;
+  if(!data.session){ toast('Confirm your email to finish signup'); nav('/login'); return false; }
+  /* onAuthStateChange will call loginFlow */
   return false;
 }
-function skipInvites() {
-  state.signupStep = 1;
-  loginFlow({ email: 'you@studio.com', name: 'New Studio', username: 'new.studio', company: 'Your Studio', role: 'Architect', kind: 'professional' }, 'Studio created — invite team anytime');
-}
+function skipInvites() { state.signupStep = 1; nav('/app/explore'); }
 window.skipInvites = skipInvites;
 function sendReset(e) { e.preventDefault(); toast('Reset link sent (demo) — redirecting…'); setTimeout(() => nav('/reset'), 900); return false; }
 function doReset(e) {
