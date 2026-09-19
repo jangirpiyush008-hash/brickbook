@@ -17,7 +17,8 @@ const MIME = {
 
 /* SPA route table — known client-side routes get 200 on fallback; anything else gets 404 */
 const SPA_ROUTES = new Set([
-  '/', '/login', '/signup', '/signup/client', '/signup/architect',
+  '/', '/list-your-practice',
+  '/login', '/signup', '/signup/client', '/signup/architect',
   '/welcome', '/forgot', '/reset',
   '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'
 ]);
