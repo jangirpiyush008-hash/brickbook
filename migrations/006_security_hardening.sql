@@ -275,6 +275,7 @@ revoke execute on function has_pending_invitation(text) from anon;
 -- Now: only studio side (firm_admin / project_manager on the studio) or
 --      platform admin can add members; regular members can't add themselves.
 drop policy if exists pm_write on project_members;
+drop policy if exists pm_write_admin_or_studio on project_members;
 create policy pm_write_admin_or_studio on project_members for all
   using (
     is_platform_admin()
