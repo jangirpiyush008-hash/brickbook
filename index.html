@@ -326,39 +326,73 @@ a{color:inherit;text-decoration:none}
   .visibility-picker{grid-template-columns:1fr}
 }
 
-/* ============ List Your Practice (architect signup) ============ */
-.lyp-signup{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:var(--ground)}
-.lyp-signup-side{background:var(--brass-tint);color:var(--ink);padding:32px 40px;display:flex;flex-direction:column;overflow-y:auto}
-.lyp-signup-head{display:flex;justify-content:space-between;align-items:center}
+/* ============ Founder card (About BricBook section) ============ */
+.founder-card{margin-top:28px;padding:20px 22px;background:var(--surface);border:1px solid var(--hairline);border-radius:12px}
+.founder-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.founder-head .av.lg{width:56px;height:56px;font-size:20px;flex-shrink:0;background:var(--brass);color:#fff;font-weight:600;font-family:var(--sans);letter-spacing:.02em;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.founder-meta{flex:1;min-width:0}
+.founder-name{font-family:var(--serif);font-size:19px;letter-spacing:-.005em;font-weight:400;color:var(--ink)}
+.founder-role{color:var(--ink-2);font-size:13px;margin-top:2px}
+.founder-tags{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.founder-link{color:var(--brass);font-size:12.5px;font-weight:500;text-decoration:none;padding:6px 12px;border:1px solid var(--brass);border-radius:5px;flex-shrink:0;transition:all .15s}
+.founder-link:hover{background:var(--brass);color:#fff}
+.founder-bio{color:var(--ink-2);font-size:13.5px;line-height:1.65;margin:0 0 14px}
+.founder-facts{display:flex;flex-wrap:wrap;gap:0 20px;font-size:11px;letter-spacing:.02em;color:var(--muted);padding:12px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);text-transform:uppercase}
+.founder-facts b{color:var(--ink);margin-right:6px;letter-spacing:0}
+.founder-links{margin-top:12px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+.founder-links a{color:var(--brass);text-decoration:none}
+.founder-links a:hover{text-decoration:underline}
+.founder-links .sep{margin:0 8px;color:var(--faint)}
+@media (max-width:640px){
+  .founder-head{flex-wrap:wrap}
+  .founder-link{margin-left:0;margin-top:4px}
+}
+
+/* ============ List Your Practice (architect signup) ============
+   Design: one screen, no page scroll. Each side scrolls independently
+   only if the content overflows. Right side is a static navy panel with
+   NO animated blueprint so it never fights the text for attention. */
+.lyp-signup{display:grid;grid-template-columns:1fr 1fr;height:100vh;background:var(--ground);overflow:hidden}
+.lyp-signup-side{background:var(--brass-tint);color:var(--ink);padding:20px 32px;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+.lyp-signup-head{display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .lyp-signup-head .auth-back{color:var(--muted);font-size:13px;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .lyp-signup-head .auth-back:hover{color:var(--ink)}
-.lyp-signup-body{margin:auto 0;max-width:440px;width:100%;padding:40px 0}
-.lyp-signup-body .eyebrow{color:var(--brass);font-weight:600}
-.lyp-signup-body h1{font-family:var(--serif);font-size:44px;font-weight:400;letter-spacing:-.025em;line-height:1.05;margin:12px 0 14px;color:var(--ink)}
+.lyp-signup-body{margin:0;padding:16px 0 20px;max-width:440px;width:100%;align-self:center;flex:1;display:flex;flex-direction:column;justify-content:center}
+.lyp-signup-body .eyebrow{color:var(--brass);font-weight:600;font-size:10.5px;letter-spacing:.14em}
+.lyp-signup-body h1{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.025em;line-height:1.05;margin:6px 0 6px;color:var(--ink)}
 .lyp-signup-body h1 em{color:var(--brass);font-style:italic}
-.lyp-signup-sub{color:var(--ink-2);font-size:15px;line-height:1.55;margin:0}
-.lyp-signup-form{display:flex;flex-direction:column;gap:12px}
+.lyp-signup-sub{color:var(--ink-2);font-size:13.5px;line-height:1.5;margin:0}
+.lyp-signup-form{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.lyp-signup-form .field{margin:0}
+.lyp-signup-form .field label{font-size:11px;margin-bottom:3px}
+.lyp-signup-form .field input,.lyp-signup-form .field select{height:38px;padding:0 10px}
+.lyp-signup-form .check{font-size:12px;margin-top:2px}
+.lyp-signup-body .oauth{margin:14px 0 0}
+.lyp-signup-body .oauth .btn{height:42px;font-size:13px}
+.lyp-signup-body .divider{font-size:10.5px;letter-spacing:.14em;margin:12px 0 8px}
+.lyp-signup-body .btn-block{height:44px;font-size:13.5px}
+.lyp-signup-body .auth-footer{margin-top:12px;font-size:12px}
 
-.lyp-signup-info{background:var(--navy);color:#F5EFD9;padding:40px 48px;display:flex;flex-direction:column;position:relative;overflow:hidden}
-.lyp-info-blueprint{position:absolute;inset:0;color:#F5EFD9;opacity:.09;pointer-events:none;z-index:0}
-.lyp-info-blueprint svg{position:absolute!important;right:-15%!important;top:0!important;width:130%!important;height:100%!important}
-.lyp-info-head{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center}
+/* RIGHT panel — static navy, no distracting animation */
+.lyp-signup-info{background:var(--navy);color:#F5EFD9;padding:32px 40px;display:flex;flex-direction:column;position:relative;overflow-y:auto;overflow-x:hidden}
+.lyp-info-blueprint{display:none}  /* animation removed — text was fighting the movement */
+.lyp-info-head{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .lyp-info-badge{background:rgba(232,153,102,.15);color:var(--brass-2);border:1px solid rgba(232,153,102,.3);padding:5px 12px;border-radius:4px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
-.lyp-info-body{position:relative;z-index:1;margin:auto 0;padding:40px 0;max-width:520px}
-.lyp-info-body h2{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;line-height:1.1;color:#F5F1EA;margin:0 0 14px}
+.lyp-info-body{position:relative;z-index:1;padding:18px 0;max-width:520px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.lyp-info-body h2{font-family:var(--serif);font-size:32px;font-weight:400;letter-spacing:-.02em;line-height:1.1;color:#F5F1EA;margin:0 0 10px}
 .lyp-info-body h2 em{color:var(--brass-2);font-style:italic}
-.lyp-info-sub{color:rgba(245,241,234,.75);font-size:14.5px;line-height:1.55;margin:0 0 32px}
-.lyp-info-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
-.lyp-info-list li{display:flex;gap:14px;align-items:flex-start;color:rgba(245,241,234,.9)}
+.lyp-info-sub{color:rgba(245,241,234,.7);font-size:13px;line-height:1.55;margin:0 0 20px}
+.lyp-info-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+.lyp-info-list li{display:flex;gap:12px;align-items:flex-start;color:rgba(245,241,234,.9)}
 .lyp-info-list li svg{color:var(--brass-2);flex-shrink:0;margin-top:2px}
-.lyp-info-list li b{display:block;font-weight:600;font-size:14px;margin-bottom:2px;color:#F5F1EA}
-.lyp-info-list li span{display:block;color:rgba(245,241,234,.65);font-size:12.5px;line-height:1.5}
-.lyp-info-foot{position:relative;z-index:1;padding-top:20px;border-top:1px solid rgba(245,241,234,.12);font-size:11px;color:rgba(245,241,234,.6);letter-spacing:.12em}
+.lyp-info-list li b{display:block;font-weight:600;font-size:13px;margin-bottom:1px;color:#F5F1EA}
+.lyp-info-list li span{display:block;color:rgba(245,241,234,.6);font-size:12px;line-height:1.45}
+.lyp-info-foot{position:relative;z-index:1;padding-top:14px;border-top:1px solid rgba(245,241,234,.12);font-size:10.5px;color:rgba(245,241,234,.55);letter-spacing:.12em;flex-shrink:0}
 
 @media (max-width:900px){
-  .lyp-signup{grid-template-columns:1fr}
+  .lyp-signup{grid-template-columns:1fr;height:auto;overflow:visible}
   .lyp-signup-info{display:none}
-  .lyp-signup-side{padding:24px 20px}
+  .lyp-signup-side{padding:24px 20px;overflow:visible}
 }
 
 /* ============ List Your Practice (marketing landing - LEGACY, unused) ============ */
@@ -3155,13 +3189,28 @@ function renderLanding() {
             <h3>Every architect should be <em>findable</em>. Every project should have <em>one shared canvas</em>.</h3>
             <p>BricBook is two products in one. First, a directory of India’s architecture practices — every firm with a permanent BricBook ID, a public profile page, and a portfolio of work. Second, a shared workspace where architects and their clients keep every photo, drawing, chat and decision in one place, from first sketch to signed handover.</p>
             <p class="pq">"We’re building the tool I wished I had running my own practice — and giving it to every architect and every client in India."</p>
-            <div class="cred">
-              <div class="av">NY</div>
-              <div class="info">
-                <div class="nm">Ar. Nishant Yadav</div>
-                <div class="loc">Founder · BricBook · Mumbai</div>
+
+            <div class="founder-card">
+              <div class="founder-head">
+                <div class="av lg">NY</div>
+                <div class="founder-meta">
+                  <div class="founder-name">Ar. Nishant Yadav</div>
+                  <div class="founder-role">Founder &amp; CEO · BricBook</div>
+                  <div class="founder-tags mono">Architect · Mumbai, India</div>
+                </div>
+                <a class="founder-link" href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
               </div>
-              <a class="rd" href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener" style="cursor:pointer">Connect on LinkedIn ↗</a>
+              <p class="founder-bio">Nishant is a practicing architect and the founder of BricBook. He spent the past decade running residential and hospitality projects across Maharashtra — the daily reality of juggling site photos, drawings, WhatsApp threads, contractor calls and client updates is what led him to build BricBook. The platform he wished he had running his own studio is the one he’s making available to every practice in India.</p>
+              <div class="founder-facts mono">
+                <span><b>10+</b> years in practice</span>
+                <span><b>Residential</b> · Hospitality · Adaptive reuse</span>
+                <span><b>Based in</b> Mumbai</span>
+              </div>
+              <div class="founder-links">
+                <a href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener noreferrer">linkedin.com/in/nishanty21</a>
+                <span class="sep">·</span>
+                <a href="mailto:sdefiners@gmail.com">sdefiners@gmail.com</a>
+              </div>
             </div>
           </div>
         </div>
@@ -3400,10 +3449,10 @@ function renderLanding() {
               <span class="chip sage">All systems normal</span>
             </div>
           </div>
-          <div><h4>Product</h4><ul><li><a href="/">Gallery</a></li><li><a href="/">Files</a></li><li><a href="/">Chat</a></li><li><a href="/">Folders</a></li><li><a href="/">Pricing</a></li></ul></div>
-          <div><h4>Studio</h4><ul><li><a href="/">About</a></li><li><a href="/">Careers</a></li><li><a href="/">Press</a></li><li><a href="mailto:sdefiners@gmail.com">Contact</a></li></ul></div>
-          <div><h4>Resources</h4><ul><li><a href="/">Docs</a></li><li><a href="/">Changelog</a></li><li><a href="/">Case studies</a></li><li><a href="/">Help center</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="mailto:sdefiners@gmail.com">Security</a></li></ul></div>
+          <div><h4>Explore</h4><ul><li><a href="/" data-scroll="directory">Directory</a></li><li><a href="/" data-scroll="about">About BricBook</a></li><li><a href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener noreferrer">Founder</a></li></ul></div>
+          <div><h4>For architects</h4><ul><li><a href="/list-your-practice">List your practice</a></li><li><a href="/login">Sign in</a></li></ul></div>
+          <div><h4>Get in touch</h4><ul><li><a href="mailto:sdefiners@gmail.com">Email us</a></li><li><a href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li></ul></div>
+          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li></ul></div>
         </div>
         <div class="footer-bot">
           <span class="mono">© 2026 BRICBOOK STUDIO · MUMBAI</span>
@@ -3505,9 +3554,16 @@ async function hydrateLandingDirectory(){
   const registrySection = all && all.closest('.ed-registry');
   if(registrySection){
     registrySection.style.display = restEmpty ? 'none' : '';
-    /* Also hide the "Load next 12" button when empty */
     const loadMore = registrySection.querySelector('button');
     if(loadMore) loadMore.style.display = restEmpty ? 'none' : '';
+  }
+  /* Also hide the primary Directory section (§ 1) when there are no practices at all,
+     so the empty-state doesn't dominate the landing. */
+  const featSection = feat && feat.closest('.ed-registry');
+  if(featSection && studios.length === 0){
+    featSection.style.display = 'none';
+    const searchWrap = document.getElementById('dirSearchWrap');
+    if(searchWrap) searchWrap.style.display = 'none';
   }
 
   /* Recent-work masonry: pick published studios with a cover image */
@@ -3783,9 +3839,9 @@ function renderArchitectProfile(slug) {
       <footer class="footer" style="margin-top:80px" id="footer">
         <div class="footer-inner">
           <div><div class="brand">${brandMark(15)}</div><p class="about">India's directory of building professionals — plus the shared canvas they and their clients build together.</p></div>
-          <div><h4>Directory</h4><ul><li><a href="/">All architects</a></li><li><a href="/">Interior only</a></li><li><a href="/">Landscape</a></li><li><a href="/">Heritage</a></li></ul></div>
-          <div><h4>For architects</h4><ul><li><a href="/signup">List your practice</a></li><li><a href="/login">Sign in</a></li><li><a href="/">Pricing</a></li></ul></div>
-          <div><h4>For clients</h4><ul><li><a href="/signup">Create account</a></li><li><a href="/">How it works</a></li><li><a href="/">Verification</a></li></ul></div>
+          <div><h4>Explore</h4><ul><li><a href="/" data-scroll="directory">Directory</a></li><li><a href="/" data-scroll="about">About BricBook</a></li></ul></div>
+          <div><h4>For architects</h4><ul><li><a href="/list-your-practice">List your practice</a></li><li><a href="/login">Sign in</a></li></ul></div>
+          <div><h4>Get in touch</h4><ul><li><a href="mailto:sdefiners@gmail.com">Email us</a></li><li><a href="https://www.linkedin.com/in/nishanty21/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li></ul></div>
           <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li></ul></div>
         </div>
         <div class="footer-bot"><span class="mono">© 2026 BRICB∞K STUDIO · MUMBAI</span><span class="mono">v6 · Directory</span></div>
@@ -3910,15 +3966,9 @@ function authVisual(kind = 'default') {
           <path class="hs-bird" d="M40 90 q 6 -8 12 0 q 6 -8 12 0"/>
         </g>
       </svg>
-      <div class="top">
-        <a class="brand" href="/" style="color:#F5EFD9">${brandMark(14)}</a>
-        <span>${isAdmin ? 'RESTRICTED ACCESS' : isCust ? 'CLIENT PORTAL' : 'STUDIO'}</span>
-      </div>
+      ${isAdmin ? `<div class="top"><span></span><span>RESTRICTED ACCESS</span></div>` : ''}
       <div class="center">${quote}</div>
-      <div class="bot">
-        <span>${isAdmin ? 'OPS · SEC-04' : isCust ? 'PROJ · SPDL01 · CUST-K7A2' : 'PROJ · SPDL01'}</span>
-        <span>${new Date().getFullYear()}</span>
-      </div>
+      ${isAdmin ? `<div class="bot"><span>OPS · SEC-04</span><span>${new Date().getFullYear()}</span></div>` : ''}
     </div>
   `;
 }
@@ -4874,7 +4924,7 @@ async function renderPracticeProfile(slug){
         </div>
       </nav>
 
-      <section class="pp-hero" ${s.cover_url ? `style="background-image:linear-gradient(180deg,rgba(31,36,64,.35) 0%,rgba(31,36,64,.75) 100%),url('${escapeAttr(s.cover_url)}')"` : ''}>
+      <section class="pp-hero" ${(function(){ const u = safeCssUrl(s.cover_url); return u ? `style="background-image:linear-gradient(180deg,rgba(31,36,64,.35) 0%,rgba(31,36,64,.75) 100%),url('${u}')"` : ''; })()}>
         ${!s.cover_url ? `<div class="pp-hero-bg">${authVisualBlueprintOnly()}</div>` : ''}
         <div class="pp-hero-inner">
           <div class="pp-hero-meta mono">
@@ -5482,8 +5532,15 @@ function openInvite(e){
 window.openInvite = openInvite;
 
 /* /client/invite/:token — invitation landing page */
-async function renderClientInvite(token){
+async function renderClientInvite(rawToken){
   const root = $('#root');
+  const token = String(rawToken || '').trim();
+  /* Hard-validate the token is a plain UUID before any downstream use.
+     Blocks reflected XSS via /client/invite/x');alert(1);// path smuggling. */
+  if(!/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(token)){
+    root.innerHTML = '<div class="auth"><div class="auth-side"><div class="auth-body"><h1 class="serif">Invalid invitation link.</h1><p>This link doesn’t look right. Ask your architect to resend the invitation.</p></div></div></div>';
+    return;
+  }
   root.innerHTML = `
     <div class="auth">
       <div class="auth-side">
@@ -5528,7 +5585,7 @@ async function renderClientInvite(token){
       <div style="opacity:.6;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px">Invited email</div>
       <div>${escapeHTML(inv.email)}</div>
     </div>
-    <button class="btn btn-navy btn-block btn-lg" onclick="acceptInvite('${token}')">
+    <button class="btn btn-navy btn-block btn-lg" id="ciAcceptBtn">
       <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Continue with Google
     </button>
@@ -5536,6 +5593,9 @@ async function renderClientInvite(token){
       Your Google email must match <b>${escapeHTML(inv.email)}</b>. If you sign in with a different account you'll get an error — that's the security check keeping your project private.
     </div>
   `;
+  /* Bind click via addEventListener with the token in a closure — never interpolate it into an onclick attribute (avoids reflected XSS through the URL path segment) */
+  const btn = document.getElementById('ciAcceptBtn');
+  if(btn) btn.addEventListener('click', () => acceptInvite(token));
 }
 function escapeHTML(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 /* safeUrl: reject anything that isn't a plain http/https/mailto/tel URL.
@@ -5550,6 +5610,19 @@ function safeUrl(u){
   if(/^(https?:|mailto:|tel:|\/|#|\?)/.test(lower)) return escapeAttr(raw);
   /* No protocol — assume https */
   return escapeAttr('https://' + raw);
+}
+/* safeCssUrl: for embedding a user-supplied URL inside a CSS url('...') value in
+   an inline style. escapeAttr entity-encodes ' -> &#39; which the HTML parser
+   decodes BEFORE the CSS engine reads it — so entity-encoding does not block
+   the '); background:url(//evil); /* CSS-break-out. Require https:// prefix
+   and reject any char that could close the CSS string or start a new rule. */
+function safeCssUrl(u){
+  const raw = String(u == null ? '' : u).trim();
+  if(!raw) return '';
+  if(!/^https:\/\//i.test(raw)) return '';
+  /* Reject characters that could break out of url('...') or inject new CSS */
+  if(/["'()\\<>;{}]/.test(raw)) return '';
+  return raw;
 }
 
 async function acceptInvite(token){

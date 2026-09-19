@@ -94,7 +94,11 @@ function spaFallback(req, res, pathname){
 function safeJoin(root, urlPath){
   const decoded = decodeURIComponent(urlPath.split('?')[0].split('#')[0]);
   const resolved = path.normalize(path.join(root, decoded));
-  return resolved.startsWith(root) ? resolved : null;
+  /* Strict prefix check: resolved MUST equal root or be a proper descendant.
+     A bare startsWith(root) would let /app/data-secrets/... escape since it
+     shares the "/app/data" prefix with a legitimate root of "/app/data". */
+  const rootWithSep = root.endsWith(path.sep) ? root : (root + path.sep);
+  return (resolved === root || resolved.startsWith(rootWithSep)) ? resolved : null;
 }
 
 http.createServer((req, res) => {
