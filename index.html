@@ -4887,9 +4887,9 @@ async function renderPracticeProfile(slug){
           ${s.tagline ? `<p class="pp-hero-tagline serif">${escapeHTML(s.tagline)}</p>` : ''}
           <div class="pp-hero-cta">
             ${s.contact_email ? `<a class="btn btn-brass btn-lg" href="mailto:${escapeAttr(s.contact_email)}">Contact</a>` : ''}
-            ${s.website ? `<a class="btn btn-ghost-light btn-lg" href="${escapeAttr(s.website)}" target="_blank" rel="noopener">Website ↗</a>` : ''}
-            ${s.linkedin ? `<a class="btn btn-ghost-light btn-lg" href="${escapeAttr(s.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ''}
-            ${s.instagram ? `<a class="btn btn-ghost-light btn-lg" href="${socialUrl('instagram', s.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ''}
+            ${s.website ? `<a class="btn btn-ghost-light btn-lg" href="${safeUrl(s.website)}" target="_blank" rel="noopener noreferrer">Website ↗</a>` : ''}
+            ${s.linkedin ? `<a class="btn btn-ghost-light btn-lg" href="${safeUrl(s.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>` : ''}
+            ${s.instagram ? `<a class="btn btn-ghost-light btn-lg" href="${safeUrl(socialUrl('instagram', s.instagram))}" target="_blank" rel="noopener noreferrer">Instagram</a>` : ''}
           </div>
         </div>
       </section>
@@ -4964,7 +4964,7 @@ async function renderPracticeProfile(slug){
                     <div class="pp-award-name serif">${escapeHTML(a.name || '')}</div>
                     ${a.organization ? `<div class="pp-award-org">${escapeHTML(a.organization)}</div>` : ''}
                     ${a.description ? `<p class="pp-award-desc">${escapeHTML(a.description)}</p>` : ''}
-                    ${a.url ? `<a class="pp-award-link" href="${escapeAttr(a.url)}" target="_blank" rel="noopener">Read more ↗</a>` : ''}
+                    ${a.url ? `<a class="pp-award-link" href="${safeUrl(a.url)}" target="_blank" rel="noopener noreferrer">Read more ↗</a>` : ''}
                   </div>
                 </li>
               `).join('')}
@@ -5005,10 +5005,10 @@ async function renderPracticeProfile(slug){
           <div class="pp-contact-grid">
             ${s.contact_email ? `<a class="pp-contact-item" href="mailto:${escapeAttr(s.contact_email)}"><span class="k mono">Email</span><span class="v">${escapeHTML(s.contact_email)}</span></a>` : ''}
             ${s.contact_phone ? `<a class="pp-contact-item" href="tel:${escapeAttr(s.contact_phone)}"><span class="k mono">Phone</span><span class="v">${escapeHTML(s.contact_phone)}</span></a>` : ''}
-            ${s.website ? `<a class="pp-contact-item" href="${escapeAttr(s.website)}" target="_blank" rel="noopener"><span class="k mono">Website</span><span class="v">${escapeHTML(s.website.replace(/^https?:\/\//,'').replace(/\/$/,''))}</span></a>` : ''}
-            ${s.linkedin ? `<a class="pp-contact-item" href="${escapeAttr(s.linkedin)}" target="_blank" rel="noopener"><span class="k mono">LinkedIn</span><span class="v">${escapeHTML(shortSocial(s.linkedin))}</span></a>` : ''}
-            ${s.instagram ? `<a class="pp-contact-item" href="${escapeAttr(socialUrl('instagram', s.instagram))}" target="_blank" rel="noopener"><span class="k mono">Instagram</span><span class="v">${escapeHTML(s.instagram.replace(/^@?/, '@'))}</span></a>` : ''}
-            ${s.behance ? `<a class="pp-contact-item" href="${escapeAttr(s.behance)}" target="_blank" rel="noopener"><span class="k mono">Behance</span><span class="v">${escapeHTML(shortSocial(s.behance))}</span></a>` : ''}
+            ${s.website ? `<a class="pp-contact-item" href="${safeUrl(s.website)}" target="_blank" rel="noopener noreferrer"><span class="k mono">Website</span><span class="v">${escapeHTML(s.website.replace(/^https?:\/\//,'').replace(/\/$/,''))}</span></a>` : ''}
+            ${s.linkedin ? `<a class="pp-contact-item" href="${safeUrl(s.linkedin)}" target="_blank" rel="noopener noreferrer"><span class="k mono">LinkedIn</span><span class="v">${escapeHTML(shortSocial(s.linkedin))}</span></a>` : ''}
+            ${s.instagram ? `<a class="pp-contact-item" href="${safeUrl(socialUrl('instagram', s.instagram))}" target="_blank" rel="noopener noreferrer"><span class="k mono">Instagram</span><span class="v">${escapeHTML(s.instagram.replace(/^@?/, '@'))}</span></a>` : ''}
+            ${s.behance ? `<a class="pp-contact-item" href="${safeUrl(s.behance)}" target="_blank" rel="noopener noreferrer"><span class="k mono">Behance</span><span class="v">${escapeHTML(shortSocial(s.behance))}</span></a>` : ''}
           </div>
         </div>
       </section>
@@ -5538,6 +5538,19 @@ async function renderClientInvite(token){
   `;
 }
 function escapeHTML(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* safeUrl: reject anything that isn't a plain http/https/mailto/tel URL.
+   Blocks javascript:, data:, vbscript:, file:, and other dangerous schemes
+   that would execute in a user-clickable <a href="..."> context. */
+function safeUrl(u){
+  const raw = String(u == null ? '' : u).trim();
+  if(!raw) return '#';
+  const lower = raw.toLowerCase();
+  if(lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:') || lower.startsWith('file:')) return '#';
+  /* Allow protocol-relative and relative URLs, plus http(s)/mailto/tel */
+  if(/^(https?:|mailto:|tel:|\/|#|\?)/.test(lower)) return escapeAttr(raw);
+  /* No protocol — assume https */
+  return escapeAttr('https://' + raw);
+}
 
 async function acceptInvite(token){
   const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
