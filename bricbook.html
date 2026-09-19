@@ -3,6 +3,11 @@
 <meta name="theme-color" content="#F5F1EA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+window.SB_URL='https://bdqfhrecctaqhrlwqwtz.supabase.co';
+window.SB_KEY='sb_publishable_3UNKcfqNXU-uMQhNJGd-9g_lfO1idFK';
+</script>
 <style>
 :root{
   /* Light: warm ivory ground, peach accent, navy-purple structure, periwinkle secondary */
@@ -4694,11 +4699,90 @@ function signInAdmin(e) {
   } else { toast('Invalid admin credentials'); }
   return false;
 }
-function googleAuth(kind) {
-  const u = kind === 'admin' ? DEMO.admin : (kind === 'user' || kind === 'customer') ? DEMO.user : DEMO.professional;
-  loginFlow({ ...u, provider: 'google' }, 'Signed in with Google');
+/* Supabase client (initialised lazily so a CDN hiccup can't crash the page) */
+function sbClient(){
+  if(window._sb) return window._sb;
+  if(!window.supabase || !window.SB_URL) return null;
+  window._sb = window.supabase.createClient(window.SB_URL, window.SB_KEY, {
+    auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, storage:window.localStorage }
+  });
+  return window._sb;
+}
+async function googleAuth(kind){
+  const sb = sbClient();
+  if(!sb){
+    /* Fallback to mock so the page never becomes unusable if Supabase CDN is blocked */
+    const u = kind === 'admin' ? DEMO.admin : (kind === 'user' || kind === 'customer') ? DEMO.user : DEMO.professional;
+    loginFlow({ ...u, provider: 'google' }, 'Signed in with Google (offline demo)');
+    return;
+  }
+  /* Remember which audience the user was on so we can route correctly after callback */
+  try{ sessionStorage.setItem('bb_audience', kind || 'professional'); }catch(e){}
+  toast('Redirecting to Google…');
+  const { error } = await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{
+      redirectTo: window.location.origin + '/',
+      queryParams:{ access_type:'offline', prompt:'select_account' }
+    }
+  });
+  if(error){ toast('Google sign-in failed: ' + error.message); }
 }
 window.googleAuth = googleAuth;
+
+/* Map a Supabase session to the shape loginFlow() expects */
+async function hydrateFromSession(session){
+  const sb = sbClient(); if(!sb || !session) return null;
+  const u = session.user; const meta = u.user_metadata || {};
+  const audience = (sessionStorage.getItem('bb_audience') || 'professional');
+  let profile = null;
+  try{
+    const { data } = await sb.from('profiles').select('*').eq('id', u.id).maybeSingle();
+    profile = data;
+  }catch(e){}
+  const name = profile?.full_name || meta.full_name || meta.name || (u.email||'').split('@')[0];
+  const username = profile?.username || (u.email||'').split('@')[0].replace(/[^a-z0-9.]/g,'.');
+  const role = profile?.role || 'client';
+  const kind = (role === 'super_admin' || role === 'ops_admin') ? 'admin'
+             : (role === 'studio_owner' || role === 'studio_member') ? 'professional'
+             : (audience === 'user' || audience === 'customer' || audience === 'client') ? 'user'
+             : audience === 'admin' ? 'admin'
+             : 'user';
+  const person = {
+    email: u.email,
+    name,
+    username,
+    avatar: profile?.avatar_url || meta.avatar_url || meta.picture,
+    company: kind === 'admin' ? 'BricBook Platform' : (kind === 'professional' ? 'Your Studio' : 'Your Residence'),
+    role: kind === 'admin' ? 'Administrator' : (kind === 'professional' ? 'Architect' : 'Homeowner'),
+    kind,
+    provider: 'google',
+    supabaseId: u.id
+  };
+  if(kind === 'user'){
+    person.projectId = 'spdl01';
+    person.customerId = 'CUST-' + (u.email||'X').split('@')[0].toUpperCase().slice(0,4) + '-' + u.id.slice(0,4).toUpperCase();
+  }
+  return person;
+}
+
+/* Bootstrap: if we have a Supabase session on page load or after OAuth callback, sign in */
+(async function bootstrapAuth(){
+  const sb = sbClient(); if(!sb) return;
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'SIGNED_IN' && session){
+      const person = await hydrateFromSession(session);
+      if(person && !AUTH.get()){ loginFlow(person, 'Signed in as ' + person.name); }
+    }
+    if(event === 'SIGNED_OUT'){ /* handled by signOut() UI */ }
+  });
+  /* On first paint, check for existing session (survives refresh) */
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session && !AUTH.get()){
+    const person = await hydrateFromSession(session);
+    if(person){ loginFlow(person, 'Welcome back, ' + person.name); }
+  }
+})();
 function suStep(e, n) {
   e.preventDefault();
   if (n < 3) { state.signupStep = n + 1; renderSignup(); }
@@ -4735,7 +4819,14 @@ function saveWA() {
 window.saveWA = saveWA;
 window.saveProfile = saveProfile; window.changePwd = changePwd; window.doReset = doReset; window.sendReset = sendReset;
 window.signIn = signIn; window.signInAdmin = signInAdmin; window.suStep = suStep; window.fillDemo = fillDemo;
-function signOut() { AUTH.clear(); toast('Signed out'); nav('/'); }
+async function signOut() {
+  const sb = sbClient();
+  if(sb){ try{ await sb.auth.signOut(); }catch(e){} }
+  AUTH.clear();
+  try{ sessionStorage.removeItem('bb_audience'); }catch(e){}
+  toast('Signed out');
+  nav('/');
+}
 window.signOut = signOut;
 
 /* ============ Lightbox ============ */
