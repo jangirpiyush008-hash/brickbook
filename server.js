@@ -21,9 +21,9 @@ const SPA_ROUTES = new Set([
   '/login', '/signup', '/signup/client', '/signup/architect',
   '/welcome', '/forgot', '/reset',
   '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs',
-  '/app/practice/setup'
+  '/app/practice/setup', '/app/practice/projects', '/app/practice/projects/new'
 ]);
-const SPA_ROUTE_PREFIXES = ['/app/', '/architect/', '/client/invite/'];
+const SPA_ROUTE_PREFIXES = ['/app/', '/architect/', '/client/invite/', '/practice/'];
 function isKnownSpaRoute(pathname){
   if(SPA_ROUTES.has(pathname)) return true;
   return SPA_ROUTE_PREFIXES.some(p => pathname.startsWith(p));

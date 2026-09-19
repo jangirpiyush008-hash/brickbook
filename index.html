@@ -90,6 +90,37 @@ a{color:inherit;text-decoration:none}
 
 /* ============ Landing nav ============ */
 .landing{min-height:100vh}
+/* ============ Portfolio editor ============ */
+.practice-main{max-width:1140px;margin:0 auto;padding:36px 24px 80px}
+.practice-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--hairline);flex-wrap:wrap}
+.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.port-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+.port-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.port-card-cover{aspect-ratio:4/3;background:var(--surface-2);position:relative;overflow:hidden}
+.port-card-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.port-card-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--surface-2),var(--hairline))}
+.port-card-featured{position:absolute;top:10px;right:10px;background:var(--brass);color:var(--ground);font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 10px;border-radius:4px;text-transform:uppercase}
+.port-card-body{padding:14px 16px}
+.port-card-name{font-family:var(--serif);font-size:18px;letter-spacing:-.01em;margin-bottom:4px}
+.port-card-meta{font-size:11px;color:var(--muted);letter-spacing:.02em}
+.port-empty{grid-column:1/-1;text-align:center;padding:80px 20px;background:var(--surface);border:1px dashed var(--hairline);border-radius:14px}
+.port-empty h3{font-family:var(--serif);font-size:28px;font-weight:400;margin:0 0 10px;letter-spacing:-.02em}
+.port-empty p{color:var(--muted);max-width:460px;margin:0 auto 24px}
+.port-editor{display:flex;flex-direction:column;gap:32px}
+.port-sec{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:24px 28px}
+.port-sec h3{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 16px;letter-spacing:-.01em}
+.port-cover-slot{position:relative;aspect-ratio:16/9;background:var(--surface-2);border-radius:8px;overflow:hidden;border:1px dashed var(--hairline);display:flex;align-items:center;justify-content:center}
+.port-cover-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.port-upload-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;background:var(--surface);border:1px solid var(--hairline);border-radius:6px;color:var(--ink-2);cursor:pointer;font-size:13.5px;transition:all .12s}
+.port-upload-btn:hover{border-color:var(--brass);color:var(--brass);background:var(--brass-tint)}
+.port-img-remove{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:rgba(15,18,32,.7);color:#fff;border:none;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.port-img-remove:hover{background:var(--terra)}
+.port-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.port-tile{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--surface-2);cursor:move}
+.port-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.port-tile-add{cursor:pointer;border:1px dashed var(--hairline);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12.5px;text-align:center;padding:10px;transition:all .12s}
+.port-tile-add:hover{border-color:var(--brass);color:var(--brass);background:var(--brass-tint)}
+
 /* ============ Practice setup wizard ============ */
 .setup{background:var(--ground);min-height:100vh;display:flex;flex-direction:column}
 .setup-progress{display:flex;gap:24px;align-items:center;font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
@@ -2268,7 +2299,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup'];
+const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup', '/app/practice/projects', '/app/practice/projects/new'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2301,6 +2332,8 @@ const ROUTE_META = {
   '/signup/architect':{ title:'List your practice — BricBook',                                  desc:'Join India’s directory of verified architects and studios.' },
   '/welcome':        { title:'Welcome — BricBook',                                               desc:'Choose how you want to use BricBook.' },
   '/app/practice/setup':{ title:'Complete your practice profile — BricBook',                     desc:'Set up your architect firm profile: info, description, services, contact.' },
+  '/app/practice/projects':{ title:'Portfolio projects — BricBook',                              desc:'Manage the projects shown on your public practice profile.' },
+  '/app/practice/projects/new':{ title:'New portfolio project — BricBook',                       desc:'Add a project to your practice portfolio.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -4058,6 +4091,314 @@ window.addCustomChip = addCustomChip;
 
 function prevSetupStep(){ if(state.practiceStep > 1){ state.practiceStep--; renderPracticeSetupBody(); } }
 window.prevSetupStep = prevSetupStep;
+
+/* ============ Portfolio projects CRUD (/app/practice/projects) ============ */
+const PORTFOLIO_STATUSES = [
+  { v:'completed',   l:'Completed' },
+  { v:'ongoing',     l:'Ongoing' },
+  { v:'concept',     l:'Concept' },
+  { v:'competition', l:'Competition' },
+  { v:'proposed',    l:'Proposed' }
+];
+const PROJECT_TYPES = [
+  'Residential','Commercial','Hospitality','Retail','Healthcare','Education',
+  'Interior','Landscape','Urban','Industrial','Sustainable','Heritage','Adaptive Reuse'
+];
+
+async function renderPortfolioList(){
+  const root = $('#root');
+  const sb = sbClient();
+  if(!sb){ root.innerHTML = '<p style="padding:40px">Auth unavailable</p>'; return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ nav('/welcome'); return; }
+  const { data: projects, error } = await sb.from('projects')
+    .select('*')
+    .eq('studio_id', studio.id)
+    .eq('kind', 'portfolio')
+    .order('featured', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .order('year', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false });
+  if(error){ toast('Load failed: ' + error.message); return; }
+  root.innerHTML = `
+    <div class="setup">
+      ${practiceShellNav('projects', studio)}
+      <main class="practice-main">
+        <div class="practice-head">
+          <div>
+            <span class="eyebrow">Portfolio</span>
+            <h1 class="serif" style="font-size:36px;font-weight:400;letter-spacing:-.02em;margin:6px 0 4px">Projects</h1>
+            <p style="color:var(--muted);font-size:13.5px;margin:0">${(projects||[]).length} project${(projects||[]).length===1?'':'s'} · shown on your public profile at <span class="mono">/practice/${escapeAttr(studio.slug)}</span></p>
+          </div>
+          <div><button class="btn btn-navy btn-lg" onclick="portfolioNew()">+ New project</button></div>
+        </div>
+        <div class="port-grid">
+          ${(projects||[]).map(p => portfolioCardHTML(p)).join('') || `
+            <div class="port-empty">
+              <h3 class="serif">Add your first project.</h3>
+              <p>Portfolio projects show up on your public practice profile. Photos, description, year, tags — the whole story.</p>
+              <button class="btn btn-brass btn-lg" onclick="portfolioNew()">+ Add a project</button>
+            </div>
+          `}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function portfolioCardHTML(p){
+  const cover = p.cover_url ? `<img src="${escapeAttr(p.cover_url)}" alt="" loading="lazy">` : '<div class="port-card-placeholder"></div>';
+  return `
+    <a class="port-card" href="/app/practice/projects/${p.id}">
+      <div class="port-card-cover">${cover}
+        ${p.featured ? '<span class="port-card-featured">✦ Featured</span>' : ''}
+      </div>
+      <div class="port-card-body">
+        <div class="port-card-name">${escapeHTML(p.name || 'Untitled project')}</div>
+        <div class="port-card-meta mono">${[p.year, p.city, p.portfolio_status || p.status].filter(Boolean).join(' · ')}</div>
+      </div>
+    </a>
+  `;
+}
+
+function practiceShellNav(active, studio){
+  const items = [
+    { k:'projects', l:'Projects', h:'/app/practice/projects' },
+    { k:'setup',    l:'Profile',  h:'/app/practice/setup' }
+  ];
+  return `
+    <nav class="ln-nav" style="border-bottom:1px solid var(--hairline)">
+      <div class="ln-nav-inner">
+        <a class="brand" href="/">${brandMark(15)}</a>
+        <div class="links">
+          ${items.map(i => `<a href="${i.h}" ${i.k===active?'data-active="true"':''}>${i.l}</a>`).join('')}
+          <a href="/practice/${escapeAttr(studio?.slug || '')}" target="_blank" rel="noopener">Public profile ↗</a>
+        </div>
+        <div class="cta">
+          <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+        </div>
+      </div>
+    </nav>
+  `;
+}
+
+async function portfolioNew(){
+  const sb = sbClient(); if(!sb){ toast('Auth unavailable'); return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ toast('Register a firm first'); nav('/welcome'); return; }
+  const { data, error } = await sb.from('projects').insert({
+    studio_id: studio.id,
+    kind: 'portfolio',
+    name: 'Untitled project',
+    portfolio_status: 'completed',
+    city: studio.city
+  }).select().single();
+  if(error){ toast('Create failed: ' + error.message); return; }
+  nav('/app/practice/projects/' + data.id);
+}
+window.portfolioNew = portfolioNew;
+
+async function renderPortfolioEdit(projectId){
+  const root = $('#root');
+  const sb = sbClient(); if(!sb){ root.innerHTML = '<p>Auth unavailable</p>'; return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  const { data: p, error } = await sb.from('projects').select('*').eq('id', projectId).maybeSingle();
+  if(error || !p){ toast('Project not found'); nav('/app/practice/projects'); return; }
+  if(studio && p.studio_id !== studio.id && !isAdminRole(p)){
+    toast('You don’t have access to that project'); nav('/app/practice/projects'); return;
+  }
+  state.portfolio = { ...p, gallery_urls: p.gallery_urls || [] };
+  renderPortfolioEditBody(studio);
+}
+
+function isAdminRole(){ /* placeholder for later admin checks */ return false; }
+
+function renderPortfolioEditBody(studio){
+  const root = $('#root');
+  const p = state.portfolio;
+  const gallery = p.gallery_urls || [];
+  root.innerHTML = `
+    <div class="setup">
+      ${practiceShellNav('projects', studio)}
+      <main class="practice-main">
+        <div class="practice-head">
+          <div>
+            <a href="/app/practice/projects" class="mono" style="color:var(--muted);font-size:12px">← All projects</a>
+            <h1 class="serif" style="font-size:32px;font-weight:400;letter-spacing:-.02em;margin:6px 0 4px">${escapeHTML(p.name || 'Untitled project')}</h1>
+            <p style="color:var(--muted);font-size:12.5px;margin:0"><span class="mono">${escapeHTML(p.code || '—')}</span> · last saved ${fmtRel(p.updated_at || p.created_at)}</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" style="color:var(--terra);border-color:var(--terra)" onclick="deletePortfolio('${p.id}')">Delete</button>
+            <button class="btn btn-navy btn-lg" onclick="savePortfolio()">Save changes</button>
+          </div>
+        </div>
+
+        <div class="port-editor">
+          <section class="port-sec">
+            <h3 class="serif">Cover image</h3>
+            <div class="port-cover-slot">
+              ${p.cover_url ? `<img src="${escapeAttr(p.cover_url)}" alt="cover"><button class="port-img-remove" onclick="removePortfolioImage('cover')" title="Remove">×</button>` :
+                `<label class="port-upload-btn"><input type="file" accept="image/*" onchange="handlePortfolioImage(this, 'cover')" hidden><span>Upload cover image</span></label>`}
+            </div>
+          </section>
+
+          <section class="port-sec">
+            <h3 class="serif">Basics</h3>
+            <div class="setup-form">
+              <div class="field"><label>Project name *</label><input id="po_name" value="${escapeAttr(p.name || '')}" required></div>
+              <div class="field-row">
+                <div class="field"><label>Year</label><input id="po_year" type="number" min="1900" max="2100" value="${p.year || ''}" placeholder="2024"></div>
+                <div class="field"><label>Status</label><select id="po_status">${PORTFOLIO_STATUSES.map(s => `<option value="${s.v}" ${p.portfolio_status===s.v?'selected':''}>${s.l}</option>`).join('')}</select></div>
+                <div class="field"><label>Type</label><select id="po_type"><option value="">Choose…</option>${PROJECT_TYPES.map(t => `<option ${p.project_type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label>City</label><input id="po_city" value="${escapeAttr(p.city || '')}"></div>
+                <div class="field"><label>Area</label><input id="po_area" value="${escapeAttr(p.area || '')}" placeholder="e.g. 2,400 sqft"></div>
+              </div>
+              <div class="field"><label>Short description</label><textarea id="po_desc" rows="2" maxlength="240" placeholder="One or two sentences">${escapeAttr(p.description || '')}</textarea></div>
+              <div class="field"><label>Full description</label><textarea id="po_desc_long" rows="6" placeholder="Materials, brief, process, client story…">${escapeAttr(p.description_long || '')}</textarea></div>
+              <div class="field"><label>Team credits</label><input id="po_team" value="${escapeAttr(p.team_credits || '')}" placeholder="Principal: X · Design lead: Y · Contractor: Z"></div>
+              <div class="field-row">
+                <div class="field"><label>Video URL (YouTube / Vimeo)</label><input id="po_video" type="url" value="${escapeAttr(p.video_url || '')}" placeholder="https://youtu.be/…"></div>
+                <div class="field"><label>External link</label><input id="po_ext" type="url" value="${escapeAttr(p.external_url || '')}" placeholder="https://…"></div>
+              </div>
+              <div class="check"><input type="checkbox" id="po_feat" ${p.featured?'checked':''}><label for="po_feat"><b>Feature this project</b> — shown prominently at the top of your profile</label></div>
+            </div>
+          </section>
+
+          <section class="port-sec">
+            <h3 class="serif">Gallery <span class="mono" style="font-size:11px;color:var(--muted);margin-left:8px">${gallery.length} image${gallery.length===1?'':'s'}</span></h3>
+            <p style="color:var(--muted);font-size:13px;margin:0 0 12px">Add up to 20 project images. Drag to reorder.</p>
+            <div class="port-gallery" id="portGallery">
+              ${gallery.map((url, i) => `
+                <div class="port-tile" draggable="true" data-i="${i}" ondragstart="portDragStart(event, ${i})" ondragover="portDragOver(event)" ondrop="portDrop(event, ${i})">
+                  <img src="${escapeAttr(url)}" alt="" loading="lazy">
+                  <button class="port-img-remove" onclick="removePortfolioImage('gallery', ${i})" title="Remove">×</button>
+                </div>
+              `).join('')}
+              ${gallery.length < 20 ? `
+                <label class="port-tile port-tile-add">
+                  <input type="file" accept="image/*" multiple onchange="handlePortfolioImage(this, 'gallery')" hidden>
+                  <span>+ Add images</span>
+                </label>
+              ` : ''}
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function fmtRel(iso){
+  if(!iso) return 'just now';
+  const t = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(t/60000), h = Math.floor(t/3600000), d = Math.floor(t/86400000);
+  if(m < 1) return 'just now';
+  if(h < 1) return m + 'm ago';
+  if(d < 1) return h + 'h ago';
+  if(d < 30) return d + 'd ago';
+  return new Date(iso).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+async function handlePortfolioImage(input, target){
+  const sb = sbClient(); if(!sb){ toast('Auth unavailable'); return; }
+  const files = Array.from(input.files || []);
+  if(!files.length) return;
+  const p = state.portfolio;
+  if(!p || !p.id){ toast('Save project first'); return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ toast('No studio'); return; }
+  toast('Uploading ' + files.length + ' file' + (files.length===1?'':'s') + '…');
+  const uploaded = [];
+  for(const f of files){
+    const safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = studio.id + '/' + p.id + '/' + Date.now() + '_' + Math.random().toString(36).slice(2,6) + '_' + safe;
+    const { error: upErr } = await sb.storage.from('practice').upload(path, f, { contentType: f.type });
+    if(upErr){ toast('Upload failed: ' + upErr.message); continue; }
+    const { data: pub } = sb.storage.from('practice').getPublicUrl(path);
+    uploaded.push(pub.publicUrl);
+  }
+  if(!uploaded.length){ input.value = ''; return; }
+  const patch = target === 'cover'
+    ? { cover_url: uploaded[0] }
+    : { gallery_urls: [...(p.gallery_urls || []), ...uploaded].slice(0, 20) };
+  const { error } = await sb.from('projects').update(patch).eq('id', p.id);
+  if(error){ toast('Save failed: ' + error.message); return; }
+  Object.assign(state.portfolio, patch);
+  toast('Uploaded');
+  renderPortfolioEditBody(studio);
+}
+window.handlePortfolioImage = handlePortfolioImage;
+
+async function removePortfolioImage(target, idx){
+  const sb = sbClient(); const p = state.portfolio; if(!sb || !p) return;
+  const patch = target === 'cover'
+    ? { cover_url: null }
+    : { gallery_urls: (p.gallery_urls || []).filter((_, i) => i !== idx) };
+  const { error } = await sb.from('projects').update(patch).eq('id', p.id);
+  if(error){ toast('Remove failed: ' + error.message); return; }
+  Object.assign(state.portfolio, patch);
+  const { data: studio } = await sb.rpc('my_studio');
+  renderPortfolioEditBody(studio);
+}
+window.removePortfolioImage = removePortfolioImage;
+
+/* Gallery reorder (drag / drop) */
+let dragIdx = null;
+function portDragStart(e, i){ dragIdx = i; e.dataTransfer.effectAllowed = 'move'; }
+function portDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+async function portDrop(e, i){
+  e.preventDefault();
+  if(dragIdx === null || dragIdx === i) return;
+  const p = state.portfolio;
+  const arr = [...(p.gallery_urls || [])];
+  const [item] = arr.splice(dragIdx, 1);
+  arr.splice(i, 0, item);
+  const sb = sbClient();
+  const { error } = await sb.from('projects').update({ gallery_urls: arr }).eq('id', p.id);
+  if(error){ toast('Reorder failed: ' + error.message); return; }
+  state.portfolio.gallery_urls = arr;
+  const { data: studio } = await sb.rpc('my_studio');
+  renderPortfolioEditBody(studio);
+}
+window.portDragStart = portDragStart; window.portDragOver = portDragOver; window.portDrop = portDrop;
+
+async function savePortfolio(){
+  const sb = sbClient(); const p = state.portfolio; if(!sb || !p) return;
+  const patch = {
+    name: $('#po_name').value.trim() || 'Untitled project',
+    year: $('#po_year').value ? parseInt($('#po_year').value, 10) : null,
+    portfolio_status: $('#po_status').value || null,
+    project_type: $('#po_type').value || null,
+    city: $('#po_city').value.trim() || null,
+    area: $('#po_area').value.trim() || null,
+    description: $('#po_desc').value.trim() || null,
+    description_long: $('#po_desc_long').value.trim() || null,
+    team_credits: $('#po_team').value.trim() || null,
+    video_url: $('#po_video').value.trim() || null,
+    external_url: $('#po_ext').value.trim() || null,
+    featured: $('#po_feat').checked
+  };
+  const { error } = await sb.from('projects').update(patch).eq('id', p.id);
+  if(error){ toast('Save failed: ' + error.message); return; }
+  Object.assign(state.portfolio, patch);
+  try{ await sb.rpc('recalc_profile_completion'); }catch(e){}
+  toast('Saved');
+  const { data: studio } = await sb.rpc('my_studio');
+  renderPortfolioEditBody(studio);
+}
+window.savePortfolio = savePortfolio;
+
+async function deletePortfolio(id){
+  if(!confirm('Delete this project permanently? The images will be removed too.')) return;
+  const sb = sbClient();
+  const { error } = await sb.from('projects').delete().eq('id', id);
+  if(error){ toast('Delete failed: ' + error.message); return; }
+  toast('Project deleted');
+  nav('/app/practice/projects');
+}
+window.deletePortfolio = deletePortfolio;
 
 async function saveSetupStep(e, step){
   e.preventDefault();
@@ -6407,6 +6748,9 @@ function route() {
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
   if (r === '/welcome') return renderWelcome();
   if (r === '/app/practice/setup') return renderPracticeSetup();
+  if (r === '/app/practice/projects') return renderPortfolioList();
+  if (r === '/app/practice/projects/new') return portfolioNew();
+  if (r.startsWith('/app/practice/projects/')) return renderPortfolioEdit(r.slice('/app/practice/projects/'.length));
   if (r === '/forgot') return renderForgot();
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();
