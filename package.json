@@ -1,0 +1,12 @@
+{
+  "name": "bricbook",
+  "version": "1.0.0",
+  "description": "BricBook — the site plan for construction collaboration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

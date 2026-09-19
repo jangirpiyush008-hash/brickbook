@@ -1981,14 +1981,88 @@ const AUTH = {
   clear() { localStorage.removeItem('bb-user'); },
 };
 
-/* ============ Router ============ */
-const ROUTES = ['/', '/login', '/signup', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
+/* ============ Router (real paths via pushState with hash fallback) ============ */
+const ROUTES = ['/', '/login', '/signup', '/signup/client', '/signup/architect', '/for-clients', '/for-architects', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
 function currentRoute() {
-  const h = (location.hash || '#/').slice(1);
-  return h || '/';
+  /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
+  let p = location.pathname || '/';
+  if(p === '/' && location.hash && location.hash.startsWith('#/')){
+    p = location.hash.slice(1) || '/';
+  }
+  /* Strip trailing slash except for root */
+  if(p !== '/' && p.endsWith('/')) p = p.slice(0, -1);
+  return p || '/';
 }
-function nav(r) { location.hash = '#' + r; }
+function nav(r) {
+  const url = r + (location.search || '');
+  if(location.pathname !== r){
+    history.pushState({}, '', url);
+  }
+  /* Clear any legacy hash so it doesn't override the path */
+  if(location.hash){ history.replaceState({}, '', r + location.search); }
+  route();
+}
 window.nav = nav;
+window.addEventListener('popstate', () => route());
+
+/* ============ SEO / per-route metadata ============ */
+const ROUTE_META = {
+  '/':               { title:'BricBook — India’s directory of architects',                     desc:'Discover verified architects across India · site plan for construction collaboration.' },
+  '/login':          { title:'Sign in — BricBook',                                              desc:'Sign in to your BricBook studio or client workspace.' },
+  '/signup':         { title:'Get started — BricBook',                                           desc:'Choose whether you’re here to hire an architect or list your practice.' },
+  '/signup/client':  { title:'Hire an architect — BricBook',                                    desc:'Post a brief and get matched to verified architects in your city.' },
+  '/signup/architect':{ title:'List your practice — BricBook',                                  desc:'Join India’s directory of verified architects and studios.' },
+  '/for-clients':    { title:'For homeowners and clients — BricBook',                            desc:'How to find, hire, and collaborate with an architect on BricBook.' },
+  '/for-architects': { title:'For architects and studios — BricBook',                            desc:'Grow your practice with a verified BricBook profile, briefs, and client workspace.' },
+  '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
+  '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
+  '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
+  '/app':            { title:'Dashboard — BricBook',                                             desc:'Your projects, chats, and site updates.' },
+  '/app/explore':    { title:'Explore — BricBook',                                               desc:'All your projects at a glance.' },
+  '/app/profile':    { title:'Profile — BricBook',                                               desc:'Your public architect or client profile.' },
+  '/app/settings':   { title:'Settings — BricBook',                                              desc:'Manage account, notifications, and appearance.' },
+  '/app/pros':       { title:'Directory — BricBook',                                             desc:'Browse verified architects across India.' },
+  '/app/jobs':       { title:'Job briefs — BricBook',                                            desc:'Client project briefs open for architect submissions.' }
+};
+function applyRouteMeta(r){
+  let meta = ROUTE_META[r];
+  if(!meta){
+    if(r.startsWith('/architect/')) meta = { title:'Architect profile — BricBook', desc:'Verified architect on BricBook.' };
+    else if(r.startsWith('/app/project/')) meta = { title:'Project — BricBook', desc:'Site plan, drawings, chat and gallery.' };
+    else meta = ROUTE_META['/'];
+  }
+  try{
+    document.title = meta.title;
+    let m = document.querySelector('meta[name="description"]');
+    if(!m){ m = document.createElement('meta'); m.setAttribute('name','description'); document.head.appendChild(m); }
+    m.setAttribute('content', meta.desc);
+    let c = document.querySelector('link[rel="canonical"]');
+    if(!c){ c = document.createElement('link'); c.setAttribute('rel','canonical'); document.head.appendChild(c); }
+    c.setAttribute('href', 'https://bricbook.com' + r);
+  }catch(e){}
+}
+
+/* ============ UTM capture (persist for signup attribution) ============ */
+(function captureUTM(){
+  try{
+    const q = new URLSearchParams(location.search);
+    const keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','ref','gclid','fbclid'];
+    const collected = {};
+    keys.forEach(k => { const v = q.get(k); if(v) collected[k] = v; });
+    if(Object.keys(collected).length){
+      collected._first_touch_at = new Date().toISOString();
+      collected._first_touch_url = location.pathname + location.search;
+      const existing = JSON.parse(localStorage.getItem('bb_utm') || 'null');
+      /* Keep the FIRST touch attribution; overwrite only if same session hits with new UTM */
+      if(!existing){ localStorage.setItem('bb_utm', JSON.stringify(collected)); }
+      localStorage.setItem('bb_utm_last', JSON.stringify(collected));
+    }
+  }catch(e){}
+})();
+function getUTM(){
+  try{ return JSON.parse(localStorage.getItem('bb_utm') || '{}'); }catch(e){ return {}; }
+}
+window.getUTM = getUTM;
 
 /* ============ Mock data ============ */
 const PROJECTS = [];
@@ -2417,18 +2491,19 @@ function renderLanding() {
     <div class="landing">
       <nav class="ln-nav" id="lnNav">
         <div class="ln-nav-inner">
-          <a class="brand" href="#/">${brandMark(15)}</a>
+          <a class="brand" href="/">${brandMark(15)}</a>
           <div class="links">
-            <a href="#/" data-scroll="directory">Directory</a>
-            <a href="#/" data-scroll="how">How it works</a>
-            <a href="#/" data-scroll="pricing">Pricing</a>
-            <a href="#/" data-scroll="studio">Reviews</a>
-            <a href="#/signup">For architects</a>
+            <a href="/" data-scroll="directory">Directory</a>
+            <a href="/" data-scroll="how">How it works</a>
+            <a href="/" data-scroll="pricing">Pricing</a>
+            <a href="/" data-scroll="studio">Reviews</a>
+            <a href="/signup/architect">For architects</a>
           </div>
           <div class="cta">
             <button class="icon-btn" onclick="toggleTheme()" id="themeBtnLn">${iconSVG('sun')}</button>
             <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
-            <button class="btn btn-navy btn-sm" onclick="nav('/signup')">List your practice</button>
+            <button class="btn btn-brass btn-sm" onclick="nav('/signup/client')">Hire an architect</button>
+            <button class="btn btn-navy btn-sm" onclick="nav('/signup/architect')">List your practice</button>
           </div>
         </div>
       </nav>
@@ -2786,10 +2861,10 @@ function renderLanding() {
               <span class="chip sage">All systems normal</span>
             </div>
           </div>
-          <div><h4>Product</h4><ul><li><a href="#/">Gallery</a></li><li><a href="#/">Files</a></li><li><a href="#/">Chat</a></li><li><a href="#/">Folders</a></li><li><a href="#/">Pricing</a></li></ul></div>
-          <div><h4>Studio</h4><ul><li><a href="#/">About</a></li><li><a href="#/">Careers</a></li><li><a href="#/">Press</a></li><li><a href="mailto:sdefiners@gmail.com">Contact</a></li></ul></div>
-          <div><h4>Resources</h4><ul><li><a href="#/">Docs</a></li><li><a href="#/">Changelog</a></li><li><a href="#/">Case studies</a></li><li><a href="#/">Help center</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="mailto:sdefiners@gmail.com">Security</a></li><li><a href="#/admin">Admin login</a></li></ul></div>
+          <div><h4>Product</h4><ul><li><a href="/">Gallery</a></li><li><a href="/">Files</a></li><li><a href="/">Chat</a></li><li><a href="/">Folders</a></li><li><a href="/">Pricing</a></li></ul></div>
+          <div><h4>Studio</h4><ul><li><a href="/">About</a></li><li><a href="/">Careers</a></li><li><a href="/">Press</a></li><li><a href="mailto:sdefiners@gmail.com">Contact</a></li></ul></div>
+          <div><h4>Resources</h4><ul><li><a href="/">Docs</a></li><li><a href="/">Changelog</a></li><li><a href="/">Case studies</a></li><li><a href="/">Help center</a></li></ul></div>
+          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="mailto:sdefiners@gmail.com">Security</a></li><li><a href="/admin">Admin login</a></li></ul></div>
         </div>
         <div class="footer-bot">
           <span class="mono">© 2025 BRICB∞K STUDIO · MUMBAI · ARC-2025.07</span>
@@ -2894,8 +2969,8 @@ function renderArchitectProfile(slug) {
     <div class="landing">
       <nav class="ln-nav" id="lnNav">
         <div class="ln-nav-inner">
-          <a class="brand" href="#/">${brandMark(15)}</a>
-          <div class="links"><a href="#/">Directory</a><a href="#/">How it works</a><a href="#/">For architects</a></div>
+          <a class="brand" href="/">${brandMark(15)}</a>
+          <div class="links"><a href="/">Directory</a><a href="/">How it works</a><a href="/">For architects</a></div>
           <div class="cta">
             <button class="icon-btn" onclick="toggleTheme()">${iconSVG('sun')}</button>
             <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
@@ -2905,8 +2980,8 @@ function renderArchitectProfile(slug) {
       </nav>
       <div class="aprofile">
         <div class="apnav">
-          <a href="#/">Directory</a>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
-          <a href="#/">${a.spec[0]}</a>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
+          <a href="/">Directory</a>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
+          <a href="/">${a.spec[0]}</a>${iconSVG('chev').replace('width="16"','width="10"').replace('height="16"','height="10"')}
           <span style="color:var(--ink)">${a.name}</span>
         </div>
         <div class="aprofile-hero">
@@ -3012,10 +3087,10 @@ function renderArchitectProfile(slug) {
       <footer class="footer" style="margin-top:80px" id="footer">
         <div class="footer-inner">
           <div><div class="brand">${brandMark(15)}</div><p class="about">India's directory of building professionals — plus the shared canvas they and their clients build together.</p></div>
-          <div><h4>Directory</h4><ul><li><a href="#/">All architects</a></li><li><a href="#/">Interior only</a></li><li><a href="#/">Landscape</a></li><li><a href="#/">Heritage</a></li></ul></div>
-          <div><h4>For architects</h4><ul><li><a href="#/signup">List your practice</a></li><li><a href="#/login">Sign in</a></li><li><a href="#/">Pricing</a></li></ul></div>
-          <div><h4>For clients</h4><ul><li><a href="#/signup">Create account</a></li><li><a href="#/">How it works</a></li><li><a href="#/">Verification</a></li></ul></div>
-          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="#/admin">Admin login</a></li></ul></div>
+          <div><h4>Directory</h4><ul><li><a href="/">All architects</a></li><li><a href="/">Interior only</a></li><li><a href="/">Landscape</a></li><li><a href="/">Heritage</a></li></ul></div>
+          <div><h4>For architects</h4><ul><li><a href="/signup">List your practice</a></li><li><a href="/login">Sign in</a></li><li><a href="/">Pricing</a></li></ul></div>
+          <div><h4>For clients</h4><ul><li><a href="/signup">Create account</a></li><li><a href="/">How it works</a></li><li><a href="/">Verification</a></li></ul></div>
+          <div><h4>Legal</h4><ul><li><a href="/terms">Terms</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/admin">Admin login</a></li></ul></div>
         </div>
         <div class="footer-bot"><span class="mono">© 2026 BRICB∞K STUDIO · MUMBAI</span><span class="mono">v6 · Directory</span></div>
       </footer>
@@ -3061,7 +3136,7 @@ function authVisual(kind = 'default') {
         <line x1="60" y1="130" x2="80" y2="130"/><line x1="200" y1="130" x2="220" y2="130"/>
       </svg>
       <div class="top">
-        <a class="brand" href="#/" style="color:#F5EFD9">${brandMark(14)}</a>
+        <a class="brand" href="/" style="color:#F5EFD9">${brandMark(14)}</a>
         <span>${isAdmin ? 'RESTRICTED ACCESS' : isCust ? 'CLIENT PORTAL' : 'STUDIO'}</span>
       </div>
       <div class="center">${quote}</div>
@@ -3075,59 +3150,128 @@ function authVisual(kind = 'default') {
 
 function renderLogin() {
   const root = $('#root');
-  const aud = state.audience || 'professional';
-  const isCust = aud === 'user' || aud === 'customer';
-  const demoUser = isCust ? DEMO.user : DEMO.professional;
   root.innerHTML = `
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}</a>
-          <a class="auth-back" href="#/">${iconSVG('arrL')} Home</a>
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
-          <h1>Welcome back.</h1>
-          <p class="sub">${isCust ? 'Sign in to see your project — every photo, drawing, and update the studio ships to your site.' : 'Sign in to your studio dashboard. All your projects, in one place.'}</p>
-          <div class="audience" role="tablist">
-            <button onclick="setAudience('professional')" ${aud === 'professional' ? 'data-active="true"' : ''}>
-              <div style="text-align:left"><div>Professional</div><div class="sub">Architect · Contractor</div></div>
-            </button>
-            <button onclick="setAudience('user')" ${(aud === 'user' || aud === 'customer') ? 'data-active="true"' : ''}>
-              <div style="text-align:left"><div>User</div><div class="sub">Client · Family · Team</div></div>
-            </button>
-          </div>
+          <h1>Welcome <em>back</em>.</h1>
+          <p class="sub">One sign-in for everyone. We'll take you to the right place based on your account.</p>
           <div class="oauth">
-            <button class="btn" onclick="googleAuth('${aud}')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+            <button class="btn" onclick="googleAuth('auto')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
           </div>
           <div class="divider">or with email</div>
           <form onsubmit="return signIn(event)">
-            <div class="field"><label>${isCust ? 'Email' : 'Work email'}</label><input type="email" id="liEmail" placeholder="${isCust ? 'you@example.com' : 'you@studio.com'}" required></div>
-            <div class="field"><label>Password <a href="#/forgot">Forgot?</a></label><input type="password" id="liPwd" placeholder="••••••••" required></div>
+            <div class="field"><label>Email</label><input type="email" id="liEmail" placeholder="you@example.com" required autocomplete="email"></div>
+            <div class="field"><label>Password <a href="/forgot">Forgot?</a></label><input type="password" id="liPwd" placeholder="••••••••" required autocomplete="current-password"></div>
             <div class="check"><input type="checkbox" id="liRem" checked><label for="liRem">Keep me signed in for 30 days</label></div>
-            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in as ${isCust ? 'client' : 'studio'} ${iconSVG('arr')}</button>
+            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in ${iconSVG('arr')}</button>
           </form>
           <div class="auth-footer">
-            <span>New here? <a href="#/signup">Create ${isCust ? 'a client account' : 'a studio'}</a></span>
-            <a href="#/admin">BricBook admin →</a>
+            <span>New here? <a href="/signup">Create an account</a></span>
+            <a href="/admin">BricBook admin →</a>
           </div>
         </div>
       </div>
-      ${authVisual(isCust ? 'customer' : 'default')}
+      ${authVisual('default')}
     </div>
   `;
 }
-function setAudience(a) { state.audience = a; renderLogin(); }
+function setAudience(a) { state.audience = a; }
 window.setAudience = setAudience;
 
 function renderSignup() {
   const root = $('#root');
-  const step = state.signupStep;
+  const kind = state.signupKind || 'choose';
+  const step = state.signupStep || 1;
+
+  /* Chooser page: /signup */
+  if(kind === 'choose'){
+    root.innerHTML = `
+      <div class="auth">
+        <div class="auth-side">
+          <div class="auth-header">
+            <a class="brand" href="/">${brandMark(14)}</a>
+            <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
+          </div>
+          <div class="auth-body">
+            <span class="eyebrow">Get started</span>
+            <h1>What brings you to <em>BricBook</em>?</h1>
+            <p class="sub">Two different journeys. Pick the one that fits — you'll never see the wrong dashboard again.</p>
+            <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px">
+              <a href="/signup/client" class="btn btn-navy btn-block btn-lg" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35">
+                <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">I want to hire an architect</span><span style="opacity:.7;font-size:12.5px;font-weight:400">Post a brief · review portfolios · track your build</span></span>
+                <span style="opacity:.7">${iconSVG('arr')}</span>
+              </a>
+              <a href="/signup/architect" class="btn btn-brass btn-block btn-lg" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35">
+                <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">I run an architecture practice</span><span style="opacity:.85;font-size:12.5px;font-weight:400">List your studio · receive briefs · collaborate with clients</span></span>
+                <span>${iconSVG('arr')}</span>
+              </a>
+            </div>
+            <div class="auth-footer" style="margin-top:32px">
+              <span>Already have an account? <a href="/login">Sign in</a></span>
+              <a href="/admin">Admin login →</a>
+            </div>
+          </div>
+        </div>
+        ${authVisual('default')}
+      </div>
+    `;
+    return;
+  }
+
+  /* Client signup: /signup/client — short form */
+  if(kind === 'client'){
+    root.innerHTML = `
+      <div class="auth">
+        <div class="auth-side">
+          <div class="auth-header">
+            <a class="brand" href="/">${brandMark(14)}</a>
+            <a class="auth-back" href="/signup">${iconSVG('arrL')} Back</a>
+          </div>
+          <div class="auth-body">
+            <span class="eyebrow">Client account · 30 sec</span>
+            <h1>Hire an <em>architect</em>.</h1>
+            <p class="sub">Create a client account to post project briefs and message architects. No card required.</p>
+            <div class="oauth">
+              <button class="btn" onclick="googleAuth('client')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+            </div>
+            <div class="divider">or with email</div>
+            <form onsubmit="return suClient(event)">
+              <div class="field-row">
+                <div class="field"><label>First name</label><input id="cuFirst" required placeholder="Piyush" autocomplete="given-name"></div>
+                <div class="field"><label>Last name</label><input id="cuLast" required placeholder="Jangir" autocomplete="family-name"></div>
+              </div>
+              <div class="field"><label>Email</label><input type="email" id="cuEmail" required placeholder="you@example.com" autocomplete="email"></div>
+              <div class="field"><label>Phone (WhatsApp)</label><input type="tel" id="cuPhone" placeholder="+91 98xxx xxxxx" autocomplete="tel"></div>
+              <div class="field"><label>City</label>
+                <select id="cuCity"><option value="">Choose…</option><option>Mumbai</option><option>Bangalore</option><option>Delhi NCR</option><option>Chennai</option><option>Pune</option><option>Kochi</option><option>Hyderabad</option><option>Other</option></select>
+              </div>
+              <div class="field"><label>Password</label><input type="password" id="cuPwd" required minlength="8" placeholder="At least 8 characters" autocomplete="new-password"></div>
+              <div class="check"><input type="checkbox" id="cuTerms" required checked><label for="cuTerms">I agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</label></div>
+              <button class="btn btn-navy btn-block btn-lg" type="submit">Create client account ${iconSVG('arr')}</button>
+            </form>
+            <div class="auth-footer">
+              <span>Are you an architect? <a href="/signup/architect">Switch to studio signup</a></span>
+            </div>
+          </div>
+        </div>
+        ${authVisual('customer')}
+      </div>
+    `;
+    return;
+  }
+
+  /* Architect signup: /signup/architect — 3-step wizard */
   root.innerHTML = `
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}</a>
-          <a class="auth-back" href="#/">${iconSVG('arrL')} Home</a>
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="/signup">${iconSVG('arrL')} Back</a>
         </div>
         <div class="auth-body">
           <div class="steps">
@@ -3135,21 +3279,21 @@ function renderSignup() {
             <div class="st ${step > 2 ? 'done' : step === 2 ? 'now' : ''}"></div>
             <div class="st ${step === 3 ? 'now' : ''}"></div>
           </div>
-          <span class="eyebrow">Step ${step} of 3</span>
+          <span class="eyebrow">Studio account · Step ${step} of 3</span>
           ${step === 1 ? `
             <h1>Start your <em>studio</em>.</h1>
             <p class="sub">Two minutes. No card. We'll set up your first project as you go.</p>
             <div class="oauth">
-              <button class="btn" onclick="googleAuth('client')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+              <button class="btn" onclick="googleAuth('architect')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
             </div>
             <div class="divider">or with email</div>
             <form onsubmit="return suStep(event, 1)">
               <div class="field-row">
-                <div class="field"><label>First name</label><input id="suFirst" required placeholder="Piyush"></div>
-                <div class="field"><label>Last name</label><input id="suLast" required placeholder="Jangir"></div>
+                <div class="field"><label>First name</label><input id="suFirst" required placeholder="Piyush" autocomplete="given-name"></div>
+                <div class="field"><label>Last name</label><input id="suLast" required placeholder="Jangir" autocomplete="family-name"></div>
               </div>
-              <div class="field"><label>Work email</label><input type="email" id="suEmail" required placeholder="you@studio.com"></div>
-              <div class="field"><label>Password</label><input type="password" id="suPwd" required minlength="8" placeholder="At least 8 characters"><span class="hint">Use a passphrase you'll remember — no expiry.</span></div>
+              <div class="field"><label>Work email</label><input type="email" id="suEmail" required placeholder="you@studio.com" autocomplete="email"></div>
+              <div class="field"><label>Password</label><input type="password" id="suPwd" required minlength="8" placeholder="At least 8 characters" autocomplete="new-password"><span class="hint">Use a passphrase you'll remember — no expiry.</span></div>
               <button class="btn btn-navy btn-block btn-lg" type="submit">Continue ${iconSVG('arr')}</button>
             </form>
           ` : step === 2 ? `
@@ -3162,7 +3306,7 @@ function renderSignup() {
                   <option value="">Choose one…</option>
                   <option>Architect</option><option>Principal Architect</option><option>Interior Designer</option>
                   <option>Structural Engineer</option><option>Project Manager</option><option>Site Engineer</option>
-                  <option>Contractor</option><option>Client</option>
+                  <option>Contractor</option>
                 </select>
               </div>
               <div class="field-row">
@@ -3191,8 +3335,8 @@ function renderSignup() {
             </form>
           `}
           <div class="auth-footer">
-            <span>Already have an account? <a href="#/login">Sign in</a></span>
-            <a href="#/admin">Admin login →</a>
+            <span>Already have an account? <a href="/login">Sign in</a></span>
+            <span>Not an architect? <a href="/signup/client">Switch to client signup</a></span>
           </div>
         </div>
       </div>
@@ -3201,13 +3345,37 @@ function renderSignup() {
   `;
 }
 
+/* Client signup handler — single-step, hits Supabase directly */
+async function suClient(e){
+  e.preventDefault();
+  const first = ($('#cuFirst')?.value || '').trim();
+  const last  = ($('#cuLast')?.value || '').trim();
+  const email = ($('#cuEmail')?.value || '').trim().toLowerCase();
+  const phone = ($('#cuPhone')?.value || '').trim();
+  const city  = ($('#cuCity')?.value || '').trim();
+  const pwd   = ($('#cuPwd')?.value || '');
+  if(!email || !pwd){ toast('Enter email and password'); return false; }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  const name = (first + ' ' + last).trim() || email.split('@')[0];
+  const username = name.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'') || email.split('@')[0];
+  const { data, error } = await sb.auth.signUp({
+    email, password: pwd,
+    options:{ data:{ full_name: name, username, phone, city, signup_role: 'client', utm: getUTM() } }
+  });
+  if(error){ toast('Sign up failed: ' + error.message); return false; }
+  if(!data.session){ toast('Confirm your email to finish signup'); nav('/login'); return false; }
+  return false;
+}
+window.suClient = suClient;
+
 function renderForgot() {
   $('#root').innerHTML = `
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}</a>
-          <a class="auth-back" href="#/login">${iconSVG('arrL')} Back to sign in</a>
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="/login">${iconSVG('arrL')} Back to sign in</a>
         </div>
         <div class="auth-body">
           <h1>Forgot <em>password</em>?</h1>
@@ -3217,8 +3385,8 @@ function renderForgot() {
             <button class="btn btn-navy btn-block btn-lg" type="submit">${iconSVG('mail')} Send reset link</button>
           </form>
           <div class="auth-footer">
-            <span>Remembered? <a href="#/login">Sign in</a></span>
-            <a href="#/signup">Create account</a>
+            <span>Remembered? <a href="/login">Sign in</a></span>
+            <a href="/signup">Create account</a>
           </div>
         </div>
       </div>
@@ -3232,8 +3400,8 @@ function renderReset() {
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
-          <a class="brand" href="#/">${brandMark(14)}</a>
-          <a class="auth-back" href="#/login">${iconSVG('arrL')} Sign in</a>
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="/login">${iconSVG('arrL')} Sign in</a>
         </div>
         <div class="auth-body">
           <h1>Set a new <em>password</em>.</h1>
@@ -3255,8 +3423,8 @@ function renderAdmin() {
     <div class="auth" data-theme="dark">
       <div class="auth-side" style="background:#0C0E12;color:#ECE4D2;border-right-color:#262A31">
         <div class="auth-header">
-          <a class="brand" href="#/" style="color:#ECE4D2">${brandMark(14)}</a>
-          <a class="auth-back" href="#/" style="color:#999488">${iconSVG('arrL')} Home</a>
+          <a class="brand" href="/" style="color:#ECE4D2">${brandMark(14)}</a>
+          <a class="auth-back" href="/" style="color:#999488">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
           <h1 style="color:#ECE4D2">Admin <em style="color:var(--terra)">access</em>.</h1>
@@ -3268,8 +3436,8 @@ function renderAdmin() {
             <button class="btn btn-block btn-lg" type="submit" style="background:var(--terra);color:#F5EFD9">${iconSVG('shield')} Sign in as admin</button>
           </form>
           <div class="auth-footer">
-            <a href="#/login" style="color:#999488">← Sign in as client</a>
-            <a href="#/" style="color:#999488">Home</a>
+            <a href="/login" style="color:#999488">← Sign in as client</a>
+            <a href="/" style="color:#999488">Home</a>
           </div>
         </div>
       </div>
@@ -4052,13 +4220,13 @@ function renderApp() {
   root.innerHTML = `
     <div class="app-shell">
       <header class="topnav">
-        <a class="brand" href="#/">${brandMark(15)}</a>
+        <a class="brand" href="/">${brandMark(15)}</a>
         <div class="nav-center">
           <div class="nav-tabs">
-            <a class="nav-tab" href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>${isCust ? 'My site' : 'Home'}</a>
-            <a class="nav-tab" href="#/app" ${sub === '/app' ? 'data-active="true"' : ''}>${isCust ? 'Drawings' : 'Projects'}</a>
-            <a class="nav-tab" href="#/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>${isCust ? 'My team' : 'Professionals'}</a>
-            ${!isCust ? `<a class="nav-tab" href="#/app/jobs" ${sub === '/app/jobs' ? 'data-active="true"' : ''}>Jobs</a>` : ''}
+            <a class="nav-tab" href="/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>${isCust ? 'My site' : 'Home'}</a>
+            <a class="nav-tab" href="/app" ${sub === '/app' ? 'data-active="true"' : ''}>${isCust ? 'Drawings' : 'Projects'}</a>
+            <a class="nav-tab" href="/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>${isCust ? 'My team' : 'Professionals'}</a>
+            ${!isCust ? `<a class="nav-tab" href="/app/jobs" ${sub === '/app/jobs' ? 'data-active="true"' : ''}>Jobs</a>` : ''}
           </div>
           <label class="gsearch"><span>${iconSVG('search')}</span><input type="search" placeholder="${isCust ? 'Search photos, drawings, updates…' : 'Search projects, drawings, teams…'}"><kbd>⌘K</kbd></label>
         </div>
@@ -4107,11 +4275,11 @@ function renderApp() {
 
       <nav class="mobile-tabs" aria-label="App tabs">
         <div class="row">
-          <a href="#/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>
+          <a href="/app/explore" ${sub === '/app/explore' ? 'data-active="true"' : ''}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-8h-6v8H5a2 2 0 0 1-2-2z"/></svg>
             <span>${isCust ? 'My site' : 'Home'}</span>
           </a>
-          <a href="#/app" ${sub === '/app' ? 'data-active="true"' : ''}>
+          <a href="/app" ${sub === '/app' ? 'data-active="true"' : ''}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             <span>${isCust ? 'Photos' : 'Projects'}</span>
           </a>
@@ -4121,11 +4289,11 @@ function renderApp() {
             </span>
             <span style="margin-top:2px">Chat</span>
           </button>
-          <a href="#/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>
+          <a href="/app/pros" ${sub === '/app/pros' ? 'data-active="true"' : ''}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span>${isCust ? 'Team' : 'People'}</span>
           </a>
-          <a href="#/app/profile" ${sub === '/app/profile' || sub === '/app/settings' ? 'data-active="true"' : ''}>
+          <a href="/app/profile" ${sub === '/app/profile' || sub === '/app/settings' ? 'data-active="true"' : ''}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span>Me</span>
           </a>
@@ -4137,8 +4305,8 @@ function renderApp() {
           <div class="nm">${u.name}</div>
           <div class="em">${u.email}</div>
         </div>
-        <a href="#/app/profile">${iconSVG('user')} My profile <span class="kbd">⌘P</span></a>
-        <a href="#/app/settings">${iconSVG('settings')} Settings <span class="kbd">⌘,</span></a>
+        <a href="/app/profile">${iconSVG('user')} My profile <span class="kbd">⌘P</span></a>
+        <a href="/app/settings">${iconSVG('settings')} Settings <span class="kbd">⌘,</span></a>
         <button onclick="toggleTheme()">${iconSVG('sun')} Toggle theme</button>
         <div class="sep"></div>
         <button class="danger" onclick="signOut()">${iconSVG('logOut')} Sign out <span class="kbd">⇧⌘Q</span></button>
@@ -4466,12 +4634,12 @@ function renderSettingsShell(sub) {
 }
 function settingsNav(active) {
   return `<div class="settings-nav">
-    <a href="#/app/profile" ${active === 'profile' ? 'data-active="true"' : ''}>Profile</a>
-    <a href="#/app/settings" ${active === 'account' ? 'data-active="true"' : ''}>Account & password</a>
-    <a href="#/app/settings" ${active === 'notif' ? 'data-active="true"' : ''}>Notifications</a>
-    <a href="#/app/settings" ${active === 'appear' ? 'data-active="true"' : ''}>Appearance</a>
-    <a href="#/app/settings" ${active === 'team' ? 'data-active="true"' : ''}>Team & permissions</a>
-    <a href="#/app/settings" ${active === 'bill' ? 'data-active="true"' : ''}>Billing</a>
+    <a href="/app/profile" ${active === 'profile' ? 'data-active="true"' : ''}>Profile</a>
+    <a href="/app/settings" ${active === 'account' ? 'data-active="true"' : ''}>Account & password</a>
+    <a href="/app/settings" ${active === 'notif' ? 'data-active="true"' : ''}>Notifications</a>
+    <a href="/app/settings" ${active === 'appear' ? 'data-active="true"' : ''}>Appearance</a>
+    <a href="/app/settings" ${active === 'team' ? 'data-active="true"' : ''}>Team & permissions</a>
+    <a href="/app/settings" ${active === 'bill' ? 'data-active="true"' : ''}>Billing</a>
   </div>`;
 }
 function renderProfile() {
@@ -4695,7 +4863,7 @@ async function suStep(e, n) {
   const username = name.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'') || email.split('@')[0];
   const { data, error } = await sb.auth.signUp({
     email, password: pwd,
-    options:{ data:{ full_name: name, username, signup_role: 'studio_owner' } }
+    options:{ data:{ full_name: name, username, signup_role: 'studio_owner', utm: getUTM() } }
   });
   if(error){ toast('Sign up failed: ' + error.message); return false; }
   state.signupStep = 1;
@@ -5147,9 +5315,14 @@ try { const s = localStorage.getItem('bb-theme'); if (s) setTheme(s); } catch(e)
 /* ============ Boot ============ */
 function route() {
   const r = currentRoute();
+  applyRouteMeta(r);
   if (r === '/') return renderLanding();
   if (r === '/login') return renderLogin();
-  if (r === '/signup') { state.signupStep = 1; return renderSignup(); }
+  if (r === '/signup')            { state.signupStep = 1; state.signupKind = 'choose';   return renderSignup(); }
+  if (r === '/signup/client')     { state.signupStep = 1; state.signupKind = 'client';    return renderSignup(); }
+  if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
+  if (r === '/for-clients')       return renderForClients ? renderForClients() : renderLanding();
+  if (r === '/for-architects')    return renderForArchitects ? renderForArchitects() : renderLanding();
   if (r === '/forgot') return renderForgot();
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();
@@ -5157,6 +5330,39 @@ function route() {
   if (r.startsWith('/app')) return renderApp();
   renderLanding();
 }
-window.addEventListener('hashchange', route);
+/* Legacy hash routing: if page loaded with #/foo, rewrite URL to /foo (one-time) */
+(function migrateLegacyHash(){
+  try{
+    if(location.hash && location.hash.startsWith('#/')){
+      const target = location.hash.slice(1);
+      history.replaceState({}, '', target + location.search);
+    }
+  }catch(e){}
+})();
+
+/* Delegated click handler: intercept internal <a href="/..."> so nav() handles them (no full reload) */
+document.addEventListener('click', (ev) => {
+  if(ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+  const a = ev.target && ev.target.closest && ev.target.closest('a[href]');
+  if(!a) return;
+  const href = a.getAttribute('href') || '';
+  const target = a.getAttribute('target');
+  const download = a.hasAttribute('download');
+  if(target && target !== '_self') return;
+  if(download) return;
+  /* Skip: absolute URLs, mailto, tel, javascript:, protocol-relative */
+  if(!href || href.startsWith('http') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+  if(href.startsWith('#')) return; /* let hash anchor scroll behaviour work */
+  /* Static folder pages should navigate normally (privacy, terms, admin) */
+  if(href === '/privacy' || href === '/terms' || href.startsWith('/privacy/') || href.startsWith('/terms/') || href.startsWith('/admin/')) return;
+  /* Only intercept same-origin path-style hrefs */
+  if(!href.startsWith('/')) return;
+  ev.preventDefault();
+  const [path, query] = href.split('?');
+  if(query){ history.pushState({}, '', href); route(); }
+  else { nav(path); }
+});
+
+window.addEventListener('hashchange', route); /* still handle any legacy hash-based links */
 route();
 </script>
