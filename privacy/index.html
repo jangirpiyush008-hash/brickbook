@@ -6,73 +6,82 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F5F1EA">
 <meta name="description" content="How BricBook collects, uses, stores and protects your personal information. Compliant with India's Digital Personal Data Protection Act, 2023.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ground:#F5F1EA;--surface:#FFFCF5;--ink:#1F2440;--ink-2:#3E4568;
+  --ground:#F5F1EA;--surface:#FFFCF5;--surface-2:#EEE9DE;--ink:#1F2440;--ink-2:#3E4568;
   --muted:#7A7E96;--faint:#A5A5C8;--hairline:#E3DED0;
-  --navy:#232842;--brass:#E89966;--brass-2:#F4A65B;
-  --serif:'Inter Tight',ui-serif,Georgia,serif;
-  --sans:'Inter',ui-sans-serif,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --navy:#232842;--brass:#E89966;--brass-2:#F4A65B;--brass-tint:#FDE9D5;
+  --serif:ui-serif,'Instrument Serif','Cormorant Garamond','New York',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans',ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#232842;--surface:#2A2F4C;--ink:#F5F1EA;--ink-2:#D8D5CC;
+    --ground:#232842;--surface:#2A2F4C;--surface-2:#353B5E;--ink:#F5F1EA;--ink-2:#D8D5CC;
     --muted:#A5A5C8;--faint:#7E82A0;--hairline:#3B426A;
-    --navy:#A5A5C8;--brass:#F4A65B;--brass-2:#F8B876;
+    --navy:#A5A5C8;--brass:#F4A65B;--brass-2:#F8B876;--brass-tint:rgba(244,166,91,.15);
   }
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.nav{position:sticky;top:0;background:rgba(245,241,234,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--hairline);z-index:10}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nav{background:rgba(35,40,66,.92)}}
+.nav-inner{max-width:1080px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:inline-flex;align-items:center;gap:2px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-weight:400;font-size:22px;letter-spacing:.02em}
+.brand .inf{color:var(--brass);font-size:22px;margin:0 3px;line-height:1}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s}
+.nav-links a:hover{color:var(--ink)}
 .page{max-width:720px;margin:0 auto;padding:56px 24px 96px}
-header{border-bottom:1px solid var(--hairline);padding-bottom:32px;margin-bottom:40px}
-.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-weight:700;font-size:22px;letter-spacing:-.02em}
-.brand-mark{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center}
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-top:36px}
-h1{font-family:var(--serif);font-weight:700;font-size:44px;line-height:1.1;letter-spacing:-.025em;margin:8px 0 12px}
-.lede{color:var(--ink-2);font-size:17px;line-height:1.55;margin:0}
-.meta{color:var(--muted);font-size:13px;font-family:var(--mono);margin-top:16px}
-h2{font-family:var(--serif);font-weight:600;font-size:24px;letter-spacing:-.015em;margin:48px 0 12px;color:var(--ink)}
-h3{font-family:var(--sans);font-weight:600;font-size:16px;margin:24px 0 8px;color:var(--ink)}
+header.doc-head{border-bottom:1px solid var(--hairline);padding-bottom:32px;margin-bottom:40px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500}
+h1{font-family:var(--serif);font-weight:400;font-size:48px;line-height:1.05;letter-spacing:-.01em;margin:12px 0 14px;color:var(--ink)}
+.lede{color:var(--ink-2);font-size:17px;line-height:1.55;margin:0;font-family:var(--serif);font-weight:400}
+.meta{color:var(--muted);font-size:12px;font-family:var(--mono);margin-top:18px;letter-spacing:.02em}
+h2{font-family:var(--serif);font-weight:400;font-size:26px;letter-spacing:-.005em;margin:52px 0 14px;color:var(--ink)}
+h3{font-family:var(--sans);font-weight:600;font-size:15px;margin:24px 0 8px;color:var(--ink)}
 p{margin:0 0 14px;color:var(--ink-2)}
 ul{margin:0 0 18px;padding-left:20px;color:var(--ink-2)}
 li{margin-bottom:6px}
-a{color:var(--brass);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+a{color:var(--brass);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;transition:color .15s}
 a:hover{color:var(--brass-2)}
 strong{color:var(--ink);font-weight:600}
-.callout{background:var(--surface);border:1px solid var(--hairline);border-left:3px solid var(--brass);padding:18px 22px;border-radius:6px;margin:24px 0}
+.callout{background:var(--brass-tint);border:1px solid var(--brass);border-radius:8px;padding:18px 22px;margin:24px 0}
 .callout p{margin:0}
-footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-footer .links a{color:var(--muted);text-decoration:none;font-size:13px;margin-right:20px}
-footer .links a:hover{color:var(--ink)}
-footer .copyright{color:var(--muted);font-size:13px;font-family:var(--mono)}
+footer.doc-foot{margin-top:80px;padding-top:28px;border-top:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.doc-foot .links a{color:var(--muted);text-decoration:none;font-size:13px;margin-right:22px}
+.doc-foot .links a:hover{color:var(--ink)}
+.doc-foot .copyright{color:var(--muted);font-size:11px;font-family:var(--mono);letter-spacing:.06em}
 @media (max-width:640px){
   .page{padding:36px 20px 72px}
-  h1{font-size:34px}
-  h2{font-size:20px;margin-top:36px}
+  h1{font-size:36px}
+  h2{font-size:22px;margin-top:40px}
+  .nav-links{gap:14px}
+  .nav-links a{font-size:12px}
 }
 </style>
 </head>
 <body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="brand">BRICB<span class="inf">∞</span>K</a>
+    <div class="nav-links">
+      <a href="/#/">Directory</a>
+      <a href="/#/">How it works</a>
+      <a href="/#/">For architects</a>
+    </div>
+  </div>
+</nav>
+
 <div class="page">
 
-<header>
-  <a href="/" class="brand">
-    <span class="brand-mark">
-      <svg viewBox="0 0 44 24" width="26" height="26" fill="none" stroke="#E89966" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 12 C4 5, 14 5, 22 12 C30 19, 40 19, 40 12 C40 5, 30 5, 22 12 C14 19, 4 19, 4 12 Z"/>
-      </svg>
-    </span>
-    BricBook
-  </a>
+<header class="doc-head">
   <div class="eyebrow">Legal</div>
   <h1>Privacy Policy</h1>
   <p class="lede">How BricBook collects, uses, stores and protects your personal information. We take your data seriously — this document explains exactly what happens to it.</p>
-  <div class="meta">Effective: 19 September 2026 · Version 1.0</div>
+  <div class="meta">EFFECTIVE 19 SEPTEMBER 2026 · VERSION 1.0</div>
 </header>
 
 <h2>1. Who we are</h2>
@@ -131,7 +140,7 @@ footer .copyright{color:var(--muted);font-size:13px;font-family:var(--mono)}
 </ul>
 
 <h2>7. Your rights under the DPDPA, 2023</h2>
-<p>India's Digital Personal Data Protection Act, 2023 gives you these rights over your personal data. You can exercise any of them by emailing <a href="mailto:privacy@bricbook.com">privacy@bricbook.com</a>:</p>
+<p>India's Digital Personal Data Protection Act, 2023 gives you these rights over your personal data. You can exercise any of them by emailing <a href="mailto:sdefiners@gmail.com">sdefiners@gmail.com</a>:</p>
 <ul>
   <li><strong>Right to access</strong> — get a copy of what we hold about you.</li>
   <li><strong>Right to correction</strong> — fix anything that's wrong.</li>
@@ -152,17 +161,16 @@ footer .copyright{color:var(--muted);font-size:13px;font-family:var(--mono)}
 <h2>11. Contact us</h2>
 <p>Questions, requests, or concerns:</p>
 <ul>
-  <li>Email: <a href="mailto:privacy@bricbook.com">privacy@bricbook.com</a></li>
-  <li>General: <a href="mailto:hello@bricbook.com">hello@bricbook.com</a></li>
+  <li>Email: <a href="mailto:sdefiners@gmail.com">sdefiners@gmail.com</a></li>
 </ul>
 
-<footer>
+<footer class="doc-foot">
   <div class="links">
     <a href="/">Home</a>
     <a href="/terms">Terms</a>
-    <a href="mailto:hello@bricbook.com">Contact</a>
+    <a href="mailto:sdefiners@gmail.com">Contact</a>
   </div>
-  <div class="copyright">© 2026 BricBook</div>
+  <div class="copyright">© 2026 BRICB∞K STUDIO · MUMBAI</div>
 </footer>
 
 </div>
