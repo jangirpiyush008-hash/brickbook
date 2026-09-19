@@ -191,6 +191,33 @@ a{color:inherit;text-decoration:none}
   .pp-notfound h1{font-size:36px}
 }
 
+/* ============ Live directory search ============ */
+.dir-search-wrap{max-width:1080px;margin:0 auto 32px;padding:0 24px}
+.dir-search{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--hairline);border-radius:100px;padding:6px 6px 6px 20px;box-shadow:var(--shadow-sm)}
+.dir-search svg{color:var(--muted);flex-shrink:0}
+.dir-search input{flex:1;height:44px;background:transparent;border:0;outline:none;color:var(--ink);font-size:14.5px;min-width:0}
+.dir-search input::placeholder{color:var(--muted)}
+.dir-count{background:var(--brass-tint);color:var(--brass);border-radius:100px;padding:8px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
+.dir-count b{color:var(--brass);font-weight:600;margin-right:4px}
+.dir-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.dir-chips .qtag{background:var(--surface);border:1px solid var(--hairline);border-radius:100px;padding:6px 16px;font-size:12.5px;color:var(--ink-2);cursor:pointer;transition:all .12s}
+.dir-chips .qtag:hover{border-color:var(--brass);color:var(--ink)}
+.dir-chips .qtag.actv{background:var(--brass);border-color:var(--brass);color:var(--ground)}
+.dir-empty{padding:60px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+.dir-empty p.serif{font-family:var(--serif);font-size:26px;color:var(--ink);font-weight:400;margin:0 0 10px;letter-spacing:-.01em}
+.dir-empty p{color:var(--muted);max-width:460px;margin:0 auto 8px;font-size:14px}
+.dir-empty a{color:var(--brass)}
+.ed-arch{cursor:pointer}
+.ed-arch .ed-verif{position:absolute;top:12px;right:12px;background:rgba(122,156,126,.9);color:#fff;padding:4px 10px;border-radius:4px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase}
+.ed-arch .photo{position:relative;overflow:hidden;aspect-ratio:5/6;background:var(--surface-2)}
+.ed-arch .photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ed-mtile{display:block;text-decoration:none;color:var(--ink);position:relative;overflow:hidden;border-radius:8px;background:var(--surface-2);aspect-ratio:4/3}
+.ed-mtile img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block}
+.ed-mtile:hover img{transform:scale(1.03)}
+.ed-mtile-cap{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;background:linear-gradient(180deg,transparent 0%,rgba(15,18,32,.7) 100%);color:#F5EFD9}
+.ed-mtile-cap b{font-family:var(--serif);font-weight:400;font-size:15px;display:block}
+.ed-mtile-cap span{font-size:11px;color:rgba(245,239,217,.7)}
+
 /* ============ Share centre ============ */
 .share-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .share-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:24px 28px;display:flex;flex-direction:column;gap:12px}
@@ -2992,7 +3019,7 @@ function renderLanding() {
           <span class="kicker">${iconSVG('arch').replace('width="16"','width="12"').replace('height="16"','height="12"')} India's directory of building professionals</span>
           <h1>Every home starts with the <em>right</em> architect.</h1>
           <p class="lede">Meet 12,000+ verified architects across India — from residential specialists in Mumbai to landscape studios in Kochi. See real portfolios, honest reviews, and transparent fees before you ever pick up the phone.</p>
-          <form class="mkt-search" onsubmit="event.preventDefault();document.getElementById('directory').scrollIntoView({behavior:'smooth'});toast('Showing 148 architects matching your criteria')">
+          <form class="mkt-search" onsubmit="event.preventDefault();document.getElementById('directory').scrollIntoView({behavior:'smooth'});setTimeout(()=>{const s=document.getElementById('dirSearch');if(s){s.focus();}},400)">
             <div class="cell" tabindex="0">
               <div class="lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h6M9 13h6M9 17h6"/></svg> Project type</div>
               <input type="text" list="msProjTypes" value="Residence" placeholder="Anything">
@@ -3338,18 +3365,170 @@ function renderLanding() {
       if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
-  const feat = ARCHITECTS.filter(a => a.feat);
-  const all = ARCHITECTS.filter(a => !a.feat);
-  const fEd = $('#edFeat'); if (fEd) fEd.innerHTML = feat.map((a, i) => edArchHTML(a, i, feat.length)).join('');
-  const aEd = $('#edAll'); if (aEd) aEd.innerHTML = all.map((a, i) => edArchHTML(a, i, all.length)).join('');
-  $$('.ed-arch').forEach(el => el.addEventListener('click', () => nav('/architect/' + el.dataset.slug)));
-  const mg = $('#edMasonry'); if (mg) mg.innerHTML = masonryHTML();
+  hydrateLandingDirectory();
   $$('.mkt-quick .qtag,.mkt-section-head .fs button').forEach(b => b.addEventListener('click', () => {
     b.parentElement.querySelectorAll('button,.qtag').forEach(x => x.classList.remove('actv'));
     b.parentElement.querySelectorAll('[data-active]').forEach(x => delete x.dataset.active);
     b.classList.add('actv'); b.dataset.active = 'true';
-    toast('Filtered by: ' + b.textContent.trim());
+    const label = b.textContent.trim();
+    /* If this is a filter chip on the directory, apply it */
+    if(b.classList.contains('qtag') || b.parentElement.classList.contains('fs')){
+      window._dirFilter = window._dirFilter || {};
+      window._dirFilter.tag = label === 'All' ? '' : label;
+      filterDirectory();
+    }
   }));
+}
+
+/* ============ Live directory hydration ============ */
+window._dirStudios = [];
+window._dirFilter = { q:'', tag:'' };
+
+async function hydrateLandingDirectory(){
+  const sb = sbClient();
+  const feat = $('#edFeat'); const all = $('#edAll'); const masonry = $('#edMasonry');
+  const empty = `<div class="dir-empty">
+    <div class="lbl mono">§ Directory</div>
+    <p class="serif">No published practices yet.</p>
+    <p>The first architects will appear here as they publish their profiles. <a href="/list-your-practice">Are you an architect? List your practice.</a></p>
+  </div>`;
+  if(!sb){ if(feat) feat.innerHTML = empty; return; }
+  const { data, error } = await sb
+    .from('studios')
+    .select('id, bric_id, slug, name, tagline, city, state, cover_url, logo_url, services, specialties, verified, founded_year, years_experience, practice_type, bio')
+    .eq('visibility', 'public')
+    .order('verified', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if(error){ if(feat) feat.innerHTML = empty; return; }
+  const studios = (data || []).map(s => ({
+    ...s,
+    firm: s.name,
+    loc: s.city || 'India',
+    spec: (s.specialties && s.specialties.length ? s.specialties : (s.services || [])).slice(0, 2),
+    yrs: s.years_experience || (s.founded_year ? Math.max(1, new Date().getFullYear() - s.founded_year) : null),
+    bio_short: s.bio || s.tagline || ''
+  }));
+  window._dirStudios = studios;
+
+  /* Insert the search bar just above the first directory container */
+  if(feat && !document.getElementById('dirSearchWrap')){
+    const wrap = document.createElement('div');
+    wrap.id = 'dirSearchWrap';
+    wrap.className = 'dir-search-wrap';
+    wrap.innerHTML = `
+      <div class="dir-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="dirSearch" placeholder="Search by name, city, or speciality…" oninput="window._dirFilter.q=this.value;filterDirectory()">
+        <span class="dir-count mono"><b id="dirCount">${studios.length}</b> practice${studios.length===1?'':'s'}</span>
+      </div>
+      <div class="dir-chips">
+        <button class="qtag actv" onclick="dirTagClick(this,'')">All</button>
+        ${uniqueCities(studios).slice(0, 8).map(c => `<button class="qtag" onclick="dirTagClick(this,'${escapeAttr(c)}')">${escapeHTML(c)}</button>`).join('')}
+      </div>
+    `;
+    feat.parentElement.insertBefore(wrap, feat);
+  }
+
+  filterDirectory();
+
+  /* Update the counters on section heads */
+  const registryMeta = document.querySelectorAll('.ed-reg-head .meta');
+  registryMeta.forEach(m => {
+    m.innerHTML = `<b>${studios.length}</b>publish${studios.length===1?'es':'ed'} · India-wide`;
+  });
+  const h2s = document.querySelectorAll('#directory h2');
+  if(h2s.length){
+    if(studios.length === 0){
+      h2s[0].innerHTML = 'The directory is <em>just getting started</em>.';
+    } else {
+      h2s[0].innerHTML = studios.length + ' architect' + (studios.length===1?'':'s') + ', <em>ready to hear from you.</em>';
+    }
+  }
+
+  /* Recent-work masonry: pick published studios with a cover image */
+  if(masonry){
+    const withCovers = studios.filter(s => s.cover_url).slice(0, 8);
+    masonry.innerHTML = withCovers.map(s => `
+      <a class="ed-mtile" href="/practice/${escapeAttr(s.slug || s.bric_id)}">
+        <img src="${escapeAttr(s.cover_url)}" alt="${escapeAttr(s.name || '')}" loading="lazy">
+        <div class="ed-mtile-cap"><b>${escapeHTML(s.name || '')}</b><span>${escapeHTML(s.loc || '')}</span></div>
+      </a>
+    `).join('') || '';
+    if(!withCovers.length){ masonry.parentElement.style.display = 'none'; }
+  }
+}
+
+function uniqueCities(studios){
+  const set = new Set();
+  studios.forEach(s => { if(s.city) set.add(s.city); });
+  return [...set];
+}
+
+function dirTagClick(btn, tag){
+  document.querySelectorAll('.dir-chips .qtag').forEach(b => b.classList.remove('actv'));
+  btn.classList.add('actv');
+  window._dirFilter.tag = tag;
+  filterDirectory();
+}
+window.dirTagClick = dirTagClick;
+
+function filterDirectory(){
+  const q = (window._dirFilter.q || '').toLowerCase().trim();
+  const tag = (window._dirFilter.tag || '').toLowerCase().trim();
+  const all = window._dirStudios || [];
+  const filtered = all.filter(s => {
+    if(q){
+      const hay = ((s.name || '') + ' ' + (s.city || '') + ' ' + (s.tagline || '') + ' ' + (s.services || []).join(' ') + ' ' + (s.specialties || []).join(' ')).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(tag && (s.city || '').toLowerCase() !== tag) return false;
+    return true;
+  });
+  const feat = $('#edFeat'); const rest = $('#edAll');
+  const featured = filtered.filter(s => s.verified);
+  const others = filtered.filter(s => !s.verified);
+  const empty = `<div class="dir-empty"><p class="serif">No practices match that.</p><p>Try a different city or clear your search.</p></div>`;
+  if(feat){
+    feat.innerHTML = featured.length
+      ? featured.map((s, i) => studioDirCardHTML(s, i, featured.length)).join('')
+      : (filtered.length ? '' : empty);
+  }
+  if(rest){
+    rest.innerHTML = others.length
+      ? others.map((s, i) => studioDirCardHTML(s, i, others.length)).join('')
+      : (filtered.length ? '' : '');
+  }
+  const count = document.getElementById('dirCount');
+  if(count) count.textContent = filtered.length;
+  /* Wire clicks to /practice/<slug> */
+  document.querySelectorAll('.ed-arch').forEach(el => el.addEventListener('click', () => nav('/practice/' + el.dataset.slug)));
+}
+window.filterDirectory = filterDirectory;
+
+function studioDirCardHTML(s, i, total){
+  const idx = 'No. ' + String(i + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+  const [first, ...rest] = (s.name || '').split(' ');
+  const last = rest.join(' ');
+  const cover = s.cover_url
+    ? `<img src="${escapeAttr(s.cover_url)}" alt="${escapeAttr(s.name || '')}" loading="lazy">`
+    : (authVisualBlueprintOnly ? `<div style="position:absolute;inset:0;background:var(--navy);color:#F5EFD9;overflow:hidden">${authVisualBlueprintOnly()}</div>` : '<div style="position:absolute;inset:0;background:var(--surface-2)"></div>');
+  return `<div class="ed-arch" data-slug="${escapeAttr(s.slug || s.bric_id)}">
+    <div class="photo">
+      <span class="idx">№ ${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}</span>
+      <div style="position:absolute;inset:0">${cover}</div>
+      ${s.verified ? '<span class="ed-verif mono">✓ Verified</span>' : ''}
+      <div class="over">
+        <div class="studio">${escapeHTML(s.practice_type || 'Practice')} ${s.city ? '· ' + escapeHTML(s.city) : ''}</div>
+        <div class="nm">${escapeHTML(first || '')}${last ? ' <em>' + escapeHTML(last) + '</em>' : ''}</div>
+      </div>
+    </div>
+    <div class="arch-spec">${escapeHTML((s.bio_short || '').split('.')[0])}${s.bio_short ? '.' : ''}</div>
+    <div class="caption">
+      <span>${escapeHTML((s.loc || '').toUpperCase())}${s.yrs ? ' · ' + s.yrs + ' YRS' : ''}${(s.spec && s.spec.length) ? ' · ' + escapeHTML(s.spec.join(' / ').toUpperCase()) : ''}</span>
+      <span class="r"><em>${s.bric_id || ''}</em></span>
+    </div>
+  </div>`;
 }
 
 function edArchHTML(a, i, total) {
