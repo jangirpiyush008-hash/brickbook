@@ -218,6 +218,13 @@ a{color:inherit;text-decoration:none}
 .ed-mtile-cap b{font-family:var(--serif);font-weight:400;font-size:15px;display:block}
 .ed-mtile-cap span{font-size:11px;color:rgba(245,239,217,.7)}
 
+/* ============ Analytics ============ */
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.analytics-card{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px 16px}
+.analytics-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.analytics-value{font-family:var(--serif);font-size:36px;font-weight:400;line-height:1;color:var(--ink);margin:8px 0 6px;letter-spacing:-.02em}
+.analytics-meta{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+
 /* ============ Share centre ============ */
 .share-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .share-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:24px 28px;display:flex;flex-direction:column;gap:12px}
@@ -2457,7 +2464,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup', '/app/practice/share', '/app/practice/projects', '/app/practice/projects/new'];
+const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup', '/app/practice/share', '/app/practice/analytics', '/app/practice/projects', '/app/practice/projects/new'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2493,6 +2500,7 @@ const ROUTE_META = {
   '/app/practice/projects':{ title:'Portfolio projects — BricBook',                              desc:'Manage the projects shown on your public practice profile.' },
   '/app/practice/projects/new':{ title:'New portfolio project — BricBook',                       desc:'Add a project to your practice portfolio.' },
   '/app/practice/share':{ title:'Share your practice — BricBook',                                desc:'Copy your public URL, share to LinkedIn / WhatsApp, download a QR code, or export a PDF portfolio.' },
+  '/app/practice/analytics':{ title:'Practice analytics — BricBook',                             desc:'Profile views, contact clicks, downloads, share activity.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -4417,6 +4425,77 @@ const PROJECT_TYPES = [
   'Interior','Landscape','Urban','Industrial','Sustainable','Heritage','Adaptive Reuse'
 ];
 
+/* ============ Analytics: fire-and-forget metric tracking ============ */
+function _bbSessionId(){
+  try{
+    let s = localStorage.getItem('bb_session');
+    if(!s){ s = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); localStorage.setItem('bb_session', s); }
+    return s;
+  }catch(e){ return null; }
+}
+function trackStudioMetric(studioId, metric){
+  const sb = sbClient(); if(!sb || !studioId || !metric) return;
+  try{
+    sb.rpc('bump_studio_metric', {
+      target_studio: studioId,
+      metric,
+      session_id: _bbSessionId(),
+      referrer: document.referrer || null,
+      ua: navigator.userAgent || null
+    }).then(() => {}, () => {});
+  }catch(e){}
+}
+window.trackStudioMetric = trackStudioMetric;
+
+/* ============ Practice analytics dashboard (/app/practice/analytics) ============ */
+async function renderPracticeAnalytics(){
+  const root = $('#root');
+  const sb = sbClient(); if(!sb){ root.innerHTML = '<p>Auth unavailable</p>'; return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ nav('/welcome'); return; }
+  const { data: rows, error } = await sb.rpc('get_studio_analytics');
+  const a = (Array.isArray(rows) ? rows[0] : rows) || {};
+  root.innerHTML = `
+    <div class="setup">
+      ${practiceShellNav('analytics', studio)}
+      <main class="practice-main">
+        <div class="practice-head">
+          <div>
+            <span class="eyebrow">Analytics</span>
+            <h1 class="serif" style="font-size:36px;font-weight:400;letter-spacing:-.02em;margin:6px 0 4px">How your profile is doing</h1>
+            <p style="color:var(--muted);font-size:13.5px;margin:0">Counted once per visitor per day. Nothing personal is stored — just aggregate counts.</p>
+          </div>
+          <div><button class="btn btn-ghost btn-sm" onclick="renderPracticeAnalytics()">Refresh</button></div>
+        </div>
+        ${error ? `<div style="padding:16px 20px;background:var(--surface-2);border:1px solid var(--terra);border-radius:8px;color:var(--terra)">Could not load analytics: ${escapeHTML(error.message)}</div>` : ''}
+        <div class="analytics-grid">
+          ${analyticsCard('Profile views',    a.view_count || 0,    (a.view_count_7d || 0) + ' in last 7 days', 'views')}
+          ${analyticsCard('Unique visitors',  a.unique_visitors||0, 'de-duplicated by session',                 'people')}
+          ${analyticsCard('Contact clicks',   a.contact_click_count||0, 'clicked the Contact button',           'contact')}
+          ${analyticsCard('Website clicks',   a.website_click_count||0, 'went to your site',                    'site')}
+          ${analyticsCard('LinkedIn clicks',  a.linkedin_click_count||0,'opened your LinkedIn',                 'linkedin')}
+          ${analyticsCard('Email clicks',     a.email_click_count||0,   'mailto clicks',                        'email')}
+          ${analyticsCard('WhatsApp clicks',  a.whatsapp_click_count||0,'',                                     'whatsapp')}
+          ${analyticsCard('PDF downloads',    a.pdf_download_count||0,  'portfolio exports',                    'pdf')}
+          ${analyticsCard('QR generated',     a.qr_generate_count||0,   '',                                     'qr')}
+          ${analyticsCard('Share clicks',     a.share_click_count||0,   'link copied / shared',                 'share')}
+        </div>
+        <div style="margin-top:32px;padding:20px 24px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px">
+          <div class="mono" style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Privacy note</div>
+          <p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.55">We count anonymous session-scoped events (browser session + day) to give you these numbers. No IP addresses are stored, no cookies beyond a rotating session id, and every visitor is counted once per event type per 24 hours.</p>
+        </div>
+      </main>
+    </div>
+  `;
+}
+function analyticsCard(label, value, meta, kind){
+  return `<div class="analytics-card">
+    <div class="analytics-label mono">${label}</div>
+    <div class="analytics-value serif">${Number(value).toLocaleString()}</div>
+    <div class="analytics-meta">${meta || ' '}</div>
+  </div>`;
+}
+
 /* ============ Share center (/app/practice/share) ============ */
 function loadScript(src){
   return new Promise((resolve, reject) => {
@@ -4547,6 +4626,7 @@ async function generateQR(){
     holder.innerHTML = `<div class="share-qr">${svgTag}</div><div class="share-qr-cap mono">${url}</div>`;
     holder.querySelector('svg').setAttribute('style', 'width:240px;height:240px;display:block');
     document.getElementById('qrActions').style.display = 'flex';
+    trackStudioMetric(s.studio.id, 'qr_generate');
   }catch(e){ holder.innerHTML = '<div class="share-hint" style="color:var(--terra)">QR generator failed to load. Check your connection and try again.</div>'; }
 }
 window.generateQR = generateQR;
@@ -4797,6 +4877,7 @@ async function generatePDF(mode){
   const filename = 'bricbook-' + (studio.slug || studio.bric_id) + (mode === 'resume' ? '-resume' : '-portfolio') + '.pdf';
   doc.save(filename);
   status.style.color = 'var(--sage)'; status.textContent = 'PDF ready — saved as ' + filename;
+  trackStudioMetric(studio.id, 'pdf_download');
 }
 window.generatePDF = generatePDF;
 
@@ -5025,6 +5106,19 @@ async function renderPracticeProfile(slug){
     const el = document.querySelector(a.getAttribute('href'));
     if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
   }));
+  /* Track profile view (once per session per day, enforced backend) */
+  trackStudioMetric(s.id, 'profile_view');
+  /* Track outbound clicks on contact CTAs + social + website */
+  document.querySelectorAll('.pp a[href^="mailto:"]').forEach(a => a.addEventListener('click', () => trackStudioMetric(s.id, 'email_click')));
+  document.querySelectorAll('.pp a[href^="tel:"]').forEach(a => a.addEventListener('click', () => trackStudioMetric(s.id, 'contact_click')));
+  document.querySelectorAll('.pp a[href^="http"]').forEach(a => {
+    const href = a.getAttribute('href') || '';
+    if(href.includes('linkedin.com')) a.addEventListener('click', () => trackStudioMetric(s.id, 'linkedin_click'));
+    else if(href.includes('wa.me') || href.includes('whatsapp')) a.addEventListener('click', () => trackStudioMetric(s.id, 'whatsapp_click'));
+    else if(s.website && href.includes(s.website.replace(/^https?:\/\//,'').replace(/\/$/,''))) a.addEventListener('click', () => trackStudioMetric(s.id, 'website_click'));
+  });
+  /* Contact card clicks (email specifically) */
+  document.querySelectorAll('.pp-contact-item[href^="mailto:"]').forEach(a => a.addEventListener('click', () => trackStudioMetric(s.id, 'contact_click')));
 }
 
 function setMetaTag(prop, val){
@@ -5066,6 +5160,15 @@ function practiceProjectCardHTML(p, size){
 async function sharePractice(slugOrId, name){
   const url = 'https://bricbook.com/practice/' + slugOrId;
   const text = `${name || 'Practice'} on BricBook — explore the practice and their work.`;
+  /* Try to also count the share event against the studio */
+  try{
+    const sb = sbClient();
+    if(sb){
+      const { data } = await sb.rpc('get_practice_public', { identifier: slugOrId });
+      const s = Array.isArray(data) ? data[0] : data;
+      if(s && s.id) trackStudioMetric(s.id, 'share_click');
+    }
+  }catch(e){}
   if(navigator.share){
     try{ await navigator.share({ title: name || 'BricBook Practice', text, url }); return; }catch(e){}
   }
@@ -5157,7 +5260,8 @@ function practiceShellNav(active, studio){
   const items = [
     { k:'projects', l:'Projects', h:'/app/practice/projects' },
     { k:'setup',    l:'Profile',  h:'/app/practice/setup' },
-    { k:'share',    l:'Share',    h:'/app/practice/share' }
+    { k:'share',    l:'Share',    h:'/app/practice/share' },
+    { k:'analytics',l:'Analytics',h:'/app/practice/analytics' }
   ];
   return `
     <nav class="ln-nav" style="border-bottom:1px solid var(--hairline)">
@@ -6495,43 +6599,42 @@ function addUserToProject(username) {
 }
 window.openAddUsers = openAddUsers; window.renderUserResults = renderUserResults; window.addUserToProject = addUserToProject;
 
-function renderPros() {
+async function renderPros() {
   const ws = $('#workspace'); if (!ws) return;
   const u = AUTH.get(); const isCust = (u?.kind === 'user' || u?.kind === 'customer');
-  const pros = [
-    { nm: 'Piyush Jangir', rl: 'Lead architect', em: 'piyush@sundara.studio', proj: 11, ph: 148, yr: 12 },
-    { nm: 'Neha Iyer', rl: 'Project manager', em: 'neha@sundara.studio', proj: 8, ph: 92, yr: 8 },
-    { nm: 'Aditya Rao', rl: 'Structural engineer', em: 'aditya@sundara.studio', proj: 14, ph: 60, yr: 15 },
-    { nm: 'Priya Menon', rl: 'Interior designer', em: 'priya@sundara.studio', proj: 6, ph: 210, yr: 6 },
-    { nm: 'Sarah Karim', rl: 'Site supervisor', em: 'sarah@sundara.studio', proj: 5, ph: 340, yr: 4 },
-    { nm: 'Jake Mendes', rl: 'Site engineer', em: 'jake@sundara.studio', proj: 3, ph: 428, yr: 3 },
-    { nm: 'Mark Rathi', rl: 'Procurement lead', em: 'mark@sundara.studio', proj: 9, ph: 44, yr: 10 },
-    { nm: 'Sundeep Vasan', rl: 'Landscape architect', em: 'sundeep@sundara.studio', proj: 4, ph: 68, yr: 9 },
-  ];
-  const filtered = isCust ? pros.slice(0, 4) : pros;
   ws.innerHTML = `
     <div class="workspace-main">
       <div class="pros">
-        <h1>${isCust ? 'Your project team' : 'Professionals in your studio'}</h1>
-        <p class="sub">${isCust ? 'The people working on your residence — chat, WhatsApp, or leave a note.' : 'Everyone on your studio, with what they\'re shipping. Click a card to open their profile.'}</p>
-        ${isCust ? '' : `<div class="pros-filter">
-          <button class="chip navy">All roles</button><button class="chip">Architects</button><button class="chip">Engineers</button><button class="chip">Site</button><button class="chip">Design</button>
-        </div>`}
-        <div class="pros-grid">
-          ${filtered.map(p => `
-            <div class="pro-card" onclick="toast('Opening ${p.nm}\\'s profile')">
-              <div class="top"><div class="av">${initials(p.nm)}</div><div><div class="nm">${p.nm}</div><div class="rl">${p.rl.toUpperCase()}</div></div></div>
-              <div class="stats"><div><b>${p.proj}</b>Projects</div><div><b>${p.ph}</b>Photos</div><div><b>${p.yr}y</b>Experience</div></div>
-              <div class="actions">
-                <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openWA('${p.nm}','Hi ${p.nm.split(' ')[0]}!','')"><svg width="12" height="12" viewBox="0 0 32 32" fill="#25D366"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> WhatsApp</button>
-                <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Opening chat')">${iconSVG('chat').replace('width="16"','width="12"').replace('height="16"','height="12"')} Message</button>
-              </div>
-            </div>
-          `).join('')}
+        <h1>${isCust ? 'Your project team' : 'Your studio team'}</h1>
+        <p class="sub">${isCust ? 'The people working on your project. Contact anyone directly.' : 'Everyone on your studio. Invite more team members from the admin panel.'}</p>
+        <div class="pros-grid" id="prosGrid">
+          <div style="grid-column:1/-1;color:var(--muted);padding:30px 0;text-align:center">Loading team…</div>
         </div>
       </div>
     </div>
   `;
+  const sb = sbClient(); if(!sb) return;
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ document.getElementById('prosGrid').innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">No studio yet. <a href="/welcome" style="color:var(--brass)">Register your firm →</a></div>`; return; }
+  const { data: team } = await sb.rpc('get_practice_team_public', { studio_uuid: studio.id });
+  const members = team || [];
+  if(!members.length){
+    document.getElementById('prosGrid').innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">No team members yet. You're the founder — invite others from the admin panel.</div>`;
+    return;
+  }
+  document.getElementById('prosGrid').innerHTML = members.map(m => `
+    <div class="pro-card">
+      <div class="top">
+        <div class="av">${m.avatar_url ? `<img src="${escapeAttr(m.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(m.full_name || '?')}</div>
+        <div>
+          <div class="nm">${escapeHTML(m.full_name || '—')}</div>
+          <div class="rl">${escapeHTML((m.team_role || '').replace('_',' ').toUpperCase())}</div>
+        </div>
+      </div>
+      <div class="stats"><div><b>${escapeHTML(m.city || '—')}</b>Based in</div><div><b>${fmtRel(m.joined_at)}</b>Joined</div></div>
+      ${m.bio ? `<div style="color:var(--ink-2);font-size:12.5px;line-height:1.55;margin-top:10px">${escapeHTML(m.bio.slice(0, 140))}${m.bio.length>140?'…':''}</div>` : ''}
+    </div>
+  `).join('');
 }
 
 /* ============ WhatsApp ============ */
@@ -7742,6 +7845,7 @@ function route() {
   if (r === '/welcome') return renderWelcome();
   if (r === '/app/practice/setup') return renderPracticeSetup();
   if (r === '/app/practice/share') return renderShareCenter();
+  if (r === '/app/practice/analytics') return renderPracticeAnalytics();
   if (r === '/app/practice/projects') return renderPortfolioList();
   if (r === '/app/practice/projects/new') return portfolioNew();
   if (r.startsWith('/app/practice/projects/')) return renderPortfolioEdit(r.slice('/app/practice/projects/'.length));

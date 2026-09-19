@@ -364,10 +364,16 @@ function renderStudios(pane){
             <tr data-search="${escape((s.name||'') + ' ' + (s.slug||'') + ' ' + (s.city||''))}">
               <td><div>${escape(s.name || '—')}</div><div class="mono">${escape(s.slug || '')}</div></td>
               <td>${escape(s.city || '—')}</td>
-              <td><span class="chip ${s.verified?'verified':'unverified'}">${s.verified?'verified':'pending'}</span></td>
+              <td>
+                <span class="chip ${s.verified?'verified':'unverified'}">${s.verified?'verified':'pending'}</span>
+                ${s.suspended ? '<span class="chip" style="background:rgba(229,110,94,.15);color:var(--danger);border:1px solid rgba(229,110,94,.3);margin-left:4px">suspended</span>' : ''}
+              </td>
               <td class="mono">${fmtDate(s.created_at)}</td>
-              <td style="text-align:right">
+              <td style="text-align:right;white-space:nowrap">
                 <button class="btn btn-ghost btn-sm" onclick="toggleVerified('${s.id}', ${!s.verified})">${s.verified?'Unverify':'Verify'}</button>
+                ${s.suspended
+                  ? `<button class="btn btn-ghost btn-sm" style="border-color:var(--ok);color:var(--ok);margin-left:4px" onclick="unsuspendStudio('${s.id}')">Unsuspend</button>`
+                  : `<button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="suspendStudio('${s.id}')">Suspend</button>`}
               </td>
             </tr>
           `).join('') || '<tr><td colspan="5" class="empty"><h3>No studios yet</h3><p>They’ll appear here once architects create their profile</p></td></tr>'}
@@ -720,11 +726,28 @@ async function setRole(id, role){
 window.setRole = setRole;
 
 async function toggleVerified(id, next){
-  const { error } = await sb.from('studios').update({ verified: next }).eq('id', id);
+  const { error } = await sb.rpc('admin_toggle_verified', { target_studio: id, next_verified: next });
   if(error){ toast('Update failed: ' + error.message, 'err'); return; }
   toast(next ? 'Studio verified' : 'Studio unverified'); loadAll();
 }
 window.toggleVerified = toggleVerified;
+
+async function suspendStudio(id){
+  const reason = prompt('Reason for suspension? (shown to the studio owner)');
+  if(reason === null) return;
+  const { error } = await sb.rpc('admin_suspend_studio', { target_studio: id, reason: reason || null });
+  if(error){ toast('Suspend failed: ' + error.message, 'err'); return; }
+  toast('Studio suspended (visibility forced to private)'); loadAll();
+}
+window.suspendStudio = suspendStudio;
+
+async function unsuspendStudio(id){
+  if(!confirm('Lift suspension? Visibility will be restored to unlisted.')) return;
+  const { error } = await sb.rpc('admin_unsuspend_studio', { target_studio: id, restore_visibility: 'unlisted' });
+  if(error){ toast('Unsuspend failed: ' + error.message, 'err'); return; }
+  toast('Studio unsuspended'); loadAll();
+}
+window.unsuspendStudio = unsuspendStudio;
 
 async function signOut(){ await sb.auth.signOut(); state.user = null; state.profile = null; renderSignin(); }
 window.signOut = signOut;
