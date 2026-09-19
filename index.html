@@ -90,6 +90,44 @@ a{color:inherit;text-decoration:none}
 
 /* ============ Landing nav ============ */
 .landing{min-height:100vh}
+/* ============ Practice setup wizard ============ */
+.setup{background:var(--ground);min-height:100vh;display:flex;flex-direction:column}
+.setup-progress{display:flex;gap:24px;align-items:center;font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
+.setup-crumb{display:flex;align-items:center;gap:8px}
+.setup-crumb .n{background:var(--surface-2);border:1px solid var(--hairline);padding:4px 8px;border-radius:4px}
+.setup-crumb.now .n{background:var(--brass);color:var(--ground);border-color:var(--brass)}
+.setup-crumb.done .n{background:var(--sage);color:#fff;border-color:var(--sage)}
+.setup-crumb.now .l{color:var(--ink)}
+.setup-main{flex:1;display:grid;grid-template-columns:340px 1fr;max-width:1140px;margin:0 auto;padding:40px 24px 80px;gap:56px;width:100%}
+.setup-side{position:sticky;top:100px;align-self:flex-start}
+.setup-side-inner{padding-right:12px}
+.setup-side-meta{margin-top:32px;padding-top:24px;border-top:1px solid var(--hairline);display:flex;flex-direction:column;gap:12px;font-size:11.5px;color:var(--ink-2)}
+.setup-side-meta > div{display:flex;justify-content:space-between;gap:12px}
+.setup-side-meta .k{color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-size:10px}
+.setup-content{background:var(--surface);border:1px solid var(--hairline);border-radius:14px;padding:36px 40px}
+.setup-form{display:flex;flex-direction:column;gap:16px}
+.setup-form textarea{width:100%;font-family:var(--sans);font-size:14px;padding:12px 14px;border:1px solid var(--hairline);border-radius:6px;background:var(--surface-2);color:var(--ink);resize:vertical;line-height:1.55;outline:none}
+.setup-form textarea:focus{border-color:var(--brass)}
+.setup-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--hairline)}
+.chip-picker{display:flex;flex-wrap:wrap;gap:6px}
+.chip-pick{background:var(--surface-2);border:1px solid var(--hairline);border-radius:20px;padding:6px 14px;font-size:12.5px;color:var(--ink-2);cursor:pointer;transition:all .12s}
+.chip-pick:hover{border-color:var(--brass);color:var(--ink)}
+.chip-pick.on{background:var(--brass-tint);border-color:var(--brass);color:var(--brass)}
+.visibility-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.vis-opt{border:1px solid var(--hairline);border-radius:8px;padding:14px 16px;background:var(--surface-2);cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:all .12s}
+.vis-opt:hover{border-color:var(--brass-2)}
+.vis-opt.on{border-color:var(--brass);background:var(--brass-tint)}
+.vis-opt input{display:none}
+.vis-opt b{font-family:var(--serif);font-weight:400;font-size:16px;color:var(--ink)}
+.vis-opt span{font-size:11.5px;color:var(--muted);line-height:1.45}
+@media (max-width:820px){
+  .setup-main{grid-template-columns:1fr;gap:24px;padding:24px 16px 60px}
+  .setup-side{position:static}
+  .setup-content{padding:24px 20px}
+  .setup-progress{display:none}
+  .visibility-picker{grid-template-columns:1fr}
+}
+
 /* ============ List Your Practice (marketing landing) ============ */
 .lyp{background:var(--ground)}
 .lyp-hero{padding:80px 24px 60px;position:relative;overflow:hidden}
@@ -2230,7 +2268,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'];
+const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2262,6 +2300,7 @@ const ROUTE_META = {
   '/signup/client':  { title:'Hire an architect — BricBook',                                    desc:'Post a brief and get matched to verified architects in your city.' },
   '/signup/architect':{ title:'List your practice — BricBook',                                  desc:'Join India’s directory of verified architects and studios.' },
   '/welcome':        { title:'Welcome — BricBook',                                               desc:'Choose how you want to use BricBook.' },
+  '/app/practice/setup':{ title:'Complete your practice profile — BricBook',                     desc:'Set up your architect firm profile: info, description, services, contact.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -3784,15 +3823,289 @@ async function registerAsFirm(){
   if(!name || !name.trim()) return;
   const { data, error } = await sb.rpc('register_as_architect_firm', { firm_name: name.trim(), city_v: 'Mumbai' });
   if(error){ toast('Registration failed: ' + error.message); return; }
-  toast('Studio created — welcome!');
+  toast('Studio created — next: complete your profile');
   try{ sessionStorage.removeItem('bb_new_user'); }catch(e){}
   const { data:{ session } } = await sb.auth.getSession();
   if(session){
     const person = await hydrateFromSession(session);
-    if(person) loginFlow(person, 'Welcome, ' + person.name);
+    if(person){
+      AUTH.set(person);
+      /* Route straight into the setup wizard so they finish onboarding */
+      renderSkeleton(() => nav('/app/practice/setup'));
+      return;
+    }
   }
+  nav('/login');
 }
 window.registerAsFirm = registerAsFirm;
+
+/* ============ Practice setup wizard (/app/practice/setup) ============ */
+const PRACTICE_TYPES = [
+  'Architecture Studio','Architecture Firm','Independent Architect',
+  'Interior Design Studio','Design Practice','Multi-disciplinary Studio'
+];
+const SUGGESTED_SERVICES = [
+  'Architectural Design','Residential Architecture','Commercial Architecture',
+  'Hospitality Design','Interior Design','Urban Planning','Landscape Design',
+  'Sustainable Design','Project Management','3D Visualization','Adaptive Reuse'
+];
+const SUGGESTED_SPECIALTIES = [
+  'Residential','Commercial','Hospitality','Retail','Healthcare','Education',
+  'Urban','Industrial','Interior','Landscape','Sustainable','Heritage'
+];
+
+async function renderPracticeSetup(){
+  const root = $('#root');
+  const sb = sbClient();
+  if(!sb){ root.innerHTML = '<div class="auth-body"><h1>Not ready</h1><p>Auth service unavailable.</p></div>'; return; }
+  const { data: studio, error } = await sb.rpc('my_studio');
+  if(error || !studio){
+    root.innerHTML = `
+      <div class="auth"><div class="auth-side"><div class="auth-header">
+        <a class="brand" href="/">${brandMark(14)}</a>
+      </div>
+      <div class="auth-body">
+        <span class="eyebrow">Setup</span>
+        <h1>No studio yet.</h1>
+        <p class="sub">You need a studio account before you can complete a practice profile. Register your firm first.</p>
+        <button class="btn btn-navy btn-lg" onclick="nav('/welcome')">Register your firm</button>
+      </div></div></div>`;
+    return;
+  }
+  state.practice = { ...studio };
+  state.practice.services = studio.services || [];
+  state.practice.specialties = studio.specialties || [];
+  state.practiceStep = state.practiceStep || 1;
+  renderPracticeSetupBody();
+}
+
+function renderPracticeSetupBody(){
+  const root = $('#root');
+  const p = state.practice || {};
+  const step = state.practiceStep || 1;
+  const stepTitles = ['Practice info','About your practice','Services & expertise','Contact & publish'];
+  root.innerHTML = `
+    <div class="setup">
+      <nav class="ln-nav" style="border-bottom:1px solid var(--hairline)">
+        <div class="ln-nav-inner">
+          <a class="brand" href="/">${brandMark(15)}</a>
+          <div class="setup-progress mono">
+            ${stepTitles.map((t,i) => `<span class="setup-crumb ${i+1===step?'now':''} ${i+1<step?'done':''}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="l">${t}</span></span>`).join('')}
+          </div>
+          <div class="cta">
+            <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+          </div>
+        </div>
+      </nav>
+
+      <main class="setup-main">
+        <div class="setup-side">
+          <div class="setup-side-inner">
+            <span class="eyebrow">Step ${step} of ${stepTitles.length}</span>
+            <h1 class="serif" style="font-size:38px;font-weight:400;letter-spacing:-.02em;line-height:1.05;margin:8px 0 12px">${stepTitles[step-1]}</h1>
+            <p class="sub" style="color:var(--muted);font-size:14px;line-height:1.6;max-width:340px">${setupIntro(step)}</p>
+            <div class="setup-side-meta mono">
+              <div><span class="k">BricBook ID</span><span>${p.bric_id || '—'}</span></div>
+              <div><span class="k">Slug</span><span>/practice/${p.slug || '—'}</span></div>
+              <div><span class="k">Completion</span><span>${p.profile_completion || 0}%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="setup-content">
+          ${renderSetupStep(step, p)}
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+function setupIntro(step){
+  return [
+    'The basics visitors see first. You can rename anything later.',
+    'A short tagline for search results, and a longer story for your public profile page.',
+    'Pick or add the services and expertise areas your firm delivers.',
+    'How clients reach you. Your practice will be reachable at bricbook.com/practice/[your-slug].'
+  ][step-1];
+}
+
+function renderSetupStep(step, p){
+  if(step === 1){
+    return `
+      <form class="setup-form" onsubmit="return saveSetupStep(event, 1)">
+        <div class="field"><label>Practice name *</label><input id="ps_name" value="${escapeAttr(p.name || '')}" required placeholder="Studio Kalpa"></div>
+        <div class="field"><label>Tagline</label><input id="ps_tagline" value="${escapeAttr(p.tagline || '')}" placeholder="Homes that breathe. Studios that build them."><span class="hint">Shows under your practice name on the public profile</span></div>
+        <div class="field-row">
+          <div class="field"><label>Practice type</label>
+            <select id="ps_ptype"><option value="">Choose…</option>${PRACTICE_TYPES.map(t => `<option ${p.practice_type===t?'selected':''}>${t}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>Founded year</label><input id="ps_founded" type="number" min="1900" max="2030" value="${p.founded_year || ''}" placeholder="2016"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>City *</label><input id="ps_city" required value="${escapeAttr(p.city || '')}" placeholder="Mumbai"></div>
+          <div class="field"><label>State</label><input id="ps_state" value="${escapeAttr(p.state || '')}" placeholder="Maharashtra"></div>
+        </div>
+        <div class="field"><label>Country</label><input id="ps_country" value="${escapeAttr(p.country || 'India')}"></div>
+        <div class="setup-actions">
+          <span></span>
+          <button class="btn btn-navy btn-lg" type="submit">Save &amp; continue ${iconSVG('arr')}</button>
+        </div>
+      </form>
+    `;
+  }
+  if(step === 2){
+    return `
+      <form class="setup-form" onsubmit="return saveSetupStep(event, 2)">
+        <div class="field">
+          <label>Short bio</label>
+          <textarea id="ps_bio" maxlength="240" rows="3" placeholder="Two sentences that describe your practice. Shown in search results and share previews.">${escapeAttr(p.bio || '')}</textarea>
+          <span class="hint">Max 240 characters</span>
+        </div>
+        <div class="field">
+          <label>Full description</label>
+          <textarea id="ps_desc" rows="8" placeholder="Tell the longer story. What you build. What you care about. Your process. Materials. Philosophy.">${escapeAttr(p.description_long || '')}</textarea>
+          <span class="hint">Appears in full on your public profile page</span>
+        </div>
+        <div class="setup-actions">
+          <button class="btn btn-ghost btn-lg" type="button" onclick="prevSetupStep()">← Back</button>
+          <button class="btn btn-navy btn-lg" type="submit">Save &amp; continue ${iconSVG('arr')}</button>
+        </div>
+      </form>
+    `;
+  }
+  if(step === 3){
+    return `
+      <form class="setup-form" onsubmit="return saveSetupStep(event, 3)">
+        <div class="field">
+          <label>Services you offer</label>
+          <div class="chip-picker" id="services_picker">
+            ${SUGGESTED_SERVICES.map(s => `<button type="button" class="chip-pick ${(p.services||[]).includes(s)?'on':''}" onclick="togglePractice('services', this, '${escapeAttr(s)}')">${s}</button>`).join('')}
+          </div>
+          <div class="field-row" style="margin-top:10px">
+            <input id="ps_srv_custom" placeholder="Add a custom service" style="flex:1">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="addCustomChip('services','#ps_srv_custom','#services_picker')">+ Add</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:24px">
+          <label>Expertise / specialties</label>
+          <div class="chip-picker" id="specs_picker">
+            ${SUGGESTED_SPECIALTIES.map(s => `<button type="button" class="chip-pick ${(p.specialties||[]).includes(s)?'on':''}" onclick="togglePractice('specialties', this, '${escapeAttr(s)}')">${s}</button>`).join('')}
+          </div>
+          <div class="field-row" style="margin-top:10px">
+            <input id="ps_spec_custom" placeholder="Add a custom specialty" style="flex:1">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="addCustomChip('specialties','#ps_spec_custom','#specs_picker')">+ Add</button>
+          </div>
+        </div>
+        <div class="setup-actions">
+          <button class="btn btn-ghost btn-lg" type="button" onclick="prevSetupStep()">← Back</button>
+          <button class="btn btn-navy btn-lg" type="submit">Save &amp; continue ${iconSVG('arr')}</button>
+        </div>
+      </form>
+    `;
+  }
+  /* step 4 */
+  return `
+    <form class="setup-form" onsubmit="return saveSetupStep(event, 4)">
+      <div class="field-row">
+        <div class="field"><label>Contact email</label><input id="ps_cemail" type="email" value="${escapeAttr(p.contact_email || '')}" placeholder="hello@yourstudio.com"></div>
+        <div class="field"><label>Contact phone</label><input id="ps_cphone" type="tel" value="${escapeAttr(p.contact_phone || '')}" placeholder="+91 98xxx xxxxx"></div>
+      </div>
+      <div class="field"><label>Website</label><input id="ps_web" type="url" value="${escapeAttr(p.website || '')}" placeholder="https://yourstudio.com"></div>
+      <div class="field-row">
+        <div class="field"><label>LinkedIn</label><input id="ps_li" value="${escapeAttr(p.linkedin || '')}" placeholder="https://linkedin.com/company/…"></div>
+        <div class="field"><label>Instagram</label><input id="ps_ig" value="${escapeAttr(p.instagram || '')}" placeholder="@yourstudio"></div>
+      </div>
+      <div class="field"><label>Behance</label><input id="ps_bh" value="${escapeAttr(p.behance || '')}" placeholder="https://behance.net/…"></div>
+      <div class="field" style="margin-top:20px">
+        <label>Public visibility</label>
+        <div class="visibility-picker">
+          ${['public','unlisted','private'].map(v => `<label class="vis-opt ${(p.visibility||'unlisted')===v?'on':''}"><input type="radio" name="ps_vis" value="${v}" ${(p.visibility||'unlisted')===v?'checked':''}><b>${v.charAt(0).toUpperCase()+v.slice(1)}</b><span>${{'public':'Indexed by Google; anyone can find you.','unlisted':'Anyone with the link can view; not indexed.','private':'Only you and your team can see.'}[v]}</span></label>`).join('')}
+        </div>
+      </div>
+      <div class="setup-actions">
+        <button class="btn btn-ghost btn-lg" type="button" onclick="prevSetupStep()">← Back</button>
+        <button class="btn btn-brass btn-lg" type="submit">Finish setup ${iconSVG('arr')}</button>
+      </div>
+    </form>
+  `;
+}
+
+function escapeAttr(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function togglePractice(field, btn, val){
+  const arr = state.practice[field] || [];
+  const i = arr.indexOf(val);
+  if(i >= 0){ arr.splice(i, 1); btn.classList.remove('on'); }
+  else { arr.push(val); btn.classList.add('on'); }
+  state.practice[field] = arr;
+}
+window.togglePractice = togglePractice;
+
+function addCustomChip(field, inputSel, containerSel){
+  const input = document.querySelector(inputSel);
+  const container = document.querySelector(containerSel);
+  const v = (input.value || '').trim();
+  if(!v) return;
+  if(!state.practice[field]) state.practice[field] = [];
+  if(state.practice[field].includes(v)){ input.value = ''; return; }
+  state.practice[field].push(v);
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'chip-pick on'; btn.textContent = v;
+  btn.setAttribute('onclick', `togglePractice('${field}', this, '${escapeAttr(v)}')`);
+  container.appendChild(btn);
+  input.value = '';
+}
+window.addCustomChip = addCustomChip;
+
+function prevSetupStep(){ if(state.practiceStep > 1){ state.practiceStep--; renderPracticeSetupBody(); } }
+window.prevSetupStep = prevSetupStep;
+
+async function saveSetupStep(e, step){
+  e.preventDefault();
+  const sb = sbClient(); if(!sb){ toast('Auth unavailable'); return false; }
+  const sid = state.practice.id;
+  if(!sid){ toast('No studio to save into'); return false; }
+  const patch = {};
+  if(step === 1){
+    patch.name = $('#ps_name').value.trim();
+    patch.tagline = $('#ps_tagline').value.trim() || null;
+    patch.practice_type = $('#ps_ptype').value || null;
+    patch.founded_year = $('#ps_founded').value ? parseInt($('#ps_founded').value, 10) : null;
+    patch.city = $('#ps_city').value.trim();
+    patch.state = $('#ps_state').value.trim() || null;
+    patch.country = $('#ps_country').value.trim() || null;
+  } else if(step === 2){
+    patch.bio = $('#ps_bio').value.trim() || null;
+    patch.description_long = $('#ps_desc').value.trim() || null;
+  } else if(step === 3){
+    patch.services = state.practice.services || [];
+    patch.specialties = state.practice.specialties || [];
+  } else {
+    patch.contact_email = $('#ps_cemail').value.trim() || null;
+    patch.contact_phone = $('#ps_cphone').value.trim() || null;
+    patch.website = $('#ps_web').value.trim() || null;
+    patch.linkedin = $('#ps_li').value.trim() || null;
+    patch.instagram = $('#ps_ig').value.trim() || null;
+    patch.behance = $('#ps_bh').value.trim() || null;
+    const visRadio = document.querySelector('input[name="ps_vis"]:checked');
+    if(visRadio) patch.visibility = visRadio.value;
+  }
+  const { error } = await sb.from('studios').update(patch).eq('id', sid);
+  if(error){ toast('Save failed: ' + error.message); return false; }
+  /* Persist locally + recalc completion */
+  Object.assign(state.practice, patch);
+  try{ await sb.rpc('recalc_profile_completion', { sid: sid }); }catch(e){}
+  toast(step < 4 ? 'Saved' : 'Profile saved — welcome to BricBook');
+  if(step < 4){
+    state.practiceStep = step + 1;
+    renderPracticeSetupBody();
+  } else {
+    /* Done: back to dashboard */
+    state.practiceStep = 1;
+    nav('/app/explore');
+  }
+  return false;
+}
+window.saveSetupStep = saveSetupStep;
 
 function openInvite(e){
   e.preventDefault();
@@ -6093,6 +6406,7 @@ function route() {
   if (r === '/signup/client')     { state.signupStep = 1; state.signupKind = 'client';    return renderSignup(); }
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
   if (r === '/welcome') return renderWelcome();
+  if (r === '/app/practice/setup') return renderPracticeSetup();
   if (r === '/forgot') return renderForgot();
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();

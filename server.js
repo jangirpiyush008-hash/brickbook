@@ -20,7 +20,8 @@ const SPA_ROUTES = new Set([
   '/', '/list-your-practice',
   '/login', '/signup', '/signup/client', '/signup/architect',
   '/welcome', '/forgot', '/reset',
-  '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs'
+  '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs',
+  '/app/practice/setup'
 ]);
 const SPA_ROUTE_PREFIXES = ['/app/', '/architect/', '/client/invite/'];
 function isKnownSpaRoute(pathname){
