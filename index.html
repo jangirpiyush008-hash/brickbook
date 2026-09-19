@@ -191,6 +191,36 @@ a{color:inherit;text-decoration:none}
   .pp-notfound h1{font-size:36px}
 }
 
+/* ============ Share centre ============ */
+.share-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.share-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:24px 28px;display:flex;flex-direction:column;gap:12px}
+.share-card-url{grid-column:1/-1}
+.share-card-head{display:flex;justify-content:space-between;align-items:center}
+.share-bric{font-size:11px;color:var(--muted);letter-spacing:.14em}
+.share-url-row{display:flex;gap:8px;margin-top:8px}
+.share-url-input{flex:1;height:44px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:6px;padding:0 14px;color:var(--ink);font-size:13.5px;outline:none}
+.share-hint{color:var(--muted);font-size:12px;line-height:1.5}
+.share-channels{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.share-channel{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px;text-decoration:none;color:var(--ink);transition:transform .12s,border-color .12s}
+.share-channel:hover{border-color:var(--brass);transform:translateY(-1px)}
+.share-channel b{display:block;font-family:var(--serif);font-size:16px;font-weight:400}
+.share-channel span:not(.share-channel-icon){display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.share-channel-icon{width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--serif);font-size:16px;font-weight:400}
+.share-qr-holder{margin-top:10px;padding:22px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;gap:10px}
+.share-qr{background:#fff;padding:12px;border-radius:8px;box-shadow:var(--shadow-sm)}
+.share-qr svg{display:block}
+.share-qr-cap{font-size:10.5px;color:var(--muted);letter-spacing:.06em;margin-top:4px;text-align:center;word-break:break-all;max-width:280px}
+.share-actions{display:flex;gap:8px;flex-wrap:wrap}
+.share-pdf-holder{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+.share-pdf-mockup{padding:22px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px;display:flex;justify-content:center}
+.share-pdf-thumb{aspect-ratio:.75;width:200px;background:var(--navy);color:#F5EFD9;border-radius:8px;padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 28px rgba(31,36,64,.25)}
+.share-pdf-mark{font-family:var(--serif);font-size:15px;letter-spacing:.05em}
+.share-pdf-name{font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em}
+.share-pdf-meta{font-size:9.5px;letter-spacing:.14em;color:rgba(245,239,217,.6);text-transform:uppercase}
+@media (max-width:820px){
+  .share-grid{grid-template-columns:1fr}
+}
+
 /* ============ Portfolio editor ============ */
 .practice-main{max-width:1140px;margin:0 auto;padding:36px 24px 80px}
 .practice-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--hairline);flex-wrap:wrap}
@@ -2400,7 +2430,7 @@ const AUTH = {
 };
 
 /* ============ Router (real paths via pushState with hash fallback) ============ */
-const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup', '/app/practice/projects', '/app/practice/projects/new'];
+const ROUTES = ['/', '/list-your-practice', '/login', '/signup', '/signup/client', '/signup/architect', '/welcome', '/forgot', '/reset', '/admin', '/app', '/app/explore', '/app/profile', '/app/settings', '/app/pros', '/app/jobs', '/app/practice/setup', '/app/practice/share', '/app/practice/projects', '/app/practice/projects/new'];
 function currentRoute() {
   /* Prefer pathname; fall back to legacy hash for backwards compat with bookmarks */
   let p = location.pathname || '/';
@@ -2435,6 +2465,7 @@ const ROUTE_META = {
   '/app/practice/setup':{ title:'Complete your practice profile — BricBook',                     desc:'Set up your architect firm profile: info, description, services, contact.' },
   '/app/practice/projects':{ title:'Portfolio projects — BricBook',                              desc:'Manage the projects shown on your public practice profile.' },
   '/app/practice/projects/new':{ title:'New portfolio project — BricBook',                       desc:'Add a project to your practice portfolio.' },
+  '/app/practice/share':{ title:'Share your practice — BricBook',                                desc:'Copy your public URL, share to LinkedIn / WhatsApp, download a QR code, or export a PDF portfolio.' },
   '/forgot':         { title:'Reset your password — BricBook',                                   desc:'Send yourself a reset link.' },
   '/reset':          { title:'Set a new password — BricBook',                                    desc:'Choose a new password for your BricBook account.' },
   '/admin':          { title:'Admin sign-in — BricBook',                                         desc:'BricBook ops team access.' },
@@ -4207,6 +4238,399 @@ const PROJECT_TYPES = [
   'Interior','Landscape','Urban','Industrial','Sustainable','Heritage','Adaptive Reuse'
 ];
 
+/* ============ Share center (/app/practice/share) ============ */
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    if(document.querySelector(`script[data-src="${src}"]`)){ resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.setAttribute('data-src', src);
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Failed to load ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+async function renderShareCenter(){
+  const root = $('#root');
+  const sb = sbClient(); if(!sb){ root.innerHTML = '<p>Auth unavailable</p>'; return; }
+  const { data: studio } = await sb.rpc('my_studio');
+  if(!studio){ nav('/welcome'); return; }
+  state.share = { studio };
+  const url = 'https://bricbook.com/practice/' + (studio.slug || studio.bric_id);
+  const linkedinUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url);
+  const whatsappMsg = `Take a look at our practice on BricBook — ${studio.name}: ${url}`;
+  const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(whatsappMsg);
+  const emailSubject = encodeURIComponent(`${studio.name} — practice profile`);
+  const emailBody = encodeURIComponent(`Hi,\n\nHere's our architecture practice profile on BricBook:\n\n${studio.name}\n${studio.tagline || ''}\n\n${url}\n\n—`);
+  const mailtoUrl = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+
+  root.innerHTML = `
+    <div class="setup">
+      ${practiceShellNav('share', studio)}
+      <main class="practice-main">
+        <div class="practice-head">
+          <div>
+            <span class="eyebrow">Share your practice</span>
+            <h1 class="serif" style="font-size:36px;font-weight:400;letter-spacing:-.02em;margin:6px 0 4px">Share centre</h1>
+            <p style="color:var(--muted);font-size:13.5px;margin:0">One profile, every channel. Copy the link, drop it anywhere, or export a PDF portfolio your clients can save.</p>
+          </div>
+          <div><a class="btn btn-ghost btn-sm" href="${url}" target="_blank" rel="noopener">View public profile ↗</a></div>
+        </div>
+
+        <div class="share-grid">
+          <section class="share-card share-card-url">
+            <div class="share-card-head">
+              <span class="eyebrow">Public URL</span>
+              <span class="mono share-bric">${escapeHTML(studio.bric_id || '')}</span>
+            </div>
+            <div class="share-url-row">
+              <input readonly value="${escapeAttr(url)}" onclick="this.select()" class="share-url-input mono">
+              <button class="btn btn-navy" onclick="copyShare('${escapeAttr(url)}')">Copy</button>
+            </div>
+            <div class="share-hint">This is your permanent link. Put it on business cards, LinkedIn, Instagram bio, email signatures.</div>
+          </section>
+
+          <section class="share-card">
+            <span class="eyebrow">Send to</span>
+            <div class="share-channels">
+              <a class="share-channel share-linkedin" href="${linkedinUrl}" target="_blank" rel="noopener">
+                <span class="share-channel-icon" style="background:#0A66C2;color:#fff">in</span>
+                <div><b>LinkedIn</b><span>Share to your feed or a connection</span></div>
+              </a>
+              <a class="share-channel share-whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener">
+                <span class="share-channel-icon" style="background:#25D366;color:#fff">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.53 15.24L2 22l4.94-1.4A10 10 0 1 0 12 2Zm5.05 14.24c-.21.59-1.26 1.13-1.7 1.19-.45.06-1.06.08-1.72-.11a11.36 11.36 0 0 1-4.65-2.75 11.44 11.44 0 0 1-2.85-4.63c-.22-.66-.22-1.24-.15-1.7.07-.45.59-1.5 1.18-1.7.36-.13.72-.05.94.24l.71 1.13c.14.24.14.51.03.75-.11.24-.25.4-.5.62-.16.14-.28.31-.16.62.13.35 1.15 1.65 1.94 2.44.79.79 2.09 1.81 2.44 1.94.31.11.48-.02.62-.16.22-.22.38-.36.62-.5.24-.11.51-.11.75.03l1.13.71c.29.22.37.58.24.94Z"/></svg>
+                </span>
+                <div><b>WhatsApp</b><span>Send directly to a client</span></div>
+              </a>
+              <a class="share-channel share-email" href="${mailtoUrl}">
+                <span class="share-channel-icon" style="background:var(--navy);color:#F5EFD9">@</span>
+                <div><b>Email</b><span>Open your mail app with a template</span></div>
+              </a>
+            </div>
+          </section>
+
+          <section class="share-card share-card-qr">
+            <span class="eyebrow">QR code</span>
+            <p class="share-hint" style="margin-top:6px">For business cards, exhibition boards, presentations. Anyone scans it — they land on your profile.</p>
+            <div id="qrHolder" class="share-qr-holder">
+              <button class="btn btn-navy btn-lg" onclick="generateQR()">Generate QR</button>
+            </div>
+            <div id="qrActions" style="display:none;gap:8px;margin-top:14px" class="share-actions">
+              <button class="btn btn-ghost btn-sm" onclick="downloadQR('svg')">Download SVG</button>
+              <button class="btn btn-ghost btn-sm" onclick="downloadQR('png')">Download PNG</button>
+              <button class="btn btn-ghost btn-sm" onclick="printQR()">Print</button>
+            </div>
+          </section>
+
+          <section class="share-card share-card-pdf">
+            <span class="eyebrow">PDF portfolio</span>
+            <p class="share-hint" style="margin-top:6px">One-click generation from your live profile. Cover, about, projects, awards, team, contact — formatted for print + email attachments.</p>
+            <div id="pdfHolder" class="share-pdf-holder">
+              <div class="share-pdf-mockup">
+                <div class="share-pdf-thumb">
+                  <div class="share-pdf-mark serif">BRICB<span style="color:var(--brass)">∞</span>K</div>
+                  <div class="share-pdf-name serif">${escapeHTML(studio.name || 'Your practice')}</div>
+                  <div class="share-pdf-meta mono">${escapeHTML(studio.bric_id || '')} · ${escapeHTML(studio.city || '')}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-brass btn-lg" onclick="generatePDF()">Generate PDF portfolio</button>
+                <button class="btn btn-ghost btn-lg" onclick="generatePDF('resume')">Short resume</button>
+              </div>
+              <div id="pdfStatus" class="share-hint" style="margin-top:8px"></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  `;
+}
+
+async function copyShare(url){
+  try{ await navigator.clipboard.writeText(url); toast('Link copied'); }
+  catch(e){ prompt('Copy this link:', url); }
+}
+window.copyShare = copyShare;
+
+async function generateQR(){
+  const s = state.share; if(!s) return;
+  const url = 'https://bricbook.com/practice/' + (s.studio.slug || s.studio.bric_id);
+  const holder = document.getElementById('qrHolder');
+  holder.innerHTML = '<div class="share-hint">Generating…</div>';
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js');
+    const qr = window.qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    /* createSvgTag with margin + module size for a crisp 240x240 output */
+    const svgTag = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    holder.innerHTML = `<div class="share-qr">${svgTag}</div><div class="share-qr-cap mono">${url}</div>`;
+    holder.querySelector('svg').setAttribute('style', 'width:240px;height:240px;display:block');
+    document.getElementById('qrActions').style.display = 'flex';
+  }catch(e){ holder.innerHTML = '<div class="share-hint" style="color:var(--terra)">QR generator failed to load. Check your connection and try again.</div>'; }
+}
+window.generateQR = generateQR;
+
+function downloadQR(kind){
+  const svg = document.querySelector('#qrHolder svg'); if(!svg) return;
+  const s = state.share.studio;
+  const filename = `bricbook-${s.slug || s.bric_id}-qr`;
+  if(kind === 'svg'){
+    const src = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([src], { type: 'image/svg+xml' });
+    triggerDownload(URL.createObjectURL(blob), filename + '.svg');
+    return;
+  }
+  /* PNG: rasterize via canvas */
+  const src = new XMLSerializer().serializeToString(svg);
+  const img = new Image();
+  const size = 720;
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+    ctx.drawImage(img, 0, 0, size, size);
+    c.toBlob(b => triggerDownload(URL.createObjectURL(b), filename + '.png'), 'image/png');
+  };
+  img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(src);
+}
+window.downloadQR = downloadQR;
+
+function triggerDownload(href, filename){
+  const a = document.createElement('a');
+  a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(href); }, 500);
+}
+
+function printQR(){
+  const svg = document.querySelector('#qrHolder svg'); if(!svg) return;
+  const s = state.share.studio;
+  const url = 'https://bricbook.com/practice/' + (s.slug || s.bric_id);
+  const src = new XMLSerializer().serializeToString(svg);
+  const w = window.open('', '_blank');
+  w.document.write(`<!doctype html><html><head><title>${escapeHTML(s.name || 'Practice')} — QR</title><style>body{font-family:sans-serif;text-align:center;padding:40px}.n{font-size:28px;margin:20px 0 4px}.u{font-family:monospace;color:#666;font-size:11px}svg{width:320px;height:320px}</style></head><body>${src}<div class="n">${escapeHTML(s.name || '')}</div><div class="u">${url}</div><script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+window.printQR = printQR;
+
+/* ============ PDF portfolio (client-side jsPDF) ============ */
+async function fetchAsDataURL(url){
+  try{
+    const r = await fetch(url, { mode:'cors' });
+    if(!r.ok) return null;
+    const b = await r.blob();
+    return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+  }catch(e){ return null; }
+}
+
+async function generatePDF(mode){
+  const s = state.share; if(!s) return;
+  const status = document.getElementById('pdfStatus');
+  status.style.color = 'var(--muted)';
+  status.textContent = 'Loading PDF engine…';
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+  }catch(e){
+    status.style.color = 'var(--terra)'; status.textContent = 'PDF engine failed to load. Check your connection.'; return;
+  }
+  const { jsPDF } = window.jspdf;
+  const sb = sbClient();
+  const studio = s.studio;
+  status.textContent = 'Fetching your projects…';
+  const [{ data: projects }, { data: awards }, { data: team }] = await Promise.all([
+    sb.rpc('get_portfolio_projects', { studio_uuid: studio.id, only_featured: false }),
+    sb.rpc('get_practice_awards_public', { studio_uuid: studio.id }),
+    sb.rpc('get_practice_team_public', { studio_uuid: studio.id })
+  ]);
+
+  status.textContent = 'Composing PDF…';
+  const doc = new jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const M = 42;
+  const brass = [232, 153, 102]; const navy = [31, 36, 64]; const muted = [122, 126, 150]; const ink = [30, 30, 45];
+
+  /* === Cover === */
+  doc.setFillColor(...navy); doc.rect(0, 0, W, H, 'F');
+  doc.setTextColor(245, 239, 217);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+  doc.text('BRICB∞K · PRACTICE PROFILE', M, M + 6);
+  doc.text(String(studio.bric_id || ''), W - M, M + 6, { align: 'right' });
+
+  doc.setFontSize(42); doc.setFont('helvetica', 'bold');
+  const name = studio.name || '—';
+  const nameLines = doc.splitTextToSize(name, W - M*2);
+  doc.text(nameLines, M, H * 0.42);
+
+  if(studio.tagline){
+    doc.setFontSize(15); doc.setFont('helvetica', 'italic'); doc.setTextColor(220, 210, 190);
+    const tag = doc.splitTextToSize(studio.tagline, W - M*2);
+    doc.text(tag, M, H * 0.42 + nameLines.length * 44 + 24);
+  }
+
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(200, 190, 170);
+  const metaLine = [studio.city, studio.state, studio.country].filter(Boolean).join(' · ');
+  doc.text(metaLine, M, H - M - 20);
+  doc.text('bricbook.com/practice/' + (studio.slug || studio.bric_id), M, H - M);
+  doc.text('Generated ' + new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}), W - M, H - M, { align: 'right' });
+
+  /* === About page === */
+  doc.addPage();
+  drawPdfHeader(doc, studio, W, M);
+  let y = M + 60;
+  doc.setTextColor(...ink); doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
+  doc.text('About the practice', M, y); y += 26;
+  if(studio.description_short){
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(13); doc.setTextColor(...ink);
+    const s1 = doc.splitTextToSize(studio.description_short, W - M*2);
+    doc.text(s1, M, y); y += s1.length * 18 + 10;
+  }
+  if(studio.description_long){
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ink);
+    const s2 = doc.splitTextToSize(studio.description_long, W - M*2);
+    (s2 || []).forEach(line => {
+      if(y > H - M - 40){ doc.addPage(); drawPdfHeader(doc, studio, W, M); y = M + 60; }
+      doc.text(line, M, y); y += 15;
+    });
+  }
+  /* Services + expertise */
+  if((studio.services && studio.services.length) || (studio.specialties && studio.specialties.length)){
+    y += 20;
+    if(y > H - M - 100){ doc.addPage(); drawPdfHeader(doc, studio, W, M); y = M + 60; }
+    if(studio.services && studio.services.length){
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...brass);
+      doc.text('SERVICES', M, y); y += 16;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ink);
+      const svc = doc.splitTextToSize((studio.services || []).join(' · '), W - M*2);
+      doc.text(svc, M, y); y += svc.length * 15 + 10;
+    }
+    if(studio.specialties && studio.specialties.length){
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...brass);
+      doc.text('EXPERTISE', M, y); y += 16;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ink);
+      const spc = doc.splitTextToSize((studio.specialties || []).join(' · '), W - M*2);
+      doc.text(spc, M, y); y += spc.length * 15 + 10;
+    }
+  }
+
+  /* === Projects (skip in short 'resume' mode) === */
+  if(mode !== 'resume' && (projects || []).length){
+    for(const p of (projects || [])){
+      doc.addPage();
+      drawPdfHeader(doc, studio, W, M);
+      let py = M + 60;
+      /* Cover image if available */
+      if(p.cover_url){
+        const dataUrl = await fetchAsDataURL(p.cover_url);
+        if(dataUrl){
+          try{ doc.addImage(dataUrl, 'JPEG', M, py, W - M*2, 260, undefined, 'FAST'); py += 276; }catch(e){ py += 10; }
+        }
+      }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(...ink);
+      const nameLines = doc.splitTextToSize(p.name || 'Untitled project', W - M*2);
+      doc.text(nameLines, M, py); py += nameLines.length * 24 + 4;
+
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...muted);
+      const projMeta = [p.year, p.city, p.project_type, p.portfolio_status].filter(Boolean).join(' · ');
+      if(projMeta){ doc.text(projMeta, M, py); py += 16; }
+
+      if(p.description_long || p.description){
+        py += 6;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ink);
+        const desc = doc.splitTextToSize(p.description_long || p.description, W - M*2);
+        (desc || []).forEach(line => {
+          if(py > H - M - 40){ doc.addPage(); drawPdfHeader(doc, studio, W, M); py = M + 60; }
+          doc.text(line, M, py); py += 14;
+        });
+      }
+    }
+  }
+
+  /* === Awards === */
+  if((awards || []).length){
+    doc.addPage();
+    drawPdfHeader(doc, studio, W, M);
+    let ay = M + 60;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...ink);
+    doc.text('Awards & recognition', M, ay); ay += 26;
+    (awards || []).forEach(a => {
+      if(ay > H - M - 60){ doc.addPage(); drawPdfHeader(doc, studio, W, M); ay = M + 60; }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...brass);
+      doc.text(String(a.year || ''), M, ay);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...ink);
+      doc.text(a.name || '', M + 60, ay);
+      if(a.organization){
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(10); doc.setTextColor(...muted);
+        doc.text(a.organization, M + 60, ay + 14);
+      }
+      ay += 34;
+    });
+  }
+
+  /* === Team (resume mode: keep brief) === */
+  if((team || []).length){
+    doc.addPage();
+    drawPdfHeader(doc, studio, W, M);
+    let ty = M + 60;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...ink);
+    doc.text('Team', M, ty); ty += 26;
+    (team || []).forEach(m => {
+      if(ty > H - M - 40){ doc.addPage(); drawPdfHeader(doc, studio, W, M); ty = M + 60; }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(...ink);
+      doc.text(m.full_name || '—', M, ty);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...muted);
+      doc.text((m.team_role || '').replace('_', ' ').toUpperCase(), W - M, ty, { align: 'right' });
+      ty += 18;
+    });
+  }
+
+  /* === Contact === */
+  doc.addPage();
+  drawPdfHeader(doc, studio, W, M);
+  let cy = M + 60;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...ink);
+  doc.text('Get in touch', M, cy); cy += 30;
+  const items = [
+    ['Email', studio.contact_email],
+    ['Phone', studio.contact_phone],
+    ['Website', studio.website],
+    ['LinkedIn', studio.linkedin],
+    ['Instagram', studio.instagram],
+    ['Behance', studio.behance],
+    ['Public profile', 'bricbook.com/practice/' + (studio.slug || studio.bric_id)],
+    ['BricBook ID', studio.bric_id]
+  ].filter(([, v]) => v);
+  items.forEach(([k, v]) => {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...brass);
+    doc.text(k.toUpperCase(), M, cy);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.setTextColor(...ink);
+    doc.text(String(v), M + 100, cy);
+    cy += 20;
+  });
+
+  /* Footer on last page */
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(...muted);
+  doc.text('Generated from live profile on bricbook.com · ' + new Date().toISOString().slice(0,10), M, H - M);
+
+  const filename = 'bricbook-' + (studio.slug || studio.bric_id) + (mode === 'resume' ? '-resume' : '-portfolio') + '.pdf';
+  doc.save(filename);
+  status.style.color = 'var(--sage)'; status.textContent = 'PDF ready — saved as ' + filename;
+}
+window.generatePDF = generatePDF;
+
+function drawPdfHeader(doc, studio, W, M){
+  const brass = [232, 153, 102]; const muted = [122, 126, 150];
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...muted);
+  doc.text('BRICB∞K', M, M);
+  doc.setFont('helvetica', 'normal'); doc.setTextColor(...brass);
+  doc.text(studio.name || '', W - M, M, { align: 'right' });
+  doc.setDrawColor(230, 225, 210); doc.setLineWidth(0.5);
+  doc.line(M, M + 10, W - M, M + 10);
+}
+
 /* ============ Public practice profile (/practice/:slug) ============ */
 async function renderPracticeProfile(slug){
   const root = $('#root');
@@ -4553,7 +4977,8 @@ function portfolioCardHTML(p){
 function practiceShellNav(active, studio){
   const items = [
     { k:'projects', l:'Projects', h:'/app/practice/projects' },
-    { k:'setup',    l:'Profile',  h:'/app/practice/setup' }
+    { k:'setup',    l:'Profile',  h:'/app/practice/setup' },
+    { k:'share',    l:'Share',    h:'/app/practice/share' }
   ];
   return `
     <nav class="ln-nav" style="border-bottom:1px solid var(--hairline)">
@@ -7137,6 +7562,7 @@ function route() {
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
   if (r === '/welcome') return renderWelcome();
   if (r === '/app/practice/setup') return renderPracticeSetup();
+  if (r === '/app/practice/share') return renderShareCenter();
   if (r === '/app/practice/projects') return renderPortfolioList();
   if (r === '/app/practice/projects/new') return portfolioNew();
   if (r.startsWith('/app/practice/projects/')) return renderPortfolioEdit(r.slice('/app/practice/projects/'.length));
