@@ -90,6 +90,107 @@ a{color:inherit;text-decoration:none}
 
 /* ============ Landing nav ============ */
 .landing{min-height:100vh}
+/* ============ Public practice profile ============ */
+.pp{background:var(--ground)}
+.pp-hero{position:relative;min-height:520px;background:var(--navy);color:#F5EFD9;display:flex;align-items:center;padding:80px 24px 60px;background-size:cover;background-position:center;overflow:hidden}
+.pp-hero-bg{position:absolute;inset:0;color:#F5EFD9;opacity:.28;overflow:hidden}
+.pp-hero-bg .lyp-bp-wrap svg.blueprint{position:absolute!important;right:-15%!important;top:0!important;width:140%!important;height:110%!important;opacity:1!important}
+.pp-hero-inner{position:relative;z-index:1;max-width:1140px;margin:0 auto;width:100%}
+.pp-hero-meta{display:flex;gap:10px;align-items:center;font-size:11px;letter-spacing:.16em;opacity:.85;margin-bottom:22px;flex-wrap:wrap}
+.pp-hero-meta .pp-verified{color:var(--brass-2)}
+.pp-hero-name{font-family:var(--serif);font-size:88px;font-weight:400;line-height:.98;letter-spacing:-.025em;margin:0 0 14px;max-width:14ch}
+.pp-hero-tagline{font-size:24px;line-height:1.35;font-weight:400;font-style:italic;color:rgba(245,239,217,.85);margin:0 0 34px;max-width:700px}
+.pp-hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+.btn-ghost-light{background:transparent;color:#F5EFD9;border:1px solid rgba(245,239,217,.35)}
+.btn-ghost-light:hover{background:rgba(245,239,217,.1);border-color:rgba(245,239,217,.6)}
+
+.pp-sec{padding:80px 24px}
+.pp-sec-tint{background:var(--surface-2);border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+.pp-sec-inner{max-width:1140px;margin:0 auto}
+.pp-sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:36px;max-width:700px}
+.pp-sec-head h2{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:0}
+.pp-sec-head h2 em{color:var(--brass);font-style:italic}
+
+.pp-about{max-width:780px;margin:0 auto}
+.pp-about-short{font-family:var(--serif);font-size:28px;line-height:1.35;color:var(--ink);font-weight:400;font-style:italic;margin:12px 0 24px}
+.pp-about-long{color:var(--ink-2);font-size:16px;line-height:1.75}
+.pp-about-long p{margin:0 0 14px}
+
+.pp-featured-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;grid-auto-rows:auto}
+.pp-featured-grid .pp-proj-lg{grid-column:span 2;grid-row:span 2}
+.pp-proj{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.pp-proj-media{aspect-ratio:4/3;overflow:hidden;background:var(--surface-2);position:relative}
+.pp-proj-lg .pp-proj-media{aspect-ratio:16/10}
+.pp-proj-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.pp-proj:hover .pp-proj-media img{transform:scale(1.03)}
+.pp-proj-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--surface-2),var(--hairline))}
+.pp-proj-body{padding:18px 20px 20px}
+.pp-proj-body h3{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 6px;color:var(--ink)}
+.pp-proj-lg .pp-proj-body h3{font-size:30px}
+.pp-proj-meta{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.pp-proj-desc{color:var(--ink-2);font-size:13.5px;line-height:1.55;margin:10px 0 0}
+
+.pp-proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pp-proj-sm .pp-proj-body{padding:14px 16px 16px}
+.pp-proj-sm .pp-proj-body h3{font-size:17px}
+
+.pp-services{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.pp-tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pp-tag{background:var(--surface);border:1px solid var(--hairline);border-radius:24px;padding:8px 18px;font-size:13px;color:var(--ink)}
+.pp-tag-alt{background:var(--brass-tint);border-color:var(--brass);color:var(--brass)}
+
+.pp-awards-list{list-style:none;padding:0;margin:0;max-width:820px}
+.pp-awards-list li{display:grid;grid-template-columns:80px 1fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--hairline)}
+.pp-awards-list li:last-child{border-bottom:0}
+.pp-award-year{font-size:14px;color:var(--brass);letter-spacing:.06em;padding-top:2px}
+.pp-award-name{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.01em;color:var(--ink);margin:0}
+.pp-award-org{color:var(--muted);font-size:13px;margin-top:2px}
+.pp-award-desc{color:var(--ink-2);font-size:13.5px;line-height:1.55;margin:10px 0 0}
+.pp-award-link{display:inline-block;margin-top:8px;font-size:12.5px;color:var(--brass)}
+
+.pp-team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.pp-team-card{background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:22px 22px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.pp-team-av{width:64px;height:64px;border-radius:50%;overflow:hidden;background:var(--navy-tint);color:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:26px;flex-shrink:0}
+.pp-team-av img{width:100%;height:100%;object-fit:cover}
+.pp-team-name{font-family:var(--serif);font-size:20px;font-weight:400;letter-spacing:-.01em;margin:0}
+.pp-team-role{font-size:10.5px;color:var(--brass);letter-spacing:.14em;margin-top:2px}
+.pp-team-bio{color:var(--ink-2);font-size:13px;line-height:1.55;margin:8px 0 0}
+
+.pp-contact{max-width:820px;margin:0 auto}
+.pp-contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:36px}
+.pp-contact-item{display:flex;flex-direction:column;gap:4px;padding:16px 20px;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;text-decoration:none;color:var(--ink);transition:border-color .12s,transform .12s}
+.pp-contact-item:hover{border-color:var(--brass);transform:translateY(-1px)}
+.pp-contact-item .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pp-contact-item .v{font-size:14px;color:var(--ink);word-break:break-all}
+
+.pp-footer{background:var(--navy);color:rgba(245,239,217,.75);padding:28px 24px}
+.pp-footer-inner{max-width:1140px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.pp-footer .mono{font-size:11px;letter-spacing:.14em;color:rgba(245,239,217,.55);text-transform:uppercase}
+.pp-footer-brand{color:#F5EFD9;text-decoration:none;display:flex;align-items:center;gap:8px;font-size:13px}
+.pp-footer-brand b{font-weight:400;font-family:var(--serif);font-style:italic;color:rgba(245,239,217,.7);margin-right:4px}
+.pp-footer .btn-ghost{background:transparent;color:#F5EFD9;border:1px solid rgba(245,239,217,.25)}
+.pp-footer .btn-ghost:hover{background:rgba(245,239,217,.08)}
+
+.pp-notfound{max-width:640px;margin:0 auto;padding:120px 24px;text-align:center}
+.pp-notfound h1{font-family:var(--serif);font-size:56px;font-weight:400;letter-spacing:-.02em;margin:12px 0 16px}
+.pp-notfound h1 em{color:var(--brass);font-style:italic}
+.pp-notfound p{color:var(--ink-2);font-size:16px;line-height:1.55}
+
+@media (max-width:960px){
+  .pp-hero{min-height:auto;padding:60px 20px 50px}
+  .pp-hero-name{font-size:52px}
+  .pp-hero-tagline{font-size:18px}
+  .pp-sec{padding:60px 20px}
+  .pp-sec-head h2{font-size:28px}
+  .pp-featured-grid{grid-template-columns:1fr}
+  .pp-featured-grid .pp-proj-lg{grid-column:auto;grid-row:auto}
+  .pp-proj-grid{grid-template-columns:1fr}
+  .pp-services{grid-template-columns:1fr;gap:32px}
+  .pp-awards-list li{grid-template-columns:60px 1fr;gap:14px}
+  .pp-notfound{padding:60px 20px}
+  .pp-notfound h1{font-size:36px}
+}
+
 /* ============ Portfolio editor ============ */
 .practice-main{max-width:1140px;margin:0 auto;padding:36px 24px 80px}
 .practice-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--hairline);flex-wrap:wrap}
@@ -2350,6 +2451,7 @@ function applyRouteMeta(r){
     if(r.startsWith('/architect/')) meta = { title:'Architect profile — BricBook', desc:'Verified architect on BricBook.' };
     else if(r.startsWith('/app/project/')) meta = { title:'Project — BricBook', desc:'Site plan, drawings, chat and gallery.' };
     else if(r.startsWith('/client/invite/')) meta = { title:'Client invitation — BricBook', desc:'Activate your BricBook client account.' };
+    else if(r.startsWith('/practice/')) meta = { title:'Practice profile — BricBook', desc:'Architect practice profile on BricBook.' };
     else meta = ROUTE_META['/'];
   }
   try{
@@ -4104,6 +4206,293 @@ const PROJECT_TYPES = [
   'Residential','Commercial','Hospitality','Retail','Healthcare','Education',
   'Interior','Landscape','Urban','Industrial','Sustainable','Heritage','Adaptive Reuse'
 ];
+
+/* ============ Public practice profile (/practice/:slug) ============ */
+async function renderPracticeProfile(slug){
+  const root = $('#root');
+  const sb = sbClient();
+  slug = decodeURIComponent(slug || '').trim();
+  if(!sb || !slug){ practiceProfileNotFound(slug); return; }
+
+  /* Fetch profile + related sections in parallel */
+  const { data: rows, error } = await sb.rpc('get_practice_public', { identifier: slug });
+  const s = Array.isArray(rows) ? rows[0] : rows;
+  if(error || !s){ practiceProfileNotFound(slug); return; }
+
+  const [{ data: projects }, { data: awards }, { data: team }] = await Promise.all([
+    sb.rpc('get_portfolio_projects', { studio_uuid: s.id, only_featured: false }),
+    sb.rpc('get_practice_awards_public', { studio_uuid: s.id }),
+    sb.rpc('get_practice_team_public', { studio_uuid: s.id })
+  ]);
+
+  /* Update SEO meta for this specific profile */
+  try{
+    document.title = `${s.name || 'Practice'} — BricBook`;
+    let m = document.querySelector('meta[name="description"]');
+    if(!m){ m = document.createElement('meta'); m.setAttribute('name','description'); document.head.appendChild(m); }
+    m.setAttribute('content', s.tagline || s.description_short || (`Explore ${s.name || 'this practice'} on BricBook — projects, services, expertise.`));
+    let c = document.querySelector('link[rel="canonical"]');
+    if(!c){ c = document.createElement('link'); c.setAttribute('rel','canonical'); document.head.appendChild(c); }
+    c.setAttribute('href', 'https://bricbook.com/practice/' + (s.slug || s.bric_id));
+    /* Open Graph */
+    setMetaTag('og:title', `${s.name} — BricBook`);
+    setMetaTag('og:description', s.tagline || s.description_short || '');
+    setMetaTag('og:type', 'profile');
+    setMetaTag('og:url', 'https://bricbook.com/practice/' + (s.slug || s.bric_id));
+    if(s.cover_url) setMetaTag('og:image', s.cover_url);
+    setMetaTag('twitter:card', s.cover_url ? 'summary_large_image' : 'summary');
+  }catch(e){}
+
+  const featured = (projects || []).filter(p => p.featured);
+  const rest = (projects || []).filter(p => !p.featured);
+
+  root.innerHTML = `
+    <div class="landing pp">
+      <nav class="ln-nav">
+        <div class="ln-nav-inner">
+          <a class="brand" href="/">${brandMark(15)}</a>
+          <div class="links">
+            <a href="#pp-about">About</a>
+            ${featured.length ? '<a href="#pp-featured">Featured</a>' : ''}
+            ${(projects||[]).length ? '<a href="#pp-projects">Projects</a>' : ''}
+            ${(awards||[]).length ? '<a href="#pp-awards">Awards</a>' : ''}
+            ${(team||[]).length ? '<a href="#pp-team">Team</a>' : ''}
+            <a href="#pp-contact">Contact</a>
+          </div>
+          <div class="cta">
+            <button class="icon-btn" onclick="toggleTheme()">${iconSVG('sun')}</button>
+            <button class="btn btn-ghost btn-sm" onclick="sharePractice('${escapeAttr(s.slug || s.bric_id)}', ${JSON.stringify(s.name || '').replace(/"/g,'&quot;')})">Share</button>
+            <button class="btn btn-navy btn-sm" onclick="nav('/list-your-practice')">List yours</button>
+          </div>
+        </div>
+      </nav>
+
+      <section class="pp-hero" ${s.cover_url ? `style="background-image:linear-gradient(180deg,rgba(31,36,64,.35) 0%,rgba(31,36,64,.75) 100%),url('${escapeAttr(s.cover_url)}')"` : ''}>
+        ${!s.cover_url ? `<div class="pp-hero-bg">${authVisualBlueprintOnly()}</div>` : ''}
+        <div class="pp-hero-inner">
+          <div class="pp-hero-meta mono">
+            <span>${escapeHTML(s.bric_id || '')}</span>
+            ${s.city ? `<span>·</span><span>${escapeHTML(s.city.toUpperCase())}${s.country && s.country.toLowerCase() !== 'india' ? ', ' + escapeHTML(s.country.toUpperCase()) : ''}</span>` : ''}
+            ${s.founded_year ? `<span>·</span><span>EST ${s.founded_year}</span>` : ''}
+            ${s.verified ? `<span>·</span><span class="pp-verified">✓ VERIFIED</span>` : ''}
+          </div>
+          <h1 class="serif pp-hero-name">${escapeHTML(s.name || '—')}</h1>
+          ${s.tagline ? `<p class="pp-hero-tagline serif">${escapeHTML(s.tagline)}</p>` : ''}
+          <div class="pp-hero-cta">
+            ${s.contact_email ? `<a class="btn btn-brass btn-lg" href="mailto:${escapeAttr(s.contact_email)}">Contact</a>` : ''}
+            ${s.website ? `<a class="btn btn-ghost-light btn-lg" href="${escapeAttr(s.website)}" target="_blank" rel="noopener">Website ↗</a>` : ''}
+            ${s.linkedin ? `<a class="btn btn-ghost-light btn-lg" href="${escapeAttr(s.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>` : ''}
+            ${s.instagram ? `<a class="btn btn-ghost-light btn-lg" href="${socialUrl('instagram', s.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ''}
+          </div>
+        </div>
+      </section>
+
+      ${(s.description_short || s.description_long) ? `
+        <section id="pp-about" class="pp-sec">
+          <div class="pp-sec-inner pp-about">
+            <span class="eyebrow">About the practice</span>
+            ${s.description_short ? `<p class="pp-about-short serif">${escapeHTML(s.description_short)}</p>` : ''}
+            ${s.description_long ? `<div class="pp-about-long">${escapeHTML(s.description_long).replace(/\n\n+/g, '</p><p>').replace(/^/, '<p>').replace(/$/, '</p>')}</div>` : ''}
+          </div>
+        </section>
+      ` : ''}
+
+      ${featured.length ? `
+        <section id="pp-featured" class="pp-sec pp-sec-tint">
+          <div class="pp-sec-inner">
+            <div class="pp-sec-head">
+              <span class="eyebrow">Featured work</span>
+              <h2 class="serif">${featured.length} project${featured.length===1?'':'s'} we’d like you to <em>see first</em>.</h2>
+            </div>
+            <div class="pp-featured-grid">
+              ${featured.map((p, i) => practiceProjectCardHTML(p, i === 0 ? 'lg' : 'md')).join('')}
+            </div>
+          </div>
+        </section>
+      ` : ''}
+
+      ${rest.length ? `
+        <section id="pp-projects" class="pp-sec">
+          <div class="pp-sec-inner">
+            <div class="pp-sec-head">
+              <span class="eyebrow">Selected projects</span>
+              <h2 class="serif">All work · ${rest.length}</h2>
+            </div>
+            <div class="pp-proj-grid">
+              ${rest.map(p => practiceProjectCardHTML(p, 'sm')).join('')}
+            </div>
+          </div>
+        </section>
+      ` : ''}
+
+      ${((s.services && s.services.length) || (s.specialties && s.specialties.length)) ? `
+        <section class="pp-sec pp-sec-tint">
+          <div class="pp-sec-inner pp-services">
+            ${s.services && s.services.length ? `
+              <div>
+                <span class="eyebrow">Services</span>
+                <div class="pp-tag-row">${s.services.map(t => `<span class="pp-tag">${escapeHTML(t)}</span>`).join('')}</div>
+              </div>` : ''}
+            ${s.specialties && s.specialties.length ? `
+              <div>
+                <span class="eyebrow">Expertise</span>
+                <div class="pp-tag-row">${s.specialties.map(t => `<span class="pp-tag pp-tag-alt">${escapeHTML(t)}</span>`).join('')}</div>
+              </div>` : ''}
+          </div>
+        </section>
+      ` : ''}
+
+      ${(awards || []).length ? `
+        <section id="pp-awards" class="pp-sec">
+          <div class="pp-sec-inner">
+            <div class="pp-sec-head">
+              <span class="eyebrow">Recognition</span>
+              <h2 class="serif">Awards &amp; recognition</h2>
+            </div>
+            <ul class="pp-awards-list">
+              ${awards.map(a => `
+                <li>
+                  <div class="pp-award-year mono">${a.year || ''}</div>
+                  <div class="pp-award-body">
+                    <div class="pp-award-name serif">${escapeHTML(a.name || '')}</div>
+                    ${a.organization ? `<div class="pp-award-org">${escapeHTML(a.organization)}</div>` : ''}
+                    ${a.description ? `<p class="pp-award-desc">${escapeHTML(a.description)}</p>` : ''}
+                    ${a.url ? `<a class="pp-award-link" href="${escapeAttr(a.url)}" target="_blank" rel="noopener">Read more ↗</a>` : ''}
+                  </div>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        </section>
+      ` : ''}
+
+      ${(team || []).length ? `
+        <section id="pp-team" class="pp-sec pp-sec-tint">
+          <div class="pp-sec-inner">
+            <div class="pp-sec-head">
+              <span class="eyebrow">Team</span>
+              <h2 class="serif">People behind the work</h2>
+            </div>
+            <div class="pp-team-grid">
+              ${team.map(m => `
+                <div class="pp-team-card">
+                  <div class="pp-team-av">${m.avatar_url ? `<img src="${escapeAttr(m.avatar_url)}" alt="${escapeAttr(m.full_name || '')}">` : `<span>${escapeHTML((m.full_name || '?').charAt(0))}</span>`}</div>
+                  <div class="pp-team-info">
+                    <div class="pp-team-name serif">${escapeHTML(m.full_name || '—')}</div>
+                    <div class="pp-team-role mono">${escapeHTML((m.team_role || '').replace('_', ' ').toUpperCase())}</div>
+                    ${m.bio ? `<p class="pp-team-bio">${escapeHTML(m.bio.slice(0,120))}${m.bio.length > 120 ? '…' : ''}</p>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+      ` : ''}
+
+      <section id="pp-contact" class="pp-sec">
+        <div class="pp-sec-inner pp-contact">
+          <div class="pp-sec-head" style="align-items:center;text-align:center;max-width:none">
+            <span class="eyebrow">Get in touch</span>
+            <h2 class="serif">Start a conversation with <em>${escapeHTML(s.name || 'us')}</em>.</h2>
+          </div>
+          <div class="pp-contact-grid">
+            ${s.contact_email ? `<a class="pp-contact-item" href="mailto:${escapeAttr(s.contact_email)}"><span class="k mono">Email</span><span class="v">${escapeHTML(s.contact_email)}</span></a>` : ''}
+            ${s.contact_phone ? `<a class="pp-contact-item" href="tel:${escapeAttr(s.contact_phone)}"><span class="k mono">Phone</span><span class="v">${escapeHTML(s.contact_phone)}</span></a>` : ''}
+            ${s.website ? `<a class="pp-contact-item" href="${escapeAttr(s.website)}" target="_blank" rel="noopener"><span class="k mono">Website</span><span class="v">${escapeHTML(s.website.replace(/^https?:\/\//,'').replace(/\/$/,''))}</span></a>` : ''}
+            ${s.linkedin ? `<a class="pp-contact-item" href="${escapeAttr(s.linkedin)}" target="_blank" rel="noopener"><span class="k mono">LinkedIn</span><span class="v">${escapeHTML(shortSocial(s.linkedin))}</span></a>` : ''}
+            ${s.instagram ? `<a class="pp-contact-item" href="${escapeAttr(socialUrl('instagram', s.instagram))}" target="_blank" rel="noopener"><span class="k mono">Instagram</span><span class="v">${escapeHTML(s.instagram.replace(/^@?/, '@'))}</span></a>` : ''}
+            ${s.behance ? `<a class="pp-contact-item" href="${escapeAttr(s.behance)}" target="_blank" rel="noopener"><span class="k mono">Behance</span><span class="v">${escapeHTML(shortSocial(s.behance))}</span></a>` : ''}
+          </div>
+        </div>
+      </section>
+
+      <footer class="pp-footer">
+        <div class="pp-footer-inner">
+          <div class="mono">${escapeHTML(s.bric_id || '')} · /practice/${escapeHTML(s.slug || '')}</div>
+          <a href="/list-your-practice" class="pp-footer-brand"><b>Created with</b> ${brandMark(14)}</a>
+          <button class="btn btn-ghost btn-sm" onclick="sharePractice('${escapeAttr(s.slug || s.bric_id)}', ${JSON.stringify(s.name || '').replace(/"/g,'&quot;')})">Share this profile</button>
+        </div>
+      </footer>
+    </div>
+  `;
+  window.scrollTo(0, 0);
+  /* Smooth-scroll for in-page anchor links */
+  document.querySelectorAll('.pp a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+}
+
+function setMetaTag(prop, val){
+  const attr = prop.startsWith('og:') ? 'property' : 'name';
+  let m = document.querySelector(`meta[${attr}="${prop}"]`);
+  if(!m){ m = document.createElement('meta'); m.setAttribute(attr, prop); document.head.appendChild(m); }
+  m.setAttribute('content', val);
+}
+
+function socialUrl(kind, handle){
+  const h = String(handle || '').trim();
+  if(h.startsWith('http')) return h;
+  const clean = h.replace(/^@/, '');
+  if(kind === 'instagram') return 'https://instagram.com/' + clean;
+  if(kind === 'behance') return 'https://behance.net/' + clean;
+  return h;
+}
+function shortSocial(url){
+  return String(url || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/,'').slice(0, 40);
+}
+
+function practiceProjectCardHTML(p, size){
+  const cls = 'pp-proj pp-proj-' + (size || 'sm');
+  const cover = p.cover_url
+    ? `<img src="${escapeAttr(p.cover_url)}" alt="${escapeAttr(p.name || '')}" loading="lazy">`
+    : '<div class="pp-proj-placeholder"></div>';
+  return `
+    <article class="${cls}">
+      <div class="pp-proj-media">${cover}</div>
+      <div class="pp-proj-body">
+        <h3 class="serif">${escapeHTML(p.name || '—')}</h3>
+        <div class="pp-proj-meta mono">${[p.year, p.city, p.project_type].filter(Boolean).join(' · ')}</div>
+        ${p.description ? `<p class="pp-proj-desc">${escapeHTML(p.description)}</p>` : ''}
+      </div>
+    </article>
+  `;
+}
+
+async function sharePractice(slugOrId, name){
+  const url = 'https://bricbook.com/practice/' + slugOrId;
+  const text = `${name || 'Practice'} on BricBook — explore the practice and their work.`;
+  if(navigator.share){
+    try{ await navigator.share({ title: name || 'BricBook Practice', text, url }); return; }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(url); toast('Profile link copied'); }
+  catch(e){ prompt('Copy this link:', url); }
+}
+window.sharePractice = sharePractice;
+
+function practiceProfileNotFound(slug){
+  const root = $('#root');
+  root.innerHTML = `
+    <div class="landing">
+      <nav class="ln-nav"><div class="ln-nav-inner">
+        <a class="brand" href="/">${brandMark(15)}</a>
+        <div class="cta"><button class="btn btn-navy btn-sm" onclick="nav('/list-your-practice')">List your practice</button></div>
+      </div></nav>
+      <div class="pp-notfound">
+        <span class="eyebrow">404</span>
+        <h1 class="serif">Practice not <em>found</em>.</h1>
+        <p>${slug ? `We couldn’t find a practice at <span class="mono">/practice/${escapeHTML(slug)}</span>.` : 'That practice link doesn’t exist.'} It may have been removed, made private, or the link is mistyped.</p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px">
+          <a class="btn btn-navy btn-lg" href="/">Back home</a>
+          <a class="btn btn-ghost btn-lg" href="/list-your-practice">List your practice</a>
+        </div>
+      </div>
+    </div>
+  `;
+  document.title = 'Practice not found — BricBook';
+  window.scrollTo(0, 0);
+}
 
 async function renderPortfolioList(){
   const root = $('#root');
@@ -6755,6 +7144,7 @@ function route() {
   if (r === '/reset') return renderReset();
   if (r === '/admin') return renderAdmin();
   if (r.startsWith('/architect/')) return renderArchitectProfile(r.slice('/architect/'.length));
+  if (r.startsWith('/practice/')) return renderPracticeProfile(r.slice('/practice/'.length));
   if (r.startsWith('/client/invite/')) return renderClientInvite(r.slice('/client/invite/'.length));
   if (r.startsWith('/app')) return renderApp();
   renderLanding();
