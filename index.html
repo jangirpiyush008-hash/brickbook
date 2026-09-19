@@ -264,7 +264,32 @@ a{color:inherit;text-decoration:none}
 .auth-visual .cite{font-family:var(--mono);font-size:11.5px;opacity:.7;letter-spacing:.05em}
 .auth-visual .bot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;position:relative;z-index:1}
 .auth-visual.admin{background:#0C0E12;color:#ECE4D2}
-.auth-visual svg.blueprint{position:absolute;right:-10%;top:20%;width:140%;height:60%;opacity:.15;pointer-events:none}
+.auth-visual svg.blueprint{position:absolute;right:-10%;top:12%;width:140%;height:76%;opacity:.24;pointer-events:none;overflow:visible}
+.auth-visual svg.blueprint *{vector-effect:non-scaling-stroke}
+.auth-visual svg.blueprint .bp-grid line{stroke:currentColor;stroke-width:.4;opacity:0;animation:bpFade 1.4s ease-out forwards}
+.auth-visual svg.blueprint .bp-outer{stroke-dasharray:1280;stroke-dashoffset:1280;animation:bpDraw 3s ease-in-out .3s forwards,bpLoop 22s ease-in-out .3s infinite}
+.auth-visual svg.blueprint .bp-room{stroke-dasharray:520;stroke-dashoffset:520;animation:bpDraw 1.6s ease-out forwards,bpLoop 22s ease-in-out infinite}
+.auth-visual svg.blueprint .bp-r1{animation-delay:1.6s,1.6s}
+.auth-visual svg.blueprint .bp-r2{animation-delay:2.2s,2.2s}
+.auth-visual svg.blueprint .bp-r3{animation-delay:2.6s,2.6s}
+.auth-visual svg.blueprint .bp-r4{animation-delay:3.0s,3.0s}
+.auth-visual svg.blueprint .bp-r5{animation-delay:3.4s,3.4s}
+.auth-visual svg.blueprint .bp-r6{animation-delay:3.8s,3.8s}
+.auth-visual svg.blueprint .bp-r7{animation-delay:4.2s,4.2s}
+.auth-visual svg.blueprint .bp-door{stroke-dasharray:60;stroke-dashoffset:60;animation:bpDraw 1s ease-out forwards,bpLoop 22s ease-in-out infinite;animation-delay:5s,5s}
+.auth-visual svg.blueprint .bp-dim{stroke-dasharray:260;stroke-dashoffset:260;opacity:0;animation:bpDim 1.4s ease-out forwards,bpLoop 22s ease-in-out infinite;animation-delay:5.4s,5.4s}
+.auth-visual svg.blueprint .bp-label{opacity:0;font-family:var(--mono);font-size:6px;letter-spacing:.14em;text-transform:uppercase;fill:currentColor;stroke:none;animation:bpFade 1s ease-out forwards,bpLoopOpacity 22s ease-in-out infinite;animation-delay:6.2s,6.2s}
+.auth-visual svg.blueprint .bp-cursor{fill:var(--brass-2);stroke:none;animation:bpCursor 22s ease-in-out infinite}
+@keyframes bpDraw{to{stroke-dashoffset:0}}
+@keyframes bpDim{0%{stroke-dashoffset:260;opacity:0}30%{opacity:.6}100%{stroke-dashoffset:0;opacity:.6}}
+@keyframes bpFade{from{opacity:0}to{opacity:1}}
+@keyframes bpLoop{0%,72%{stroke-dashoffset:0}85%{stroke-dashoffset:0;opacity:1}96%{opacity:0;stroke-dashoffset:1280}100%{stroke-dashoffset:1280;opacity:1}}
+@keyframes bpLoopOpacity{0%,72%{opacity:1}86%{opacity:1}96%,100%{opacity:0}}
+@keyframes bpCursor{0%{transform:translate(0,0);opacity:0}5%{opacity:.9}10%{transform:translate(40px,10px)}25%{transform:translate(180px,60px)}40%{transform:translate(260px,140px)}55%{transform:translate(180px,240px)}70%{transform:translate(80px,300px)}75%{opacity:.9}80%{opacity:0}100%{transform:translate(0,0);opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .auth-visual svg.blueprint *{animation:none!important;stroke-dashoffset:0!important;opacity:1!important}
+  .auth-visual svg.blueprint .bp-cursor{display:none}
+}
 @media(max-width:900px){.auth{grid-template-columns:1fr}.auth-visual{display:none}}
 
 /* Form */
@@ -2490,8 +2515,7 @@ function renderLanding() {
           </div>
           <div class="cta">
             <button class="icon-btn" onclick="toggleTheme()" id="themeBtnLn">${iconSVG('sun')}</button>
-            <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Sign in</button>
-            <button class="btn btn-brass btn-sm" onclick="nav('/signup/client')">Hire an architect</button>
+            <button class="btn btn-ghost btn-sm" onclick="nav('/login')">Studio sign-in</button>
             <button class="btn btn-navy btn-sm" onclick="nav('/signup/architect')">List your practice</button>
           </div>
         </div>
@@ -3112,17 +3136,49 @@ function authVisual(kind = 'default') {
       : `<p class="quote">The canvas where site work, drawings, and conversations finally live together.</p><p class="cite">— Kaustubh Residence · Ground floor · Revision C</p>`;
   return `
     <div class="auth-visual ${isAdmin ? 'admin' : ''}" ${isCust ? 'style="background:linear-gradient(135deg,#A87A44 0%,#7A5A2E 100%)"' : ''}>
-      <svg class="blueprint" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1" opacity="1">
-        <rect x="40" y="40" width="320" height="320"/>
-        <rect x="60" y="60" width="130" height="130"/>
-        <rect x="200" y="60" width="140" height="80"/>
-        <rect x="200" y="150" width="140" height="40"/>
-        <rect x="60" y="200" width="90" height="140"/>
-        <rect x="160" y="200" width="120" height="80"/>
-        <rect x="160" y="290" width="120" height="50"/>
-        <rect x="290" y="200" width="50" height="140"/>
-        <line x1="130" y1="60" x2="130" y2="80"/><line x1="230" y1="60" x2="230" y2="80"/>
-        <line x1="60" y1="130" x2="80" y2="130"/><line x1="200" y1="130" x2="220" y2="130"/>
+      <svg class="blueprint" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+        <g class="bp-grid">
+          <line x1="0" y1="40"  x2="400" y2="40"/>
+          <line x1="0" y1="120" x2="400" y2="120"/>
+          <line x1="0" y1="200" x2="400" y2="200"/>
+          <line x1="0" y1="280" x2="400" y2="280"/>
+          <line x1="0" y1="360" x2="400" y2="360"/>
+          <line x1="40"  y1="0" x2="40"  y2="400"/>
+          <line x1="120" y1="0" x2="120" y2="400"/>
+          <line x1="200" y1="0" x2="200" y2="400"/>
+          <line x1="280" y1="0" x2="280" y2="400"/>
+          <line x1="360" y1="0" x2="360" y2="400"/>
+        </g>
+        <rect class="bp-outer" x="40" y="40" width="320" height="320"/>
+        <rect class="bp-room bp-r1" x="60"  y="60"  width="130" height="130"/>
+        <rect class="bp-room bp-r2" x="200" y="60"  width="140" height="80"/>
+        <rect class="bp-room bp-r3" x="200" y="150" width="140" height="40"/>
+        <rect class="bp-room bp-r4" x="60"  y="200" width="90"  height="140"/>
+        <rect class="bp-room bp-r5" x="160" y="200" width="120" height="80"/>
+        <rect class="bp-room bp-r6" x="160" y="290" width="120" height="50"/>
+        <rect class="bp-room bp-r7" x="290" y="200" width="50"  height="140"/>
+        <g class="bp-door">
+          <line x1="130" y1="60"  x2="130" y2="80"/>
+          <line x1="230" y1="60"  x2="230" y2="80"/>
+          <line x1="60"  y1="130" x2="80"  y2="130"/>
+          <line x1="200" y1="130" x2="220" y2="130"/>
+        </g>
+        <g class="bp-dim" stroke-width="0.6">
+          <line x1="40" y1="20" x2="360" y2="20"/>
+          <line x1="40" y1="14" x2="40" y2="26"/>
+          <line x1="360" y1="14" x2="360" y2="26"/>
+          <line x1="380" y1="40" x2="380" y2="360"/>
+          <line x1="374" y1="40" x2="386" y2="40"/>
+          <line x1="374" y1="360" x2="386" y2="360"/>
+        </g>
+        <g>
+          <text class="bp-label" x="90" y="128">Living</text>
+          <text class="bp-label" x="238" y="104">Bed 01</text>
+          <text class="bp-label" x="82" y="272">Kitchen</text>
+          <text class="bp-label" x="192" y="242">Dining</text>
+          <text class="bp-label" x="298" y="272">Bath</text>
+        </g>
+        <circle class="bp-cursor" cx="40" cy="40" r="3"/>
       </svg>
       <div class="top">
         <a class="brand" href="/" style="color:#F5EFD9">${brandMark(14)}</a>
@@ -3147,20 +3203,21 @@ function renderLogin() {
           <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="auth-body">
-          <h1>Welcome <em>back</em>.</h1>
-          <p class="sub">One sign-in for everyone. We'll take you to the right place based on your account.</p>
+          <span class="eyebrow">For architecture practices</span>
+          <h1>Studio <em>sign-in</em>.</h1>
+          <p class="sub">This dashboard is for architects and studios. Clients don't sign up here — your architect adds you to a project and shares access from their side.</p>
           <div class="oauth">
-            <button class="btn" onclick="googleAuth('auto')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+            <button class="btn" onclick="googleAuth('professional')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
           </div>
           <div class="divider">or with email</div>
           <form onsubmit="return signIn(event)">
-            <div class="field"><label>Email</label><input type="email" id="liEmail" placeholder="you@example.com" required autocomplete="email"></div>
+            <div class="field"><label>Work email</label><input type="email" id="liEmail" placeholder="you@studio.com" required autocomplete="email"></div>
             <div class="field"><label>Password <a href="/forgot">Forgot?</a></label><input type="password" id="liPwd" placeholder="••••••••" required autocomplete="current-password"></div>
             <div class="check"><input type="checkbox" id="liRem" checked><label for="liRem">Keep me signed in for 30 days</label></div>
-            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in ${iconSVG('arr')}</button>
+            <button class="btn btn-navy btn-block btn-lg" type="submit">Sign in as studio ${iconSVG('arr')}</button>
           </form>
           <div class="auth-footer">
-            <span>New here? <a href="/signup">Create an account</a></span>
+            <span>New studio? <a href="/signup/architect">List your practice</a></span>
             <a href="/admin">BricBook admin →</a>
           </div>
         </div>
@@ -3210,39 +3267,32 @@ function renderSignup() {
     return;
   }
 
-  /* Client signup: /signup/client — short form */
+  /* Client signup: /signup/client — self-signup disabled. Clients are invited by their architect. */
   if(kind === 'client'){
     root.innerHTML = `
       <div class="auth">
         <div class="auth-side">
           <div class="auth-header">
             <a class="brand" href="/">${brandMark(14)}</a>
-            <a class="auth-back" href="/signup">${iconSVG('arrL')} Back</a>
+            <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
           </div>
           <div class="auth-body">
-            <span class="eyebrow">Client account · 30 sec</span>
-            <h1>Hire an <em>architect</em>.</h1>
-            <p class="sub">Create a client account to post project briefs and message architects. No card required.</p>
-            <div class="oauth">
-              <button class="btn" onclick="googleAuth('client')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
+            <span class="eyebrow">Clients · by invitation only</span>
+            <h1>Your architect adds <em>you</em>.</h1>
+            <p class="sub">BricBook client accounts aren't self-serve. Your architect sends you an invitation from their studio dashboard and you get a link to your project directly.</p>
+            <div style="background:var(--brass-tint);border:1px solid var(--brass);border-radius:8px;padding:16px 18px;margin:20px 0">
+              <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:8px">How it works</div>
+              <ol style="margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px;line-height:1.65">
+                <li>Talk to your architect and share your email</li>
+                <li>They add you as a project member from their studio dashboard</li>
+                <li>You get an email invitation with a link to your project</li>
+                <li>Sign in with that link — no password required for first entry</li>
+              </ol>
             </div>
-            <div class="divider">or with email</div>
-            <form onsubmit="return suClient(event)">
-              <div class="field-row">
-                <div class="field"><label>First name</label><input id="cuFirst" required placeholder="Piyush" autocomplete="given-name"></div>
-                <div class="field"><label>Last name</label><input id="cuLast" required placeholder="Jangir" autocomplete="family-name"></div>
-              </div>
-              <div class="field"><label>Email</label><input type="email" id="cuEmail" required placeholder="you@example.com" autocomplete="email"></div>
-              <div class="field"><label>Phone (WhatsApp)</label><input type="tel" id="cuPhone" placeholder="+91 98xxx xxxxx" autocomplete="tel"></div>
-              <div class="field"><label>City</label>
-                <select id="cuCity"><option value="">Choose…</option><option>Mumbai</option><option>Bangalore</option><option>Delhi NCR</option><option>Chennai</option><option>Pune</option><option>Kochi</option><option>Hyderabad</option><option>Other</option></select>
-              </div>
-              <div class="field"><label>Password</label><input type="password" id="cuPwd" required minlength="8" placeholder="At least 8 characters" autocomplete="new-password"></div>
-              <div class="check"><input type="checkbox" id="cuTerms" required checked><label for="cuTerms">I agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</label></div>
-              <button class="btn btn-navy btn-block btn-lg" type="submit">Create client account ${iconSVG('arr')}</button>
-            </form>
+            <p class="sub" style="font-size:13px">Already got an invitation email? Click the link in it. Trying to reach an existing architect on BricBook? <a href="/">Browse the directory</a>.</p>
             <div class="auth-footer">
-              <span>Are you an architect? <a href="/signup/architect">Switch to studio signup</a></span>
+              <span>Are you an architect? <a href="/signup/architect">List your practice</a></span>
+              <a href="/login">Sign in</a>
             </div>
           </div>
         </div>
@@ -3269,11 +3319,7 @@ function renderSignup() {
           <span class="eyebrow">Studio account · Step ${step} of 3</span>
           ${step === 1 ? `
             <h1>Start your <em>studio</em>.</h1>
-            <p class="sub">Two minutes. No card. We'll set up your first project as you go.</p>
-            <div class="oauth">
-              <button class="btn" onclick="googleAuth('architect')"><svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google</button>
-            </div>
-            <div class="divider">or with email</div>
+            <p class="sub">Two minutes. No card. We'll set up your first project as you go. Once your studio is live you can sign in with Google using the same email.</p>
             <form onsubmit="return suStep(event, 1)">
               <div class="field-row">
                 <div class="field"><label>First name</label><input id="suFirst" required placeholder="Piyush" autocomplete="given-name"></div>
@@ -4818,11 +4864,30 @@ async function hydrateFromSession(session){
   return person;
 }
 
+/* Client login is not allowed — architects invite clients from inside the app.
+   If a signed-in profile has role 'client' AND is not coming through an invitation,
+   sign them out and show a friendly error. */
+async function enforceStudioOnlyLogin(session){
+  const sb = sbClient(); if(!sb || !session) return false;
+  const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+  const role = profile?.role || 'client';
+  const studioRoles = ['studio_owner','studio_member','ops_admin','super_admin'];
+  if(studioRoles.includes(role)) return false; /* allowed */
+  /* Reject client role coming through the public login path */
+  await sb.auth.signOut();
+  try{ sessionStorage.removeItem('bb_audience'); }catch(e){}
+  AUTH.clear();
+  toast('This account isn’t authorised for the studio dashboard. Ask your architect to add you to their project.');
+  nav('/login');
+  return true;
+}
+
 /* Bootstrap: if we have a Supabase session on page load or after OAuth callback, sign in */
 (async function bootstrapAuth(){
   const sb = sbClient(); if(!sb) return;
   sb.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session){
+      if(await enforceStudioOnlyLogin(session)) return;
       const person = await hydrateFromSession(session);
       if(person && !AUTH.get()){ loginFlow(person, 'Signed in as ' + person.name); }
     }
@@ -4831,6 +4896,7 @@ async function hydrateFromSession(session){
   /* On first paint, check for existing session (survives refresh) */
   const { data:{ session } } = await sb.auth.getSession();
   if(session && !AUTH.get()){
+    if(await enforceStudioOnlyLogin(session)) return;
     const person = await hydrateFromSession(session);
     if(person){ loginFlow(person, 'Welcome back, ' + person.name); }
   }
@@ -5326,7 +5392,7 @@ function route() {
   applyRouteMeta(r);
   if (r === '/') return renderLanding();
   if (r === '/login') return renderLogin();
-  if (r === '/signup')            { state.signupStep = 1; state.signupKind = 'choose';   return renderSignup(); }
+  if (r === '/signup')            { return nav('/signup/architect'); } /* clients cannot self-signup */
   if (r === '/signup/client')     { state.signupStep = 1; state.signupKind = 'client';    return renderSignup(); }
   if (r === '/signup/architect')  { state.signupStep = 1; state.signupKind = 'architect'; return renderSignup(); }
   if (r === '/forgot') return renderForgot();
