@@ -6622,28 +6622,65 @@ async function renderPros() {
       </div>
     </div>
   `;
-  const sb = sbClient(); if(!sb) return;
-  const { data: studio } = await sb.rpc('my_studio');
-  if(!studio){ document.getElementById('prosGrid').innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">No studio yet. <a href="/welcome" style="color:var(--brass)">Register your firm →</a></div>`; return; }
-  const { data: team } = await sb.rpc('get_practice_team_public', { studio_uuid: studio.id });
-  const members = team || [];
-  if(!members.length){
-    document.getElementById('prosGrid').innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">No team members yet. You're the founder — invite others from the admin panel.</div>`;
+  const grid = document.getElementById('prosGrid');
+  const emptyMsg = (html) => { if(grid) grid.innerHTML = `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted)">${html}</div>`; };
+
+  const sb = sbClient();
+  if(!sb){ emptyMsg('Couldn’t reach the auth service. Refresh the page or check your connection.'); return; }
+
+  if(isCust){
+    /* Client dashboard: show the members of the project(s) the client belongs to */
+    const { data: memberships, error: mErr } = await sb.from('project_members')
+      .select('project_id, projects(name, code, studio_id, studios(name, slug, bric_id))')
+      .eq('user_id', u?.supabaseId);
+    if(mErr){ emptyMsg('Couldn’t load your projects: ' + mErr.message); return; }
+    if(!memberships || !memberships.length){
+      emptyMsg('You aren’t on any project yet. Ask your architect to add you — they can send an invitation link from their dashboard.');
+      return;
+    }
+    /* Show each project the client is on, with the firm they work with */
+    grid.innerHTML = memberships.map(m => `
+      <div class="pro-card">
+        <div class="top">
+          <div class="av">${initials(m.projects?.studios?.name || 'F')}</div>
+          <div>
+            <div class="nm">${escapeHTML(m.projects?.studios?.name || 'Your firm')}</div>
+            <div class="rl">${escapeHTML((m.projects?.studios?.bric_id || '').toString())}</div>
+          </div>
+        </div>
+        <div class="stats"><div><b>${escapeHTML(m.projects?.name || '—')}</b>Project</div><div><b>${escapeHTML(m.projects?.code || '—')}</b>Code</div></div>
+        ${m.projects?.studios?.slug ? `<div style="margin-top:10px"><a class="btn btn-ghost btn-sm" href="/practice/${escapeAttr(m.projects.studios.slug)}" target="_blank" rel="noopener noreferrer">Firm profile ↗</a></div>` : ''}
+      </div>
+    `).join('');
     return;
   }
-  document.getElementById('prosGrid').innerHTML = members.map(m => `
-    <div class="pro-card">
-      <div class="top">
-        <div class="av">${m.avatar_url ? `<img src="${escapeAttr(m.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(m.full_name || '?')}</div>
-        <div>
-          <div class="nm">${escapeHTML(m.full_name || '—')}</div>
-          <div class="rl">${escapeHTML((m.team_role || '').replace('_',' ').toUpperCase())}</div>
+
+  /* Studio side: show my own team */
+  try{
+    const { data: studio, error } = await sb.rpc('my_studio');
+    if(error){ emptyMsg('Couldn’t load your studio: ' + error.message); return; }
+    if(!studio || !studio.id){
+      emptyMsg(`You don’t have a studio yet. <a href="/list-your-practice" style="color:var(--brass)">Register your practice →</a>`);
+      return;
+    }
+    const { data: team, error: tErr } = await sb.rpc('get_practice_team_public', { studio_uuid: studio.id });
+    if(tErr){ emptyMsg('Couldn’t load your team: ' + tErr.message); return; }
+    const members = team || [];
+    if(!members.length){ emptyMsg('You’re the founder — no team members yet. Invite others from the admin panel.'); return; }
+    grid.innerHTML = members.map(m => `
+      <div class="pro-card">
+        <div class="top">
+          <div class="av">${m.avatar_url ? `<img src="${escapeAttr(m.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : initials(m.full_name || '?')}</div>
+          <div>
+            <div class="nm">${escapeHTML(m.full_name || '—')}</div>
+            <div class="rl">${escapeHTML((m.team_role || '').replace('_',' ').toUpperCase())}</div>
+          </div>
         </div>
+        <div class="stats"><div><b>${escapeHTML(m.city || '—')}</b>Based in</div><div><b>${fmtRel(m.joined_at)}</b>Joined</div></div>
+        ${m.bio ? `<div style="color:var(--ink-2);font-size:12.5px;line-height:1.55;margin-top:10px">${escapeHTML(m.bio.slice(0, 140))}${m.bio.length>140?'…':''}</div>` : ''}
       </div>
-      <div class="stats"><div><b>${escapeHTML(m.city || '—')}</b>Based in</div><div><b>${fmtRel(m.joined_at)}</b>Joined</div></div>
-      ${m.bio ? `<div style="color:var(--ink-2);font-size:12.5px;line-height:1.55;margin-top:10px">${escapeHTML(m.bio.slice(0, 140))}${m.bio.length>140?'…':''}</div>` : ''}
-    </div>
-  `).join('');
+    `).join('');
+  }catch(e){ emptyMsg('Unexpected error: ' + (e && e.message || e)); }
 }
 
 /* ============ WhatsApp ============ */
