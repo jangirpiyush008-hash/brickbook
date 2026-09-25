@@ -4016,26 +4016,25 @@ function renderListYourPractice() {
           <a class="auth-back" href="/">${iconSVG('arrL')} Home</a>
         </div>
         <div class="lyp-signup-body">
-          <span class="eyebrow">For architects & studios</span>
+          <span class="eyebrow">For individual architects</span>
           <h1 class="serif">List your <em>practice</em>.</h1>
-          <p class="lyp-signup-sub">Create your BricBook architect profile in two minutes. Free during beta. No card. Your profile stays yours.</p>
+          <p class="lyp-signup-sub">This is a personal architect profile — not a firm account. Show your work, share a public URL, get discovered. Two minutes. Free during beta. No card.</p>
           <div class="oauth" style="margin-top:24px">
             <button class="btn btn-navy btn-block btn-lg" onclick="googleAuth('architect')" style="justify-content:center"><svg width="16" height="16" viewBox="0 0 48 48" style="background:#fff;border-radius:50%;padding:2px;box-sizing:content-box"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>&nbsp; Sign up with Google — fastest</button>
           </div>
           <div class="divider">or with email</div>
           <form onsubmit="return lypDirectSignup(event)" class="lyp-signup-form">
             <div class="field-row">
-              <div class="field"><label>First name</label><input id="lypFirst" required placeholder="Piyush" autocomplete="given-name"></div>
-              <div class="field"><label>Last name</label><input id="lypLast" required placeholder="Jangir" autocomplete="family-name"></div>
+              <div class="field"><label>First name *</label><input id="lypFirst" required placeholder="Piyush" autocomplete="given-name"></div>
+              <div class="field"><label>Last name *</label><input id="lypLast" required placeholder="Jangir" autocomplete="family-name"></div>
             </div>
-            <div class="field"><label>Firm name *</label><input id="lypFirm" required placeholder="Studio Kalpa"></div>
-            <div class="field"><label>Work email *</label><input type="email" id="lypEmail" required placeholder="you@yourstudio.com" autocomplete="email"></div>
+            <div class="field"><label>Work email *</label><input type="email" id="lypEmail" required placeholder="you@example.com" autocomplete="email"></div>
             <div class="field"><label>Password *</label><input type="password" id="lypPwd" required minlength="8" placeholder="At least 8 characters" autocomplete="new-password"></div>
             <div class="field"><label>City</label>
               <select id="lypCity"><option value="Mumbai" selected>Mumbai</option><option>Bangalore</option><option>Delhi NCR</option><option>Chennai</option><option>Pune</option><option>Kochi</option><option>Hyderabad</option><option>Other</option></select>
             </div>
             <div class="check"><input type="checkbox" id="lypTerms" required checked><label for="lypTerms">I agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/privacy" target="_blank">Privacy Policy</a></label></div>
-            <button class="btn btn-brass btn-block btn-lg" type="submit">Create my practice ${iconSVG('arr')}</button>
+            <button class="btn btn-brass btn-block btn-lg" type="submit">Create my profile ${iconSVG('arr')}</button>
           </form>
           <div class="auth-footer">
             <span>Already listed? <a href="/login">Sign in</a></span>
@@ -4050,20 +4049,20 @@ function renderListYourPractice() {
         </div>
         <div class="lyp-info-body">
           <h2 class="serif">Everything an architect needs to be <em>found</em>.</h2>
-          <p class="lyp-info-sub">Build your profile once. Send it everywhere. Track how it performs.</p>
+          <p class="lyp-info-sub">Your personal profile page — build it once, share it everywhere, track how it performs.</p>
           <ul class="lyp-info-list">
-            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Public profile URL</b><span>bricbook.com/practice/your-firm — forever</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Public profile URL</b><span>bricbook.com/practice/your-name — forever</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Permanent BricBook ID</b><span>Immutable identifier like BRIC-000042</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Unlimited portfolio projects</b><span>Cover, gallery, video, description, tags</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>PDF portfolio export</b><span>One-click, ready to email or print</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>LinkedIn + WhatsApp share</b><span>Deep links pre-composed with your details</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>QR code</b><span>For cards, exhibitions, signboards</span></div></li>
             <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Analytics</b><span>Views, contact clicks, PDF downloads</span></div></li>
-            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Client workspace</b><span>Shared photos, drawings, chat per project</span></div></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>Direct enquiries</b><span>Clients reach you from your public page</span></div></li>
           </ul>
         </div>
         <div class="lyp-info-foot">
-          <span class="mono">Trusted by architects across India</span>
+          <span class="mono">Made for solo architects across India</span>
         </div>
         <div class="lyp-info-blueprint">${authVisualBlueprintOnly()}</div>
       </aside>
@@ -4076,24 +4075,24 @@ async function lypDirectSignup(e){
   e.preventDefault();
   const first = ($('#lypFirst')?.value || '').trim();
   const last  = ($('#lypLast')?.value || '').trim();
-  const firm  = ($('#lypFirm')?.value || '').trim();
   const email = ($('#lypEmail')?.value || '').trim().toLowerCase();
   const pwd   = ($('#lypPwd')?.value || '');
   const city  = ($('#lypCity')?.value || 'Mumbai');
-  if(!email || !pwd || !firm){ toast('Fill in firm, email and password'); return false; }
+  if(!first || !last || !email || !pwd){ toast('Fill in name, email and password'); return false; }
   const sb = sbClient();
   if(!sb){ toast('Auth service unavailable'); return false; }
-  const name = (first + ' ' + last).trim() || email.split('@')[0];
+  const name = (first + ' ' + last).trim();
   const username = name.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'') || email.split('@')[0];
+  /* Individual architect — the "practice" is named after the person. Backend still needs a studios row. */
+  const practiceName = name;
   const { data, error } = await sb.auth.signUp({
     email, password: pwd,
-    options:{ data:{ full_name: name, username, signup_role: 'studio_owner', firm_name: firm, city, utm: getUTM() } }
+    options:{ data:{ full_name: name, username, signup_role: 'studio_owner', firm_name: practiceName, city, utm: getUTM() } }
   });
   if(error){ toast('Sign up failed: ' + error.message); return false; }
   if(!data.session){ toast('Confirm your email to finish signup'); nav('/login'); return false; }
-  /* Immediately register the firm so it's provisioned before they land in the dashboard */
-  try{ await sb.rpc('register_as_architect_firm', { firm_name: firm, city_v: city }); }catch(err){}
-  toast('Practice created — complete your profile next');
+  try{ await sb.rpc('register_as_architect_firm', { firm_name: practiceName, city_v: city }); }catch(err){}
+  toast('Profile created — complete it next');
   nav('/app/practice/setup');
   return false;
 }
@@ -5949,50 +5948,70 @@ function renderExplore() {
   const ws = $('#workspace'); if (!ws) return;
   const u = AUTH.get() || {};
   const first = u.name?.split(' ')[0] || 'there';
-  const hour = 10; const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const now = new Date();
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const projCount = PROJECTS.length;
+  const isEmpty = projCount === 0;
+  const heroSub = isEmpty
+    ? `Your dashboard will show your projects, photos, and messages once you add your first one.`
+    : `Here’s what’s happening across your ${projCount} project${projCount === 1 ? '' : 's'}.`;
   ws.innerHTML = `
     <div class="workspace-main">
       <div class="explore">
         <div class="explore-hero">
           <div class="grid-bg"></div>
-          <span class="eyebrow">Overview · ${new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
-          <h1 class="greeting" style="margin-top:8px">${greet}, <em>${first}</em>.</h1>
-          <p class="sub">Here's what's happening across your ${PROJECTS.length} projects. 3 sites have new updates since yesterday — a couple need your attention.</p>
+          <span class="eyebrow">Overview · ${now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+          <h1 class="greeting" style="margin-top:8px">${greet}, <em>${escapeHTML(first)}</em>.</h1>
+          <p class="sub">${heroSub}</p>
           <div class="explore-stats">
-            <div class="estat"><div class="lb">${iconSVG('arch').replace('width="16"','width="12"').replace('height="16"','height="12"')} Active projects</div><div class="vl">${PROJECTS.length}</div><div class="dl">3 on site today</div></div>
-            <div class="estat"><div class="lb">${iconSVG('gallery').replace('width="16"','width="12"').replace('height="16"','height="12"')} New photos</div><div class="vl">42</div><div class="dl">+12 vs yesterday</div></div>
-            <div class="estat"><div class="lb">${iconSVG('chat').replace('width="16"','width="12"').replace('height="16"','height="12"')} Unread messages</div><div class="vl">7</div><div class="dl warn">2 need reply</div></div>
-            <div class="estat"><div class="lb">${iconSVG('file').replace('width="16"','width="12"').replace('height="16"','height="12"')} Drawings sent</div><div class="vl">18</div><div class="dl">Via WhatsApp this week</div></div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-lbl"><span>Portfolio completion</span><span><b>64%</b> · avg across active sites</span></div>
-            <div class="progress"><div class="bar" style="width:64%"></div></div>
+            <div class="estat"><div class="lb">${iconSVG('arch').replace('width="16"','width="12"').replace('height="16"','height="12"')} Active projects</div><div class="vl">${projCount}</div><div class="dl">${isEmpty ? 'None yet' : 'Live'}</div></div>
+            <div class="estat"><div class="lb">${iconSVG('gallery').replace('width="16"','width="12"').replace('height="16"','height="12"')} Photos</div><div class="vl">0</div><div class="dl">—</div></div>
+            <div class="estat"><div class="lb">${iconSVG('chat').replace('width="16"','width="12"').replace('height="16"','height="12"')} Messages</div><div class="vl">0</div><div class="dl">—</div></div>
+            <div class="estat"><div class="lb">${iconSVG('file').replace('width="16"','width="12"').replace('height="16"','height="12"')} Drawings</div><div class="vl">0</div><div class="dl">—</div></div>
           </div>
         </div>
 
         <div class="explore-section">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-            <h2 style="margin:0">Your active sites</h2>
+            <h2 style="margin:0">${isEmpty ? 'Get started' : 'Your active sites'}</h2>
+            ${isEmpty ? '' : `
             <div class="view-switch" id="expView">
               <button data-v="grid" data-active="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Grid</button>
               <button data-v="map"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> Map</button>
-            </div>
+            </div>`}
           </div>
           <div id="expBody"></div>
         </div>
 
+        ${isEmpty ? '' : `
         <div class="explore-section">
           <h2>Recent updates</h2>
           <div class="feed" id="feed"></div>
-        </div>
+        </div>`}
       </div>
     </div>
   `;
+
+  if(isEmpty){
+    $('#expBody').innerHTML = `
+      <div style="background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:40px 32px;text-align:center;max-width:640px;margin:0 auto">
+        <div style="font-family:var(--serif);font-size:26px;line-height:1.2;color:var(--ink);margin-bottom:10px">Your workspace is ready.</div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 auto 24px;max-width:440px">Finish your practice profile so clients can find you, then add your first project when you’re ready.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-navy btn-lg" onclick="nav('/app/practice/setup')">Complete my profile ${iconSVG('arr')}</button>
+          <button class="btn btn-ghost btn-lg" onclick="nav('/app/practice/projects/new')">Add first project</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   const projData = PROJECTS.slice(0, 6).map(p => ({ id: p.id, name: p.name + ' Residence', code: p.code, progress: p.progress, phase: p.status === 'completed' ? 'Handover' : p.progress > 80 ? 'Interior' : p.progress > 40 ? 'Structure' : 'Foundation', arch: p.architect, poc: p.poc, client: p.client }));
   const gridHTML = projData.map(p => {
     const proj = PROJECTS.find(x => x.id === p.id);
     const hero = proj?.hero || 'residential';
-    const totalPhotos = 12 + (p.id.length * 3);   // fake but stable per project
+    const totalPhotos = 12 + (p.id.length * 3);
     const thumbSeeds = ['Bedroom','Kitchen','Living','Bathroom'];
     const thumbsHTML = thumbSeeds.map((s, i) => `<div class="th">${spaceMedia(s, i)}</div>`).join('')
       + `<div class="th more">+ ${totalPhotos - thumbSeeds.length}</div>`;
@@ -6011,7 +6030,7 @@ function renderExplore() {
             </div>
             <span class="chip sage" style="font-size:10px">${p.progress}%</span>
           </div>
-          <div class="meta"><span>📍 ${proj?.city || ''}</span><span>${p.phase}</span></div>
+          <div class="meta"><span>\u{1F4CD} ${proj?.city || ''}</span><span>${p.phase}</span></div>
         </div>
       </div>
     `;
@@ -6024,23 +6043,10 @@ function renderExplore() {
     b.dataset.active = 'true';
     if (b.dataset.v === 'map') renderMapView(body); else showGrid();
   }));
-  const feed = [
-    { who: 'Jake', act: 'uploaded 8 photos to', tgt: 'Kaustubh · Interior', t: '12 min ago', wa: true },
-    { who: 'You', act: 'sent RCP Rev C to', tgt: 'Ajay Kumar', t: '1 hour ago', wa: false },
-    { who: 'Priya', act: 'commented on', tgt: 'Column · Kamlesh', t: '2 hours ago', wa: false },
-    { who: 'Sarah', act: 'moved Vikas to', tgt: 'Foundation phase', t: '3 hours ago', wa: false },
-    { who: 'Mark', act: 'flagged delay on', tgt: 'Steel · United Strangers', t: 'Yesterday', wa: true },
-  ];
-  $('#feed').innerHTML = feed.map(f => `
-    <div class="feed-item">
-      <div class="av">${iconSVG(f.who === 'You' ? 'user' : 'gallery').replace('width="16"','width="14"').replace('height="16"','height="14"')}</div>
-      <div>
-        <div class="ac"><b>${f.who}</b> ${f.act} <span class="tag">${f.tgt}</span></div>
-        <div class="t">${f.t}</div>
-      </div>
-      ${f.wa ? `<button class="wa-btn" onclick="openWA('${f.tgt}','${f.who} · ${f.act} ${f.tgt}','update.jpg')"><svg width="12" height="12" viewBox="0 0 32 32" fill="#fff"><path d="M16 3C9 3 3.5 8.5 3.5 15.4c0 2.3.6 4.5 1.7 6.4L3 29l7.5-2.1c1.8 1 3.9 1.5 5.9 1.5 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg> Send</button>` : `<button class="btn btn-ghost btn-sm">View</button>`}
-    </div>
-  `).join('');
+  const feedEl = $('#feed');
+  if(feedEl){
+    feedEl.innerHTML = `<div style="color:var(--muted);font-size:13.5px;text-align:center;padding:24px 12px">No recent updates yet.</div>`;
+  }
 }
 function openProject(id) { state.projectId = id; state.module = 'gallery'; nav('/app'); }
 window.openProject = openProject;
@@ -7226,7 +7232,9 @@ function renderSettings() {
 function loginFlow(user, note) {
   AUTH.set(user);
   toast(note || 'Signed in');
-  renderSkeleton(() => { nav('/app/explore'); });
+  /* Architects land on their practice setup dashboard (create-your-firm view). Everyone else on explore. */
+  const landing = user.kind === 'professional' ? '/app/practice/setup' : '/app/explore';
+  renderSkeleton(() => { nav(landing); });
 }
 async function signIn(e) {
   e.preventDefault();
