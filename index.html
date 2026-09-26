@@ -2847,9 +2847,9 @@ function iconSVG(name) {
 }
 function brandMark(size = 15) {
   const s = Math.round(size * 1.35);
-  const infW = Math.round(s * 1.15);
-  const infH = Math.round(s * 0.65);
-  return `<span class="brand-mark" style="display:inline-flex;align-items:center;gap:0;font-family:'Inter Tight','SF Pro Display',ui-sans-serif,system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:-.03em;font-size:${s}px;line-height:1;color:var(--ink);text-transform:none">BRIC<span style="display:inline-flex;align-items:center;color:var(--brass);margin:0 1px"><svg width="${infW}" height="${infH}" viewBox="0 0 46 22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 11 C6 3, 17 3, 23 11 C29 19, 40 19, 40 11 C40 3, 29 3, 23 11 C17 19, 6 19, 6 11 Z"/></svg></span>K</span>`;
+  const infW = Math.round(s * 0.9);
+  const infH = Math.round(s * 0.5);
+  return `<span class="brand-mark" style="display:inline-flex;align-items:center;gap:0;font-family:'Inter Tight','SF Pro Display',ui-sans-serif,system-ui,-apple-system,sans-serif;font-weight:900;letter-spacing:-.03em;font-size:${s}px;line-height:1;color:var(--ink);text-transform:none">BRIC<span aria-hidden="true" style="display:inline-flex;align-items:center;color:var(--brass);margin:0 2px"><svg width="${infW}" height="${infH}" viewBox="0 0 46 22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 11 C6 3, 17 3, 23 11 C29 19, 40 19, 40 11 C40 3, 29 3, 23 11 C17 19, 6 19, 6 11 Z"/></svg></span>BOOK</span>`;
 }
 function projectThumbSVG(seed) {
   const v = {
