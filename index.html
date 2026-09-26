@@ -4107,34 +4107,34 @@ function authVisualBlueprintOnly(){
   return svgMatch ? `<div class="lyp-bp-wrap">${svgMatch[0]}</div>` : '';
 }
 
-/* /welcome — shown once for brand-new Google users with no profile row yet */
+/* /welcome — shown to orphan clients (Google sign-in, no invitation, no studio, no project).
+   Migration 007's my_account_status() RPC decides who lands here. */
 function renderWelcome() {
   const root = $('#root');
+  const email = AUTH.get()?.email || '';
   root.innerHTML = `
     <div class="auth">
       <div class="auth-side">
         <div class="auth-header">
           <a class="brand" href="/">${brandMark(14)}</a>
-          <a class="auth-back" href="#" onclick="signOut();return false">${iconSVG('arrL')} Sign out</a>
+          <a class="auth-back" href="#" onclick="cancelWelcome();return false">${iconSVG('arrL')} Cancel &amp; sign out</a>
         </div>
         <div class="auth-body">
-          <span class="eyebrow">One more step</span>
-          <h1>Welcome to <em>BricBook</em>.</h1>
-          <p class="sub">Your Google account is verified but we don't know which side of BricBook you belong to yet. Which one fits?</p>
-          <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px">
-            <button class="btn btn-navy btn-block btn-lg" onclick="registerAsFirm()" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35">
-              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">I run an architecture practice</span><span style="opacity:.7;font-size:12.5px;font-weight:400">Create a studio account · add clients · manage projects</span></span>
-              <span style="opacity:.7">${iconSVG('arr')}</span>
+          <span class="eyebrow">You’re signed in${email ? ' as ' + escapeHTML(email) : ''}</span>
+          <h1>You’re not a client of any <em>BricBook project</em> yet.</h1>
+          <p class="sub">Clients on BricBook are added by their architect — you’ll get an invitation link from them and sign in through that. Nothing else to do here unless you’re actually an architect looking to list your practice.</p>
+          <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:28px">
+            <a class="btn btn-brass btn-block btn-lg" href="/list-your-practice" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35;text-decoration:none">
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">List my practice instead</span><span style="opacity:.85;font-size:12.5px;font-weight:400">Sign me up as an individual architect</span></span>
+              <span>${iconSVG('arr')}</span>
+            </a>
+            <button class="btn btn-ghost btn-block btn-lg" onclick="cancelWelcome()" style="justify-content:space-between;padding:20px 22px;text-align:left;height:auto;line-height:1.35">
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:var(--serif);font-size:20px;font-weight:400">Cancel</span><span style="opacity:.75;font-size:12.5px;font-weight:400">Sign me out — my architect will send an invitation</span></span>
+              <span style="opacity:.55">${iconSVG('arr')}</span>
             </button>
-            <div style="background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px 20px">
-              <div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">I have an invitation link</div>
-              <form onsubmit="return openInvite(event)" style="display:flex;gap:8px;align-items:center">
-                <input id="inviteTokenInput" placeholder="Paste your invite link or token" style="flex:1;height:38px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:6px;padding:0 12px;color:var(--ink);font-size:13px" required>
-                <button class="btn btn-brass btn-sm" type="submit">Open</button>
-              </form>
-              <div style="font-size:11.5px;color:var(--muted);margin-top:8px">Clients get invited by their architect. If you don't have a link, contact your architect.</div>
-            </div>
-            <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px">Not sure? <a href="#" onclick="signOut();return false" style="color:var(--brass)">Sign out</a> and come back later.</div>
+          </div>
+          <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:20px">
+            Waiting for an invitation? Ask your architect to send you a link from their BricBook dashboard.
           </div>
         </div>
       </div>
@@ -4142,6 +4142,16 @@ function renderWelcome() {
     </div>
   `;
 }
+async function cancelWelcome(){
+  const sb = sbClient();
+  if(sb){ try{ await sb.auth.signOut(); }catch(e){} }
+  AUTH.clear();
+  try{ sessionStorage.removeItem('bb_new_user'); }catch(e){}
+  try{ localStorage.removeItem('bb_pending_invite'); }catch(e){}
+  toast('Signed out');
+  nav('/');
+}
+window.cancelWelcome = cancelWelcome;
 async function registerAsFirm(){
   const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
   const name = prompt('What’s your firm name?');
@@ -7330,53 +7340,39 @@ async function hydrateFromSession(session){
   return person;
 }
 
-/* Unified auth: Google sign-in creates a session, backend tells us the role, we route.
-   - Existing profile (client / studio_owner / studio_member / ops_admin / super_admin) -> dashboard
-   - No profile yet (fresh Google user) -> /welcome chooser (register firm OR paste invite link)
-   - Pending client invite token in localStorage -> auto-accept it */
+/* Unified auth routing (migration 007):
+   - Admins / studio_owner / studio_member -> normal dashboard
+   - Client with at least one project membership -> client dashboard
+   - Client with NO studio and NO project (orphan) -> /welcome "not invited" screen
+   Migration 007's handle_new_user auto-accepts pending invitations at signup,
+   so the legacy "paste invite token" path is no longer needed here. */
 async function routeUserByRole(session){
   const sb = sbClient(); if(!sb || !session) return false;
 
-  /* If there's a pending invitation token (client tapped an invite link), try to accept it first */
-  let pendingToken = null;
-  try{ pendingToken = localStorage.getItem('bb_pending_invite'); }catch(e){}
-  if(pendingToken){
-    try{
-      const { data, error } = await sb.rpc('accept_client_invitation', { inv_token: pendingToken });
-      if(error){
-        toast('Invitation error: ' + error.message);
-      } else {
-        toast('Client account activated — welcome!');
-      }
-    }catch(e){ toast('Could not accept invitation'); }
-    try{ localStorage.removeItem('bb_pending_invite'); }catch(e){}
+  let status = null;
+  try{
+    const { data, error } = await sb.rpc('my_account_status');
+    if(!error && Array.isArray(data) && data.length){ status = data[0]; }
+    else if(!error && data && typeof data === 'object'){ status = data; }
+  }catch(e){ /* RPC missing on older DB — fall back below */ }
+
+  if(!status){
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+    if(!profile){ nav('/welcome'); return true; }
+    status = { role: profile.role, has_studio: false, project_count: 0 };
   }
 
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  const role = status.role;
+  const hasStudio = !!status.has_studio;
+  const projectCount = Number(status.project_count || 0);
 
-  if(!profile){
-    /* Brand new Google user with no profile row yet. */
-    /* Trigger will create a default profile with role='client' on the next tick,
-       but for a first-time OAuth landing we want the chooser. Stash a flag and route. */
-    try{ sessionStorage.setItem('bb_new_user', '1'); }catch(e){}
+  if(role === 'super_admin' || role === 'ops_admin'){ return false; }
+  if(role === 'studio_owner' || role === 'studio_member'){ return false; }
+  if(role === 'client'){
+    if(hasStudio || projectCount > 0){ return false; }
     nav('/welcome');
     return true;
   }
-
-  /* Route based on role */
-  const role = profile.role;
-  if(role === 'super_admin' || role === 'ops_admin'){
-    /* Admins can use the app or go to /admin/. Keep them in the app; admin panel is a separate URL. */
-    return false;
-  }
-  if(role === 'studio_owner' || role === 'studio_member'){
-    return false; /* hydrateFromSession will send to firm dashboard */
-  }
-  if(role === 'client'){
-    /* Client with an active profile — allowed, route to client dashboard */
-    return false;
-  }
-  /* Unknown role: safest bet is to sign them out */
   await sb.auth.signOut();
   AUTH.clear();
   toast('Your account role isn’t recognised. Contact BricBook support.');
