@@ -7903,9 +7903,48 @@ window.toggleTheme = toggleTheme; window.setTheme = setTheme;
 try { const s = localStorage.getItem('bb-theme'); if (s) setTheme(s); } catch(e) {}
 
 /* ============ Boot ============ */
+function isOAuthCallback(){
+  try{
+    const q = new URLSearchParams(location.search);
+    if(q.has('code') || q.has('error') || q.has('error_description')) return true;
+    const h = (location.hash || '').replace(/^#/, '');
+    if(h){
+      const hp = new URLSearchParams(h);
+      if(hp.has('access_token') || hp.has('refresh_token') || hp.has('error')) return true;
+    }
+  }catch(e){}
+  return false;
+}
+function renderAuthCallback(){
+  const root = $('#root');
+  if(!root) return;
+  root.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ground);color:var(--ink);font-family:var(--sans)">
+      <div style="text-align:center;max-width:340px;padding:32px 24px">
+        <div style="display:flex;justify-content:center;margin-bottom:22px">${brandMark(16)}</div>
+        <div style="width:44px;height:44px;border-radius:50%;border:2.5px solid var(--hairline);border-top-color:var(--brass);margin:0 auto 18px;animation:bb-spin 0.8s linear infinite"></div>
+        <div style="font-family:var(--serif);font-size:20px;line-height:1.3;color:var(--ink);margin-bottom:6px">Signing you in…</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">Verifying your Google account and taking you to your dashboard.</div>
+      </div>
+    </div>
+    <style>@keyframes bb-spin{to{transform:rotate(360deg)}}</style>
+  `;
+  /* Safety fallback: if bootstrapAuth doesn't route us within 8s, drop back to the landing */
+  clearTimeout(window._bbAuthTimer);
+  window._bbAuthTimer = setTimeout(() => {
+    if(currentRoute() === '/' && isOAuthCallback()){
+      try{ history.replaceState({}, '', '/'); }catch(e){}
+      renderLanding();
+    }
+  }, 8000);
+}
 function route() {
   const r = currentRoute();
   applyRouteMeta(r);
+  /* If this page load is an OAuth callback, don't flash the landing page.
+     Supabase's onAuthStateChange fires SIGNED_IN once detectSessionInUrl parses
+     the URL, and routeUserByRole() will nav() to the right destination. */
+  if (r === '/' && isOAuthCallback()) return renderAuthCallback();
   if (r === '/') return renderLanding();
   if (r === '/list-your-practice') return renderListYourPractice();
   if (r === '/login') return renderLogin();
