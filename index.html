@@ -4157,36 +4157,94 @@ async function cancelWelcome(){
 }
 window.cancelWelcome = cancelWelcome;
 
-/* /welcome "Register my firm" — same convert-to-studio_owner flow whether the caller
-   arrived via Google or email/password. Falls back to /signup/architect only if there
-   is no session (e.g. someone hitting /welcome directly). */
+/* /welcome "Register my firm" — swaps in an inline firm-name form (no prompt() dialog).
+   After a successful register_as_architect_firm RPC the caller lands on /app/explore,
+   which is the firm workspace shell (topnav + rail + empty-state card). */
 async function registerFirmFromWelcome(){
   const sb = sbClient();
   if(!sb){ toast('Auth service unavailable'); return; }
   const { data:{ session } } = await sb.auth.getSession();
   if(!session){ nav('/signup/architect'); return; }
-  return registerAsFirm();
+  renderFirmNameForm(session);
 }
 window.registerFirmFromWelcome = registerFirmFromWelcome;
-async function registerAsFirm(){
-  const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
-  const name = prompt('What’s your firm name?');
-  if(!name || !name.trim()) return;
-  const { data, error } = await sb.rpc('register_as_architect_firm', { firm_name: name.trim(), city_v: 'Mumbai' });
-  if(error){ toast('Registration failed: ' + error.message); return; }
-  toast('Studio created — next: complete your profile');
+
+function renderFirmNameForm(session){
+  const root = $('#root');
+  const meta = (session && session.user && session.user.user_metadata) || {};
+  const displayName = meta.full_name || meta.name || '';
+  const first = displayName ? displayName.split(' ')[0] : '';
+  const suggested = first ? (first + ' Studio') : '';
+  root.innerHTML = `
+    <div class="auth">
+      <div class="auth-side">
+        <div class="auth-header">
+          <a class="brand" href="/">${brandMark(14)}</a>
+          <a class="auth-back" href="#" onclick="nav('/welcome');return false">${iconSVG('arrL')} Back</a>
+        </div>
+        <div class="auth-body">
+          <span class="eyebrow">Firm details</span>
+          <h1>Name your <em>firm</em>.</h1>
+          <p class="sub">This is how your studio appears to clients and on your public profile. You can rename it later from settings.</p>
+          <form onsubmit="return submitFirmName(event)" style="margin-top:16px">
+            <div class="field"><label>Firm name *</label><input id="rfName" required placeholder="e.g. Studio Kalpa" value="${escapeAttr(suggested)}" autocomplete="organization"></div>
+            <div class="field"><label>Primary city *</label>
+              <select id="rfCity" required>
+                <option value="Mumbai" selected>Mumbai</option><option>Bangalore</option><option>Delhi NCR</option><option>Chennai</option><option>Pune</option><option>Kochi</option><option>Hyderabad</option><option>Ahmedabad</option><option>Other</option>
+              </select>
+            </div>
+            <button class="btn btn-brass btn-block btn-lg" type="submit">Create firm ${iconSVG('arr')}</button>
+          </form>
+          <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:14px">
+            <a href="#" onclick="cancelWelcome();return false" style="color:var(--brass)">Cancel &amp; sign out</a>
+          </div>
+        </div>
+      </div>
+      ${authVisual('default')}
+    </div>
+  `;
+  setTimeout(() => { const el = $('#rfName'); if(el){ el.focus(); el.select(); } }, 60);
+}
+window.renderFirmNameForm = renderFirmNameForm;
+
+async function submitFirmName(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const name = ($('#rfName')?.value || '').trim();
+  const city = ($('#rfCity')?.value || 'Mumbai');
+  if(!name){ toast('Enter a firm name'); return false; }
+  const sb = sbClient();
+  if(!sb){ toast('Auth service unavailable'); return false; }
+  if(btn){ btn.disabled = true; btn.dataset._t = btn.textContent; btn.textContent = 'Creating firm…'; }
+  const { error } = await sb.rpc('register_as_architect_firm', { firm_name: name, city_v: city });
+  if(error){
+    toast('Registration failed: ' + error.message);
+    if(btn){ btn.disabled = false; btn.textContent = btn.dataset._t || 'Create firm'; }
+    return false;
+  }
+  toast('Firm created — welcome to BricBook');
   try{ sessionStorage.removeItem('bb_new_user'); }catch(e){}
   const { data:{ session } } = await sb.auth.getSession();
   if(session){
     const person = await hydrateFromSession(session);
     if(person){
       AUTH.set(person);
-      /* Route straight into the setup wizard so they finish onboarding */
-      renderSkeleton(() => nav('/app/practice/setup'));
-      return;
+      renderSkeleton(() => nav('/app/explore'));
+      return false;
     }
   }
   nav('/login');
+  return false;
+}
+window.submitFirmName = submitFirmName;
+
+/* Legacy helper kept for other callers (e.g. renderPracticeSetup's "No studio yet" screen);
+   uses the same inline form when a session exists. */
+async function registerAsFirm(){
+  const sb = sbClient(); if(!sb){ toast('Auth service unavailable'); return; }
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ nav('/signup/architect'); return; }
+  renderFirmNameForm(session);
 }
 window.registerAsFirm = registerAsFirm;
 
@@ -6760,7 +6818,7 @@ function renderApp() {
         <div class="nav-actions">
           ${!isCust ? `<button class="btn btn-ghost btn-sm" onclick="nav('/app/jobs')" title="Browse construction jobs" style="margin-right:4px">${iconSVG('search').replace('width="16"','width="12"').replace('height="16"','height="12"')} Job search</button>` : ''}
           <button class="icon-btn" onclick="toggleTheme()" title="Theme">${iconSVG('sun')}</button>
-          <button class="icon-btn" onclick="toast('3 new updates · 7 unread messages')" title="Notifications">${iconSVG('bell')}<span class="dot"></span></button>
+          <button class="icon-btn" onclick="toast('No new notifications')" title="Notifications">${iconSVG('bell')}</button>
           <div class="avatar" id="avBtn" onclick="toggleDropdown(event)" title="Account">${initials(u.name)}</div>
         </div>
       </header>
@@ -6918,7 +6976,16 @@ function renderRail(filter = '') {
     });
     return row;
   }
-  if (!active.length) list.appendChild(Object.assign(document.createElement('div'), { className: 'rail-section', textContent: 'No matches' }));
+  if (!active.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'padding:22px 12px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.55';
+    if(!isCust && !PROJECTS.length){
+      empty.innerHTML = `<div style="font-family:var(--serif);color:var(--ink);font-size:15px;margin-bottom:6px">No projects yet</div>Click <b>+ New</b> above to add your first project. Your rail will fill in as you go.`;
+    } else {
+      empty.textContent = 'No matches';
+    }
+    list.appendChild(empty);
+  }
   if (isCust) {
     const info = document.createElement('div');
     info.style.cssText = 'padding:14px 8px 8px;margin-top:14px;border-top:1px solid var(--hairline)';
@@ -6937,6 +7004,24 @@ window.togglePin = togglePin;
 function renderWorkspace() {
   const ws = $('#workspace'); if (!ws) return;
   const p = project();
+  if(!p){
+    const u = AUTH.get() || {};
+    const isCust = (u.kind === 'user' || u.kind === 'customer');
+    ws.innerHTML = `
+      <div class="workspace-main">
+        <div style="max-width:640px;margin:56px auto 0;padding:40px 32px;background:var(--surface);border:1px solid var(--hairline);border-radius:12px;text-align:center">
+          <div style="font-family:var(--serif);font-size:26px;line-height:1.2;color:var(--ink);margin-bottom:10px">${isCust ? 'Waiting on your architect' : 'Your workspace is ready.'}</div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 auto 24px;max-width:440px">${isCust ? 'Your project will appear here once your architect adds you. Nothing for you to do meanwhile.' : 'Add your first project to start collaborating with clients and your team. Every drawing, photo and message will live inside it.'}</p>
+          ${isCust ? '' : `
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-brass btn-lg" onclick="openCreate()">${iconSVG('plus')} Add first project</button>
+            <button class="btn btn-ghost btn-lg" onclick="nav('/app/practice/setup')">Complete my profile</button>
+          </div>`}
+        </div>
+      </div>
+    `;
+    return;
+  }
   const needsFloors = state.module === 'gallery' || state.module === 'files';
   const counts = {
     gallery: (SPACES_BY_FLOOR[state.floorId] || []).length,
