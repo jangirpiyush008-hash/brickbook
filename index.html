@@ -4229,7 +4229,7 @@ async function submitFirmName(e){
     const person = await hydrateFromSession(session);
     if(person){
       AUTH.set(person);
-      renderSkeleton(() => nav('/app/explore'));
+      renderSkeleton(() => nav('/app'));
       return false;
     }
   }
@@ -7347,8 +7347,10 @@ function renderSettings() {
 function loginFlow(user, note) {
   AUTH.set(user);
   toast(note || 'Signed in');
-  /* Architects land on their practice setup dashboard (create-your-firm view). Everyone else on explore. */
-  const landing = user.kind === 'professional' ? '/app/practice/setup' : '/app/explore';
+  /* Firm users land on the project workspace shell (topnav + rail + workspace).
+     That's the same layout they had before go-live; renderWorkspace handles the
+     no-project-selected empty state cleanly. Everyone else goes to explore. */
+  const landing = user.kind === 'professional' ? '/app' : '/app/explore';
   renderSkeleton(() => { nav(landing); });
 }
 async function signIn(e) {
